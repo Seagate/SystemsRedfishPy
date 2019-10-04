@@ -1,0 +1,42 @@
+#
+# Redfish API Test Script
+#
+# !version
+# !mcip 10.235.221.119
+# !username manage
+# !password Testit123!
+# !annotate yes
+!trace 5
+!urltimeout 10
+!dumpjsondata 0
+!dump
+
+#
+# Run a series of Redfish API commands
+#
+
+# redfish version
+# redfish services
+# redfish odata
+# redfish metadata
+
+redfish session
+
+# redfish urls
+# redfish urls /redfish/v1/Chassis
+# redfish urls /redfish/v1/ComputerSystem
+# redfish urls /redfish/v1/Managers
+# redfish urls /redfish/v1/SessionService
+# redfish urls /redfish/v1/StorageServices
+# redfish urls /redfish/v1/TaskService
+
+# redfish urls /redfish/v1/ComputerSystem
+# redfish urls /redfish/v1/ComputerSystem/00C0FF43C844/Storage/controller_a
+# redfish urls /redfish/v1/Managers
+
+# redfish json /redfish/v1/ComputerSystem/00C0FF43C844/Storage/controller_a
+# redfish urls /redfish/v1/ComputerSystem/00C0FF43C844/Storage/controller_a
+
+# show disks
+# show volumes
+show pools
