@@ -21,7 +21,7 @@ import json
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, LinkStatus
+from urlAccess import UrlAccess, UrlStatus
 
 
 ################################################################################
@@ -49,7 +49,7 @@ class CommandHandler(CommandHandlerBase):
     def process_json(self, config, url):
 
         Trace.log(TraceLevel.INFO, '   ++ CommandHandler: redfish json // process_url ({})'.format(url))
-        link = UrlAccess.process_link(config, LinkStatus(url), True)
+        link = UrlAccess.process_request(config, UrlStatus(url), 'GET', True)
         self.link = link
 
     @classmethod

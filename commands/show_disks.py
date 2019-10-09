@@ -44,7 +44,7 @@
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, LinkStatus
+from urlAccess import UrlAccess, UrlStatus
 
 ################################################################################
 # DiskInformation
@@ -65,7 +65,7 @@ class DiskInformation:
     def init_from_url(self, config, url):
         Trace.log(TraceLevel.DEBUG, '   ++ Disk init from URL {}'.format(url))
 
-        link = UrlAccess.process_link(config, LinkStatus(url))
+        link = UrlAccess.process_request(config, UrlStatus(url))
 
         if (link.valid):        
             Trace.log(TraceLevel.DEBUG, '   ++ Disk: ({}, {}, {}, {}, {})'.format(
@@ -101,7 +101,7 @@ class CommandHandler(CommandHandlerBase):
 
         # GET DriveCollection
         Trace.log(TraceLevel.VERBOSE, '++ GET Drive collection from ({})'.format(url))
-        self.link = UrlAccess.process_link(config, LinkStatus(url))
+        self.link = UrlAccess.process_request(config, UrlStatus(url))
         
         # Retrieve a listing of all drives for this system
         if (self.link.valid):

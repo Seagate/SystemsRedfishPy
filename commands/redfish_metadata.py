@@ -33,7 +33,7 @@ import xml.dom.minidom
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, LinkStatus
+from urlAccess import UrlAccess, UrlStatus
 
 
 ################################################################################
@@ -50,7 +50,7 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def process_json(self, config, url):
 
-        self.link = UrlAccess.process_link(config, LinkStatus(url), False)
+        self.link = UrlAccess.process_request(config, UrlStatus(url), 'GET', False)
 
     @classmethod
     def display_results(self, config):

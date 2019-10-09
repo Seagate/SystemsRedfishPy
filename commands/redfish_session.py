@@ -22,7 +22,7 @@
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, LinkStatus
+from urlAccess import UrlAccess, UrlStatus
 
 ################################################################################
 # CommandHandler
@@ -43,10 +43,17 @@ class CommandHandler(CommandHandlerBase):
         Trace.log(TraceLevel.INFO, '++ Establish Redfish session: ({})...'.format(url))
         
         authenticationData = {'UserName' : config.get_value('username'), 'Password' : config.get_value('password') }
-        link = UrlAccess.process_link(config, LinkStatus(url), False, authenticationData)
+        link = UrlAccess.process_request(config, UrlStatus(url), 'POST', False, authenticationData)
 
         # HTTP 201 Created
         if (link.urlStatus == 201):
+
+            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Id', link.jsonData['Id']))
+            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Name', link.jsonData['Name']))
+            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Description', link.jsonData['Description']))
+            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('UserName', link.jsonData['UserName']))
+            
+            link.sessionKey = link.response.getheader('x-auth-token', '')
             config.sessionKey = link.sessionKey
             if (config.sessionKey != ''):
                 config.sessionValid = True

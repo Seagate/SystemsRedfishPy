@@ -19,6 +19,7 @@ import importlib
 import math
 import sys
 import time
+import traceback
 
 from trace import TraceLevel, Trace
 
@@ -53,14 +54,14 @@ class RedfishCommand:
         # as an example.
         # 
         words = command.split(' ')
-        if (len(words) > 0 and words[0] == 'help'):
-            handlerName = 'commands.' + 'show' + '_' + 'help'
-        elif (len(words) > 1):
-            handlerName = 'commands.' + words[0] + '_' + words[1]
-        else:
-            Trace.log(TraceLevel.ERROR, '[] Unable to run command: ({})...'.format(command))
-            return
-        
+        if (len(words) == 1):
+            handlerName = 'commands.' + words[0]
+        elif (len(words) >= 2):
+            if (words[0] == 'help'):
+                handlerName = 'commands.' + words[0]
+            else:
+                handlerName = 'commands.' + words[0] + '_' + words[1]
+
         try:
             handler = dynamic_import(handlerName)
     
@@ -79,6 +80,13 @@ class RedfishCommand:
                 Trace.log(TraceLevel.INFO, ''.format())
                 Trace.log(TraceLevel.INFO, '[] Elapsed time: {}m {}s to execute command'.format(minutes, seconds))
 
+        except ImportError:
+            Trace.log(TraceLevel.ERROR, 'No module found for command ({}) using [{}]'.format(command, handlerName))
+            pass
+
         except Exception as inst:
             Trace.log(TraceLevel.ERROR, 'Unexpected error while executing command ({}): {} -- {}'.format(command, sys.exc_info()[0], inst))
+            print('-'*100)
+            traceback.print_exc(file=sys.stdout)
+            print('-'*100)
             pass

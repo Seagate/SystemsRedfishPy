@@ -22,7 +22,7 @@
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, LinkStatus
+from urlAccess import UrlAccess, UrlStatus
 
 ################################################################################
 # VolumeInformation
@@ -43,7 +43,7 @@ class VolumeInformation:
     def init_from_url(self, config, url):
         Trace.log(TraceLevel.DEBUG, '   ++ Volume init from URL {}'.format(url))
 
-        link = UrlAccess.process_link(config, LinkStatus(url))
+        link = UrlAccess.process_request(config, UrlStatus(url))
 
         if (link.valid):        
             Trace.log(TraceLevel.DEBUG, '   ++ Volume: ({}, {}, {}, {}, {})'.format(
@@ -87,7 +87,7 @@ class CommandHandler(CommandHandlerBase):
     def process_json(self, config, url):
         
         # GET Volumes
-        self.link = UrlAccess.process_link(config, LinkStatus(url))
+        self.link = UrlAccess.process_request(config, UrlStatus(url))
         
         # Retrieve a listing of all volumes for this system
         if (self.link.valid):

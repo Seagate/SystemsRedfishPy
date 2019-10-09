@@ -22,7 +22,7 @@
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, LinkStatus
+from urlAccess import UrlAccess, UrlStatus
 
 ################################################################################
 # PoolInformation
@@ -50,7 +50,7 @@ class PoolInformation:
     def init_from_url(self, config, url):
         Trace.log(TraceLevel.DEBUG, '   ++ Pool init from URL {}'.format(url))
 
-        link = UrlAccess.process_link(config, LinkStatus(url))
+        link = UrlAccess.process_request(config, UrlStatus(url))
 
         if (link.valid):        
             Trace.log(TraceLevel.DEBUG, '   ++ Pool: ({}, {}, {}, {}, {})'.format(
@@ -106,7 +106,7 @@ class CommandHandler(CommandHandlerBase):
     def process_json(self, config, url):
         
         # GET Pools
-        self.link = UrlAccess.process_link(config, LinkStatus(url))
+        self.link = UrlAccess.process_request(config, UrlStatus(url))
         
         # Retrieve a listing of all pools for this system
         # Note: Version 1.1 returns storage groups and pools, don't take StoragePools that start with 00c0ff

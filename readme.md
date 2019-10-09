@@ -17,6 +17,18 @@ is an extension to the Redfish API maintained by [SNIA Swordfish](https://www.sn
 
 This project is maintained under the [EDS ADT seagit repository](https://seagit.okla.seagate.com/eds-adt/SystemsRedfishPy).
 
+The process to use this client is to create a copy of the project on your local hard drive. Once you have the project run:
+
+```
+$ cd <working-folder>
+$ git clone https://seagit.okla.seagate.com/eds-adt/SystemsRedfishPy.git
+$ cd SystemsRedfishPy
+$ python redfishAPI.py -h
+```
+
+In order to use SSH, you will need to [add an SSH key](https://seagit.okla.seagate.com/profile/keys).
+
+
 
 ## Requirements
 
@@ -32,7 +44,8 @@ interactive mode. All commands entered at the prompt can also be pasted into a t
 Open a terminal window and change directories to the SystemsRedfishPy folder. Run the command 'python redfishAPI.py'
 and you will be presented with a '(redfish)' prompt. 
 
-```>python redfishAPI.py
+```bash
+>python redfishAPI.py
 
 --------------------------------------------------------------------------------
 [1.0] Redfish API
@@ -77,12 +90,14 @@ Most commands require that you establish a session with the target Redfish Servi
 This command will use the configuration settings, listed above, such as mcip, username, and password and attempt to
 establish a session.
 
-```(redfish) redfish session
+```bash
+(redfish) redfish session
 
 ++ Establish Redfish session: (/redfish/v1/SessionService/Sessions)...
 [] Redfish session established (key=8356051e862ca5de23bc2850a3903ad6)
 
-[] Elapsed time: 0m 1s to execute command```
+[] Elapsed time: 0m 1s to execute command
+```
 
 The main redfish commands are used for debugging or learning more about the data returned by the Redfish Service.
 

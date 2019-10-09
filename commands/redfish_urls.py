@@ -34,10 +34,12 @@
 #
 #
 
+import time
+
 from collections import OrderedDict
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, LinkStatus
+from urlAccess import UrlAccess, UrlStatus
 
 
 ################################################################################
@@ -102,7 +104,7 @@ class CommandHandler(CommandHandlerBase):
                     if (k == '@odata.id'):
                         if (v not in self.allLinks):
                             Trace.log(TraceLevel.DEBUG, '   @@ ++ New Link: ({})'.format(v))
-                            link = LinkStatus(v)
+                            link = UrlStatus(v)
                             self.allLinks[v] = link
                             self.dump_links(self)
 
@@ -110,7 +112,7 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def process_next_url(self, config, link):
         Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // process_next_url ({}) session ({})'.format(link.url, config.sessionKey))
-        UrlAccess.process_link(config, link)
+        UrlAccess.process_request(config, link)
         self.add_links(self, link.jsonData, '')
 
 
@@ -132,7 +134,7 @@ class CommandHandler(CommandHandlerBase):
 
         Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // process_json url ({})'.format(url))
 
-        link = UrlAccess.process_link(config, LinkStatus(url), True)
+        link = UrlAccess.process_request(config, UrlStatus(url), 'GET', True)
         self.allLinks[url] = link
         self.dump_links(self)
         self.add_links(self, link.jsonData, '')

@@ -1,14 +1,12 @@
 #
-# @command show help [command]
+# @command help [command]
 #
 # @synopsis Display a synopsys of all commands, or details for a command
 #
 # @description-start
 #
-# Use the 'show help' command to display all available commands. Use
-# 'show help [command name]' to display details for a command. 
-#
-# Note: Use 'help' instead of 'show help' if desired.
+# Use the 'help' command to display all available commands. Use
+# 'help [command name]' to display details for a command. 
 # 
 # @description-end
 #
@@ -22,8 +20,8 @@ from trace import TraceLevel, Trace
 # CommandHandler
 ################################################################################
 class CommandHandler(CommandHandlerBase):
-    """Command - show help """
-    name = 'show help'
+    """Command - help """
+    name = 'help'
     valid = False
     command = None
     commandFull = None

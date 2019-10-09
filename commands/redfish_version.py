@@ -19,7 +19,7 @@
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, LinkStatus
+from urlAccess import UrlAccess, UrlStatus
 
 ################################################################################
 # CommandHandler
@@ -37,7 +37,7 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def process_json(self, config, url):
 
-        link = UrlAccess.process_link(config, LinkStatus(url), False, None)
+        link = UrlAccess.process_request(config, UrlStatus(url), 'GET', False, None)
 
         self.valid = link.valid
 
