@@ -6,6 +6,8 @@
 
 import json
 import socket
+import sys
+import traceback
 import urllib.request, urllib.error
 
 from trace import TraceLevel, Trace
@@ -75,8 +77,15 @@ class UrlAccess():
 
             if (link.urlData):
                 try:
-                    link.jsonData = json.loads(link.urlData)
-                except:
+                    link.jsonData = json.loads(link.urlData.decode('utf-8'))
+
+                except Exception as inst:
+                    Trace.log(TraceLevel.INFO, '   -- Exception: Trying to convert to JSON data, jsonData={} -- {}'.format(link.jsonData, sys.exc_info()[0], inst))
+                    Trace.log(TraceLevel.INFO, '-'*100)
+                    Trace.log(TraceLevel.INFO, '   -- urlData={}'.format(link.urlData))
+                    Trace.log(TraceLevel.INFO, '-'*100)
+                    traceback.print_exc(file=sys.stdout)
+                    Trace.log(TraceLevel.INFO, '-'*100)
                     pass
 
             link.update_status(link.response.status, link.response.reason)

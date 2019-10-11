@@ -86,7 +86,7 @@ class RedfishCommand:
 
         except Exception as inst:
             Trace.log(TraceLevel.ERROR, 'Unexpected error while executing command ({}): {} -- {}'.format(command, sys.exc_info()[0], inst))
-            print('-'*100)
+            Trace.log(TraceLevel.INFO, '-'*100)
             traceback.print_exc(file=sys.stdout)
-            print('-'*100)
+            Trace.log(TraceLevel.INFO, '-'*100)
             pass

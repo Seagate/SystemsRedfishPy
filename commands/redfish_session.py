@@ -44,14 +44,19 @@ class CommandHandler(CommandHandlerBase):
         
         authenticationData = {'UserName' : config.get_value('username'), 'Password' : config.get_value('password') }
         link = UrlAccess.process_request(config, UrlStatus(url), 'POST', False, authenticationData)
+        
+        Trace.log(TraceLevel.TRACE, '   -- urlStatus={} urlReason={}'.format(link.urlStatus, link.urlReason))
 
         # HTTP 201 Created
         if (link.urlStatus == 201):
 
-            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Id', link.jsonData['Id']))
-            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Name', link.jsonData['Name']))
-            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Description', link.jsonData['Description']))
-            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('UserName', link.jsonData['UserName']))
+            if (link.jsonData != None):
+                Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Id', link.jsonData['Id']))
+                Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Name', link.jsonData['Name']))
+                Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Description', link.jsonData['Description']))
+                Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('UserName', link.jsonData['UserName']))
+            else:
+                Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
             
             link.sessionKey = link.response.getheader('x-auth-token', '')
             config.sessionKey = link.sessionKey
