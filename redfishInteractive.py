@@ -77,11 +77,8 @@ class RedfishPrompt():
 ################################################################################
 class RedfishInteractive:
 
-    def execute(self):
+    def execute(self, config):
         Trace.log(TraceLevel.INFO, '[] Run Redfish API commands interactively...')
-
-        # Load configuration settings, which can be overwritten at the command line or in a script file
-        config = RedfishConfig('redfishAPI.json')
 
         # Create an object to handle all commands
         command = RedfishCommand()

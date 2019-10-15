@@ -121,14 +121,14 @@ class UrlAccess():
             # Print the contents of the HTTP message response
             read_op = getattr(err, "read", None)
             if (callable(read_op)):
-                Trace.log(TraceLevel.INFO, '   ' + '='*60 + '  HTTP Error START  ' + '='*60)
+                Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error START  ' + '='*60)
                 errorMessage = err.read()
                 if (errorMessage != None):
                     jsonData = json.loads(errorMessage)
-                    Trace.log(TraceLevel.INFO, json.dumps(jsonData, indent=4))
+                    Trace.log(TraceLevel.VERBOSE, json.dumps(jsonData, indent=4))
                 else:
-                    Trace.log(TraceLevel.INFO, '  No error data in HTTP response'.format())
-                Trace.log(TraceLevel.INFO, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
+                    Trace.log(TraceLevel.VERBOSE, '  No error data in HTTP response'.format())
+                Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
 
             pass
 

@@ -5,7 +5,7 @@
     "password": "Testit123!",
     "annotate": "yes",
     "urltimeout": "10",
-    "trace": "7",
+    "trace": "4",
     "dumpjsondata": "0",
     "dumppostdata": "0"
 }

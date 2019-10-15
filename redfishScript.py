@@ -29,15 +29,12 @@ from trace import TraceLevel, Trace
 ################################################################################
 class RedfishScript:
 
-    def execute_script(self, scriptfile):
+    def execute_script(self, config, scriptfile):
 
         lineCount = 1
 
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '[] Execute Redfish API script file ({})...'.format(scriptfile))
-
-        # Load configuration settings, which can be overwritten at the command line or in a script file
-        config = RedfishConfig('redfishAPI.json')
 
         # Create an object to handle all commands
         command = RedfishCommand()

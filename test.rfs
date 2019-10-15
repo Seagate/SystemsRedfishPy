@@ -6,8 +6,8 @@
 # !username manage
 # !password Testit123!
 # !annotate yes
-!trace 5
-!urltimeout 10
+# !trace 6
+# !urltimeout 10
 !dumpjsondata 0
 !dump
 
@@ -36,12 +36,11 @@ create session
 # redfish json /redfish/v1/ComputerSystem/00C0FF43C844/Storage/controller_a
 # redfish urls /redfish/v1/ComputerSystem/00C0FF43C844/Storage/controller_a
 
-show disks
+# create diskgroup name=dgA01 disks=0.1,0.2,0.3,0.4 pool=A level=raid5
+# create diskgroup name=dgA02 disks=0.5,0.6,0.7,0.8 pool=A level=raid6
+# create diskgroup name=dgA03 disks=0.9,0.10 pool=A level=raid1
+# create diskgroup name=dgA04 disks=0.11,0.12 pool=A level=raid1
 
-create diskgroup name=dgA01 disks=0.1,0.2,0.3,0.4 pool=A level=raid5
-create diskgroup name=dgA02 disks=0.5,0.6,0.7,0.8 pool=A level=raid6
-create diskgroup name=dgA03 disks=0.9,0.10 pool=A level=raid1
-create diskgroup name=dgA04 disks=0.11,0.12 pool=A level=raid1
-
+# show disks
 # show volumes
 show pools

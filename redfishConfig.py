@@ -65,7 +65,7 @@ class RedfishConfig:
                 if key in settings:
                     self.dictionary[key] = settings[key]
                 Trace.log(TraceLevel.DEBUG, '   -- {0: <8} : {1}'.format(key, self.dictionary[key]))
-                
+
         self.update_trace('trace', currentvalue, self.dictionary['trace'])
 
     @classmethod
@@ -129,6 +129,9 @@ class RedfishConfig:
             with open(configurationfile, "w") as write_file:
                 json.dump(settings, write_file, indent=4)
                 self.update_trace(parameter, currentvalue, value)
+            # Update the trace level as needed
+            if (parameter == 'trace'):
+                Trace.setlevel(value)
             updated = True
         except:
             Trace.log(TraceLevel.INFO, '   -- Unable to update parameter ({}) - check spelling'.format(parameter))
