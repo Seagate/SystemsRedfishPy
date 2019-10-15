@@ -6,5 +6,6 @@
     "annotate": "yes",
     "urltimeout": "10",
     "trace": "4",
-    "dumpjsondata": "0"
+    "dumpjsondata": "0",
+    "dumppostdata": "0"
 }

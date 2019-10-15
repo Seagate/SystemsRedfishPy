@@ -64,7 +64,7 @@ class RedfishCommand:
 
         try:
             handler = dynamic_import(handlerName)
-    
+
             url = handler.CommandHandler().prepare_url(command)
             Trace.log(TraceLevel.DEBUG, '      ++ URL: {}'.format(url))
     

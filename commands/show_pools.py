@@ -18,7 +18,7 @@
 # Success: Command completed successfully. (2019-10-01 14:18:01)
 #
 # @description-end
-#
+# 
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
@@ -52,41 +52,46 @@ class PoolInformation:
 
         link = UrlAccess.process_request(config, UrlStatus(url))
 
-        if (link.valid):        
-            Trace.log(TraceLevel.DEBUG, '   ++ Pool: ({}, {}, {}, {}, {})'.format(
-                link.jsonData['Id'], link.jsonData['Name'], link.jsonData['Manufacturer'], link.jsonData['BlockSizeBytes'], link.jsonData['remainingCapacityPercent']))
+        if (link.valid):
+
+            Trace.log(TraceLevel.DEBUG, '   ++ Pool: ({}, {}, {})'.format(link.jsonData['Id'], link.jsonData['Name'], link.jsonData['@odata.type']))
 
             self.Name = link.jsonData['Name']
             self.Id = link.jsonData['Id']
             self.Manufacturer = link.jsonData['Manufacturer']
-            self.BlockSizeBytes = link.jsonData['BlockSizeBytes']
 
-            try:
-                avs = link.jsonData['AllocatedVolumes']
-                self.AllocatedVolumes = len(avs)
-            except:
-                self.AllocatedVolumes = 0
-                pass
+            if (link.jsonData['@odata.type'] == 'ERROR'):
+                self.Health = 'ERROR'
 
-            self.RemainingCapacityPercent = link.jsonData['remainingCapacityPercent']
+            else:
+                self.BlockSizeBytes = link.jsonData['BlockSizeBytes']
 
-            iostats = link.jsonData['IOStatistics']
-            self.ReadHitIORequests = iostats['ReadHitIORequests']
-            self.ReadIOKiBytes = iostats['ReadIOKiBytes']
-            self.ReadIORequestTime = iostats['ReadIORequestTime']
-            self.WriteHitIORequests = iostats['WriteHitIORequests']
-            self.WriteIOKiBytes = iostats['WriteIOKiBytes']
-            self.WriteIORequestTime = iostats['WriteIORequestTime']
+                try:
+                    avs = link.jsonData['AllocatedVolumes']
+                    self.AllocatedVolumes = len(avs)
+                except:
+                    self.AllocatedVolumes = 0
+                    pass
 
-            capacity = link.jsonData['Capacity']
-            data = capacity['Data']
-            self.AllocatedBytes = data['AllocatedBytes']
-            self.ConsumedBytes = data['ConsumedBytes']
-            
-            status = link.jsonData['Status']
-            self.State = status['State']
-            self.Health = status['Health']
-            
+                self.RemainingCapacityPercent = link.jsonData['remainingCapacityPercent']
+
+                iostats = link.jsonData['IOStatistics']
+                self.ReadHitIORequests = iostats['ReadHitIORequests']
+                self.ReadIOKiBytes = iostats['ReadIOKiBytes']
+                self.ReadIORequestTime = iostats['ReadIORequestTime']
+                self.WriteHitIORequests = iostats['WriteHitIORequests']
+                self.WriteIOKiBytes = iostats['WriteIOKiBytes']
+                self.WriteIORequestTime = iostats['WriteIORequestTime']
+
+                capacity = link.jsonData['Capacity']
+                data = capacity['Data']
+                self.AllocatedBytes = data['AllocatedBytes']
+                self.ConsumedBytes = data['ConsumedBytes']
+
+                status = link.jsonData['Status']
+                self.State = status['State']
+                self.Health = status['Health']
+
 
 ################################################################################
 # CommandHandler

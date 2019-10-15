@@ -39,6 +39,9 @@ class RedfishConfig:
     @classmethod
     def __init__(self, filename):
 
+        #
+        # Add new configuration settings here, they will be automatically written to the JSON file.
+        #
         self.dictionary['configurationfile'] = filename
         self.dictionary['version'] = ''
         self.dictionary['mcip'] = ''
@@ -70,12 +73,23 @@ class RedfishConfig:
         return self.dictionary[key]
 
     @classmethod
-    def get_int_value(self, key):
+    def get_int(self, key):
         try:
             value = int(self.dictionary[key])
         except:
             value = -1
         return value
+
+    @classmethod
+    def get_bool(self, key):
+        results = False
+        try:
+            value = int(self.dictionary[key])
+            if (value == 1):
+                results = True
+        except:
+            results = False
+        return results
 
     @classmethod
     def get_urltimeout(self):
@@ -101,6 +115,7 @@ class RedfishConfig:
     @classmethod
     def update(self, parameter, value):
         
+        updated = False
         configurationfile = self.dictionary['configurationfile']
 
         Trace.log(TraceLevel.INFO, '   -- Update Redfish API configuration parameter ({}), value ({}), config file ({})'.format(parameter, value, configurationfile))
@@ -108,13 +123,18 @@ class RedfishConfig:
         with open(configurationfile, "r") as read_file:
             settings = json.load(read_file)
 
-        currentvalue = self.dictionary[parameter]
-        self.dictionary[parameter] = settings[parameter] = value
+        try:
+            currentvalue = self.dictionary[parameter]
+            self.dictionary[parameter] = settings[parameter] = value
+            with open(configurationfile, "w") as write_file:
+                json.dump(settings, write_file, indent=4)
+                self.update_trace(parameter, currentvalue, value)
+            updated = True
+        except:
+            Trace.log(TraceLevel.INFO, '   -- Unable to update parameter ({}) - check spelling'.format(parameter))
+            pass
 
-        with open(configurationfile, "w") as write_file:
-            json.dump(settings, write_file, indent=4)
-        
-        self.update_trace(parameter, currentvalue, value)
+        return (updated)
 
     @classmethod
     def execute(self, command):
@@ -131,7 +151,7 @@ class RedfishConfig:
                 words = command.split(' ')
                 if (len(words) > 1):
                     parameter = words[0].replace('!', '')
-                    self.update(parameter, words[1])
-                    Trace.log(TraceLevel.INFO, '   ++ CFG: \'{}\' set to ({})'.format(parameter, self.dictionary[parameter]))
+                    if (self.update(parameter, words[1])):
+                        Trace.log(TraceLevel.INFO, '   ++ CFG: \'{}\' set to ({})'.format(parameter, self.dictionary[parameter]))
 
 

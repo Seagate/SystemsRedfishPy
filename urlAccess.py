@@ -59,21 +59,26 @@ class UrlAccess():
 
             request = urllib.request.Request(fullUrl, method = method)
 
-            if (data):
-                request.add_header('Content-Type', 'application/json; charset=utf-8')
-                jsondata = json.dumps(data)
-                jsondataasbytes = jsondata.encode('utf-8')
-                request.add_header('Content-Length', len(jsondataasbytes))
-
             if (addAuth):
                 request.add_header('x-auth-token', config.sessionKey)
 
             if (data):
+                request.add_header('Content-Type', 'application/json; charset=utf-8')
+                jsondataasbytes = data.encode('utf-8')                
+                request.add_header('Content-Length', len(jsondataasbytes))
+                Trace.log(TraceLevel.DEBUG, '   ++ Content-Length={}'.format(len(jsondataasbytes)))
+                if (config.get_bool('dumppostdata')):
+                    Trace.log(TraceLevel.INFO, '[[ POST DATA ({}) ]]'.format(link.url))
+                    print(data)
+                    Trace.log(TraceLevel.INFO, '[[ POST DATA END ]]')
                 link.response = urllib.request.urlopen(request, jsondataasbytes, timeout=config.get_urltimeout())
             else:
                 link.response = urllib.request.urlopen(request, timeout=config.get_urltimeout())
+
+            Trace.log(TraceLevel.DEBUG, '   >> link.response={}'.format(link.response))
                 
             link.urlData = link.response.read()
+            Trace.log(TraceLevel.DEBUG, '   >> link.urlData={}'.format(link.urlData))
 
             if (link.urlData):
                 try:
@@ -90,7 +95,7 @@ class UrlAccess():
 
             link.update_status(link.response.status, link.response.reason)
 
-            if (config.get_int_value('dumpjsondata') == 1):
+            if (config.get_bool('dumpjsondata')):
                 if (link.jsonData != None):
                     Trace.log(TraceLevel.INFO, '[[ JSON DATA ({}) ]]'.format(link.url))
                     print(json.dumps(link.jsonData, indent=4))
@@ -104,8 +109,25 @@ class UrlAccess():
             pass
 
         except urllib.error.URLError as err:
-            link.update_status(501, err.reason)
-            Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): URL Error {}'.format(link.url, err.reason))
+            errorCode = 500
+            if hasattr(err,'code'):
+                errorCode = err.code
+            errorReason = 'Unknown'
+            if hasattr(err,'reason'):
+                errorReason = err.reason
+            Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): URL Error code={} reason={}'.format(link.url, errorCode, errorReason))
+            link.update_status(errorCode, errorReason)
+
+            # Print the contents of the HTTP message response
+            Trace.log(TraceLevel.INFO, '   ' + '='*60 + '  HTTP Error START  ' + '='*60)
+            errorMessage = err.read()
+            if (errorMessage != None):
+                jsonData = json.loads(errorMessage)
+                Trace.log(TraceLevel.INFO, json.dumps(jsonData, indent=4))
+            else:
+                Trace.log(TraceLevel.INFO, '  No error data in HTTP response'.format())
+            Trace.log(TraceLevel.INFO, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
+
             pass
 
         except urllib.error.HTTPError as err:

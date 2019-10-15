@@ -66,32 +66,38 @@ help [command name] - provides details on a command
 
 There are several configuration commands useful to set up communications and tracing.
 
-!dump - will print out all configuration options. This is useful to learn what settings are available.
-![option] [value] - will change the value for that setting.
+| Command           | Description |
+| ----------------- | ----------- |
+| !dump             | Print out all configuration options. This is useful to learn what settings are available. |
+| ![option] [value] | Change the value for that setting. |
 
 To configure which controller to talk to:
 
-!mcip 10.235.221.120 - will change all HTTP communications to use this new ip address.
-!username [name] - will change the username to '[name]' that is used to log in to the Redfish Service.
-!password [password] - will change the password to '[password]' that is used to log in to the Redfish Service.
+| Command              | Description |
+| -------------------- | ----------- |
+| !mcip 10.235.221.120 | Change all HTTP communications to use this new ip address. |
+| !username [name]     | Change the username to '[name]' that is used to log in to the Redfish Service. |
+| !password [password] | Change the password to '[password]' that is used to log in to the Redfish Service. |
 
 When running commands, you have several options to help debug issues:
 
-!dumpjsondata 1 - Will display all JSON data read from the Redfish Service. Zero will turn it off.
-!dumppostdata 1 - Will display all data that is sent via an HTTP POST operation. Zero will turn it off.
-!trace 5 - will turn on additional tracing at a VERBOSE level.
-!trace 6 - will turn on additional tracing at a VERBOSE level.
-!trace 7 - will turn on additional tracing at a VERBOSE level.
-!trace 4 - will reset tracing to the default INFO level.
+| Command              | Description |
+| -------------------- | ----------- |
+| !dumpjsondata 1      | Display all JSON data read from the Redfish Service. Zero will turn it off. |
+| !dumppostdata 1      | Display all data that is sent via an HTTP POST operation. Zero will turn it off. |
+| !trace 5             | Turn on additional tracing at a VERBOSE level. |
+| !trace 6             | Turn on additional tracing at a VERBOSE level. |
+| !trace 7             | Turn on additional tracing at a VERBOSE level. |
+| !trace 4             | Reset tracing to the default INFO level. |
 
 ### Redfish Commands
 
-Most commands require that you establish a session with the target Redfish Service. To do so, use 'redfish session'.
+Most commands require that you establish a session with the target Redfish Service. To do so, use 'create session'.
 This command will use the configuration settings, listed above, such as mcip, username, and password and attempt to
 establish a session.
 
 ```bash
-(redfish) redfish session
+(redfish) create session
 
 ++ Establish Redfish session: (/redfish/v1/SessionService/Sessions)...
 [] Redfish session established (key=8356051e862ca5de23bc2850a3903ad6)
@@ -103,9 +109,11 @@ The main redfish commands are used for debugging or learning more about the data
 
 For example:
 
-redfish json <url> - will display the JSON data returned from a GET to <url>. Errors are also reported.
-redfish urls [optional url] - will traverse every URL reported by the service, validate them, and produce a report.
-                              If no optional url is specified, then the traversing starts with '/redfish/v1'.
+
+| Command                     | Description |
+| --------------------------- | ----------- |
+| redfish json <url>          | Display the JSON data returned from a GET to <url>. Errors are also reported. |
+| redfish urls [optional url] | Traverse every URL reported by the service, validate them, and produce a report. If no optional url is specified, then the traversing starts with '/redfish/v1'. |
 
 
 ### Systems Commands
@@ -115,8 +123,10 @@ maintenance items.
 
 For example:
 
+```bash
 (redfish) show disks - will display all disk drives in the system
 (redfish) show pools - will display all configured virtual pools
+```
 
 ### Design
 

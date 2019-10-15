@@ -1,5 +1,5 @@
 #
-# @command redfish session
+# @command create session
 #
 # @synopsis Establish a session with the Redfish Service (using mcip, username, and password)
 #
@@ -11,7 +11,7 @@
 #
 # Example:
 # 
-# (redfish) redfish session
+# (redfish) create session
 # 
 # ++ Establish Redfish session: (/redfish/v1/SessionService/Sessions)...
 # [] Redfish session established (key=5ecff24c0259db2b810327047538dc9f)
@@ -19,6 +19,7 @@
 # @description-end
 #
 
+import json
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
@@ -28,8 +29,8 @@ from urlAccess import UrlAccess, UrlStatus
 # CommandHandler
 ################################################################################
 class CommandHandler(CommandHandlerBase):
-    """Command - redfish session """
-    name = 'redfish session'
+    """Command - create session """
+    name = 'create session'
 
     def prepare_url(self, command):
         return ('/redfish/v1/SessionService/Sessions')
@@ -43,7 +44,7 @@ class CommandHandler(CommandHandlerBase):
         Trace.log(TraceLevel.INFO, '++ Establish Redfish session: ({})...'.format(url))
         
         authenticationData = {'UserName' : config.get_value('username'), 'Password' : config.get_value('password') }
-        link = UrlAccess.process_request(config, UrlStatus(url), 'POST', False, authenticationData)
+        link = UrlAccess.process_request(config, UrlStatus(url), 'POST', False, json.dumps(authenticationData, indent=4))
         
         Trace.log(TraceLevel.TRACE, '   -- urlStatus={} urlReason={}'.format(link.urlStatus, link.urlReason))
 
