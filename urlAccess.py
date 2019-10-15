@@ -109,7 +109,7 @@ class UrlAccess():
             pass
 
         except urllib.error.URLError as err:
-            errorCode = 500
+            errorCode = 0
             if hasattr(err,'code'):
                 errorCode = err.code
             errorReason = 'Unknown'
@@ -119,14 +119,16 @@ class UrlAccess():
             link.update_status(errorCode, errorReason)
 
             # Print the contents of the HTTP message response
-            Trace.log(TraceLevel.INFO, '   ' + '='*60 + '  HTTP Error START  ' + '='*60)
-            errorMessage = err.read()
-            if (errorMessage != None):
-                jsonData = json.loads(errorMessage)
-                Trace.log(TraceLevel.INFO, json.dumps(jsonData, indent=4))
-            else:
-                Trace.log(TraceLevel.INFO, '  No error data in HTTP response'.format())
-            Trace.log(TraceLevel.INFO, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
+            read_op = getattr(err, "read", None)
+            if (callable(read_op)):
+                Trace.log(TraceLevel.INFO, '   ' + '='*60 + '  HTTP Error START  ' + '='*60)
+                errorMessage = err.read()
+                if (errorMessage != None):
+                    jsonData = json.loads(errorMessage)
+                    Trace.log(TraceLevel.INFO, json.dumps(jsonData, indent=4))
+                else:
+                    Trace.log(TraceLevel.INFO, '  No error data in HTTP response'.format())
+                Trace.log(TraceLevel.INFO, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
 
             pass
 

@@ -112,7 +112,7 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def process_next_url(self, config, link):
         Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // process_next_url ({}) session ({})'.format(link.url, config.sessionKey))
-        UrlAccess.process_request(config, link)
+        UrlAccess.process_request(config, link, 'GET', True)
         self.add_links(self, link.jsonData, '')
 
 

@@ -70,4 +70,4 @@ class CommandHandler(CommandHandlerBase):
         if (config.sessionValid == True):            
             Trace.log(TraceLevel.INFO, '[] Redfish session established (key={})'.format(config.sessionKey))
         else:            
-            Trace.log(TraceLevel.ERROR, 'Unable to establish a Redfish session, check ip address, username and password')
+            Trace.log(TraceLevel.ERROR, 'Unable to establish a Redfish session, connection, check ip address, username and password')
