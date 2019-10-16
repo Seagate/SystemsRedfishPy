@@ -71,7 +71,7 @@ IP Address of the target controller running the Redfish Service.
 
 ## Quick Tutorial
 
-This client can run in either an interactive mode, or by parsing a script files. This quick tutorial demonstrates the
+This client can run in either an interactive mode, or by parsing a script file. This quick tutorial demonstrates the
 interactive mode. All commands entered at the prompt can also be pasted into a text file and run as a script.
 
 Open a terminal window and change directories to the SystemsRedfishPy folder. Run the command 'python redfishAPI.py'
@@ -119,8 +119,8 @@ When running commands, you have several options to help debug issues:
 | !dumpjsondata 1      | Display all JSON data read from the Redfish Service. Zero will turn it off. |
 | !dumppostdata 1      | Display all data that is sent via an HTTP POST operation. Zero will turn it off. |
 | !trace 5             | Turn on additional tracing at a VERBOSE level. |
-| !trace 6             | Turn on additional tracing at a VERBOSE level. |
-| !trace 7             | Turn on additional tracing at a VERBOSE level. |
+| !trace 6             | Turn on additional tracing at a DEBUG level. |
+| !trace 7             | Turn on additional tracing at a TRACE level. |
 | !trace 4             | Reset tracing to the default INFO level. |
 
 ### Redfish Commands
@@ -146,7 +146,7 @@ For example:
 | Command                     | Description |
 | --------------------------- | ----------- |
 | redfish json <url>          | Display the JSON data returned from a GET to <url>. Errors are also reported. |
-| redfish urls [optional url] | Traverse every URL reported by the service, validate them, and produce a report. If no optional url is specified, then the traversing starts with '/redfish/v1'. |
+| redfish urls [optional url] | Traverse every URL reported by the service, validate them, and produce a report. If no optional url is specified, then traversing starts with '/redfish/v1'. |
 
 
 ### Systems Commands
@@ -159,6 +159,9 @@ For example:
 ```bash
 (redfish) show disks - will display all disk drives in the system
 (redfish) show pools - will display all configured virtual pools
+(redfish) show volumes - will display all configured volumes
+(redfish) create diskgroup name=dgA01 disks=0.7,0.8 pool=A level=raid1 - to create a new RAID1 disk group
+(redfish) create volume name=TestVol01 size=100000000000 pool=A - to create a new volume
 ```
 
 ### Design
