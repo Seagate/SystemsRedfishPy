@@ -163,7 +163,7 @@ For example:
 
 ### Design
 
-If you want to make changes to this reference client, there is a design document that provides an overview
+If you want to make changes to this reference client, there is a [design document](design.md) that provides an overview
 of how to make changes and add new commands. The main system design allows you to add commands, and help for
 commands, without having to change any of the underlying core files. The only step needed is to add your new
 command to the 'commands' folder using the prescribed template.
