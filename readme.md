@@ -17,7 +17,43 @@ is an extension to the Redfish API maintained by [SNIA Swordfish](https://www.sn
 
 This project is maintained under the [EDS ADT seagit repository](https://seagit.okla.seagate.com/eds-adt/SystemsRedfishPy).
 
-The process to use this client is to create a copy of the project on your local hard drive. Once you have the project run:
+The process to use this client is to clone a copy of the project on your local hard drive. Once you have the project run:
+
+### Using SSH to Clone the Project Under Linux
+
+You won't be able to pull or push project code via SSH until you add an SSH key to your profile. SSH keys allow you to establish a secure connection between your computer and GitLab.
+
+1. Check for an existing SSH Key - [Seagit Readme](https://seagit.okla.seagate.com/help/ssh/README)
+
+2) Generate a new SSH key pair, follow the prompts and use the default filename suggested
+```
+ssh-keygen -t rsa -C "your.email@example.com" -b 4096
+```
+
+3) Copy your public SSH key to the clipboard
+```
+cat ~/.ssh/id_rsa.pub
+```
+Then select and copy the output.
+
+4) Paste this key into the GitLab Settings page
+
+* Open a web browser to - (https://seagit.okla.seagate.com/groups/eds-adt)
+* Click on the down-arrow in the upper right-hand corner, next to your picture
+* Choose Settings
+* Click on SSH Keys
+* Paste your publick Key into the 'Key' text box
+* Click Add Key
+
+5) Clone the project
+```
+cd base_directory
+git clone git@seagit.okla.seagate.com:eds-adt/SystemsRedfishPy.git (Enter your password for your private key)
+cd SystemsRedfishPy
+python3 redfishAPI.py
+```
+
+### Using HTTPS to Clone the Project Under Windows
 
 ```
 $ cd <working-folder>
@@ -25,9 +61,6 @@ $ git clone https://seagit.okla.seagate.com/eds-adt/SystemsRedfishPy.git
 $ cd SystemsRedfishPy
 $ python redfishAPI.py -h
 ```
-
-In order to use SSH, you will need to [add an SSH key](https://seagit.okla.seagate.com/profile/keys).
-
 
 
 ## Requirements
