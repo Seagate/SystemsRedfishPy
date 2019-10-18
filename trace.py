@@ -49,12 +49,17 @@ class Trace:
     @classmethod
     def setlevel(cls, level):
 
-        if (level < TraceLevel.NONE):
-            cls.tracelevel = TraceLevel.NONE
-        elif (level > TraceLevel.TRACE):
-            cls.tracelevel = TraceLevel.TRACE
-        else:
-            cls.tracelevel = level
+        newlevel = int(level)
+        try:
+            if (newlevel < TraceLevel.NONE):
+                cls.tracelevel = TraceLevel.NONE
+            elif (newlevel > TraceLevel.TRACE):
+                cls.tracelevel = TraceLevel.TRACE
+            else:
+                cls.tracelevel = newlevel
+        except Exception as e:
+            Trace.log(TraceLevel.ERROR, '   -- Unable to set trace level ({}) for cls {}: Exception: {}'.format(newlevel, cls, str(e)))
+            pass
 
     @classmethod
     def log(cls, level, entry):
