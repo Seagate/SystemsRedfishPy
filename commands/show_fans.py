@@ -1,7 +1,7 @@
 #
 # @command show fans
 #
-# @synopsis Display all ran readings from the system.
+# @synopsis Display all fan readings from the system.
 #
 # @description-start
 #

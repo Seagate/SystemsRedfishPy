@@ -1,7 +1,7 @@
 #
 # @command show thermal
 #
-# @synopsis Display all temperature data from the system.
+# @synopsis Display all temperature data from the system
 #
 # @description-start
 #
