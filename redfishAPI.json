@@ -1,5 +1,6 @@
 {
     "version": "1.0",
+    "http": "http",
     "mcip": "10.235.221.119",
     "username": "manage",
     "password": "Testit123!",

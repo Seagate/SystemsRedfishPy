@@ -55,7 +55,7 @@ class UrlAccess():
 
         try:
             Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request - {} ({}) session ({})'.format(method, link.url, config.sessionKey))
-            fullUrl = 'http://' + config.get_value('mcip') + link.url
+            fullUrl = config.get_value('http') + '://' + config.get_value('mcip') + link.url
 
             request = urllib.request.Request(fullUrl, method = method)
 

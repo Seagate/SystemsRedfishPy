@@ -44,6 +44,7 @@ class RedfishConfig:
         #
         self.dictionary['configurationfile'] = filename
         self.dictionary['version'] = ''
+        self.dictionary['http'] = ''
         self.dictionary['mcip'] = ''
         self.dictionary['username'] = ''
         self.dictionary['password'] = ''

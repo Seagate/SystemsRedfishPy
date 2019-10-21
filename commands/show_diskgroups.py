@@ -31,7 +31,7 @@ class StorageGroupInformation:
     SerialNumber = ''
     Name = ''
     Manufacturer = ''
-    BlockSizeBytes = 0
+    MaxBlockSizeBytes = 0
     AllocatedVolumes = []
     RemainingCapacityPercent = 0
     AllocatedBytes = ''
@@ -47,12 +47,12 @@ class StorageGroupInformation:
 
         if (link.valid):        
             Trace.log(TraceLevel.DEBUG, '   ++ Storage Group: ({}, {}, {}, {}, {})'.format(
-                link.jsonData['Id'], link.jsonData['Name'], link.jsonData['Manufacturer'], link.jsonData['BlockSizeBytes'], link.jsonData['remainingCapacityPercent']))
+                link.jsonData['Id'], link.jsonData['Name'], link.jsonData['Manufacturer'], link.jsonData['MaxBlockSizeBytes'], link.jsonData['RemainingCapacityPercent']))
 
             self.SerialNumber = link.jsonData['Id']
             self.Name = link.jsonData['Name']
             self.Manufacturer = link.jsonData['Manufacturer']
-            self.BlockSizeBytes = link.jsonData['BlockSizeBytes']
+            self.MaxBlockSizeBytes = link.jsonData['MaxBlockSizeBytes']
 
             try:
                 self.AllocatedVolumes = []
@@ -67,7 +67,7 @@ class StorageGroupInformation:
                 self.AllocatedVolumes = []
                 pass
 
-            self.RemainingCapacityPercent = link.jsonData['remainingCapacityPercent']
+            self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
 
             capacity = link.jsonData['Capacity']
             data = capacity['Data']
@@ -78,9 +78,8 @@ class StorageGroupInformation:
             self.State = status['State']
             self.Health = status['Health']
             
-            links = link.jsonData['Links']
-            cos = links['ClassofService']
-            self.ClassofService = cos['@odata.id'].replace('/redfish/v1/StorageServices/S1/ClassesOfService/', '')
+            dcos = link.jsonData['DefaultClassOfService']
+            self.ClassofService = dcos['@odata.id'].replace('/redfish/v1/StorageServices/S1/ClassesOfService/', '')
             
 
 ################################################################################
@@ -162,7 +161,7 @@ class CommandHandler(CommandHandlerBase):
                     print(' {0: >12}  {1: >32}  {2: >9}  {3: >8}  {4: >14}  {5: >13}  {6: >6}  {7: >13}'.format(
                         self.groups[i].Name,
                         self.groups[i].SerialNumber,
-                        self.groups[i].BlockSizeBytes,
+                        self.groups[i].MaxBlockSizeBytes,
                         self.groups[i].RemainingCapacityPercent,
                         self.groups[i].AllocatedBytes,
                         self.groups[i].ConsumedBytes,

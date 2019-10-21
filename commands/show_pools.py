@@ -33,7 +33,7 @@ class PoolInformation:
     Name = ''
     Id = ''
     Manufacturer = ''
-    BlockSizeBytes = ''
+    MaxBlockSizeBytes = ''
     AllocatedVolumes = ''
     RemainingCapacityPercent = ''
     ReadHitIORequests = ''
@@ -64,7 +64,7 @@ class PoolInformation:
                 self.Health = 'ERROR'
 
             else:
-                self.BlockSizeBytes = link.jsonData['BlockSizeBytes']
+                self.MaxBlockSizeBytes = link.jsonData['MaxBlockSizeBytes']
 
                 try:
                     avs = link.jsonData['AllocatedVolumes']
@@ -73,7 +73,7 @@ class PoolInformation:
                     self.AllocatedVolumes = 0
                     pass
 
-                self.RemainingCapacityPercent = link.jsonData['remainingCapacityPercent']
+                self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
 
                 iostats = link.jsonData['IOStatistics']
                 self.ReadHitIORequests = iostats['ReadHitIORequests']
@@ -177,7 +177,7 @@ class CommandHandler(CommandHandlerBase):
                     print(' {0: >4}  {1: >32}  {2: >9}  {3: >7}  {4: >8}  {5: >12}  {6: >9}  {7: >8}  {8: >13}  {9: >10}  {10: >9}  {11: >14}  {12: >13}  {13: >6}'.format(
                         self.pools[i].Name,
                         self.pools[i].Id,
-                        self.pools[i].BlockSizeBytes,
+                        self.pools[i].MaxBlockSizeBytes,
                         self.pools[i].AllocatedVolumes,
                         self.pools[i].RemainingCapacityPercent,
                         self.pools[i].ReadHitIORequests,

@@ -119,6 +119,7 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, command):
         # Usage: redfish urls [startingurl]
+        self.allLinks = {}
         words = command.split(' ')
         if (len(words) > 2):
             self.startingurl = words[2]
