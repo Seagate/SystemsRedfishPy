@@ -122,7 +122,7 @@ class CommandHandler(CommandHandlerBase):
             print(' [] Reason     : {}'.format(self.link.urlReason))
 
         else:
-            # Sort the list b
+            # Sort the list
             self.sessions.sort(key=lambda x: x.Id, reverse=False)
 
             print('')

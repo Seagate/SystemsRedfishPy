@@ -53,6 +53,7 @@ class DiskInformation:
     """Disk Information"""
 
     Id = ''
+    IdNumber = ''
     SerialNumber = ''
     Manufacturer = ''
     Revision = ''
@@ -81,6 +82,10 @@ class DiskInformation:
             self.BlockSizeBytes = link.jsonData['BlockSizeBytes']
             healthDict = link.jsonData['Status']
             self.Health = healthDict['Health']
+            
+            words = self.Id.split('.')
+            if (len(words) >= 2):
+                self.IdNumber = (100 * int(words[0])) + int(words[1])
 
 ################################################################################
 # CommandHandler
@@ -139,6 +144,9 @@ class CommandHandler(CommandHandlerBase):
             print(' [] Reason     : {}'.format(self.link.urlReason))
 
         else:
+            # Sort the list
+            self.disks.sort(key=lambda x: x.IdNumber, reverse=False)
+            
             print('')
             print('    Id            SerialNumber  Manufacturer  Revision   PartNumber  NegotiatedSpeedGbs    CapacityBytes  BlockSizeBytes  Health')
             print('  ------------------------------------------------------------------------------------------------------------------------------')

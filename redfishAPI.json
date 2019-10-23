@@ -5,8 +5,8 @@
     "username": "manage",
     "password": "Testit123!",
     "annotate": "yes",
-    "urltimeout": "10",
+    "urltimeout": "15",
     "trace": "4",
-    "dumpjsondata": "0",
+    "dumpjsondata": "1",
     "dumppostdata": "0"
 }

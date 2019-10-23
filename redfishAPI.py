@@ -16,7 +16,6 @@
 #
 
 import argparse
-from os import path
 import sys
 
 from redfishConfig import RedfishConfig
@@ -24,7 +23,7 @@ from redfishScript import RedfishScript
 from redfishInteractive import RedfishInteractive
 from trace import TraceLevel, Trace
 
-version = '1.0.4'
+version = '1.0.5'
 
 ################################################################################
 # main()
@@ -72,11 +71,7 @@ if __name__ == '__main__':
         ri.execute(config)
     else:
         # Run script mode
-        if (path.exists(args.scriptfile)):
-            rs = RedfishScript()
-            returncode = rs.execute_script(config, args.scriptfile)
-        else:
-            Trace.log(TraceLevel.ERROR, 'Redfish API script file ({}) does not exist!'.format(args.scriptfile))
-            returncode = -1
+        rs = RedfishScript()
+        returncode = rs.execute_script(config, args.scriptfile)
 
     sys.exit(returncode)

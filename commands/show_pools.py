@@ -34,6 +34,7 @@ class PoolInformation:
     Id = ''
     Manufacturer = ''
     MaxBlockSizeBytes = ''
+    PoolType = ''
     AllocatedVolumes = ''
     RemainingCapacityPercent = ''
     ReadHitIORequests = ''
@@ -46,10 +47,11 @@ class PoolInformation:
     ConsumedBytes = ''
     State = ''
     Health = ''
-    
-    def init_from_url(self, config, url):
-        Trace.log(TraceLevel.DEBUG, '   ++ Pool init from URL {}'.format(url))
 
+    def init_from_url(self, config, url):
+
+        isPool = False
+        Trace.log(TraceLevel.DEBUG, '   ++ Pool init from URL {}'.format(url))
         link = UrlAccess.process_request(config, UrlStatus(url))
 
         if (link.valid):
@@ -64,33 +66,46 @@ class PoolInformation:
                 self.Health = 'ERROR'
 
             else:
-                self.MaxBlockSizeBytes = link.jsonData['MaxBlockSizeBytes']
-
                 try:
-                    avs = link.jsonData['AllocatedVolumes']
-                    self.AllocatedVolumes = len(avs)
+                    oem = link.jsonData['Oem']
+                    self.PoolType = oem['PoolType']
+                    if (self.PoolType == 'Pool'):
+                        isPool = True
                 except:
-                    self.AllocatedVolumes = 0
+                    self.PoolType = 'Unknown'
+                    isPool = False
                     pass
 
-                self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
+                if (isPool):
+                    self.MaxBlockSizeBytes = link.jsonData['MaxBlockSizeBytes']
 
-                iostats = link.jsonData['IOStatistics']
-                self.ReadHitIORequests = iostats['ReadHitIORequests']
-                self.ReadIOKiBytes = iostats['ReadIOKiBytes']
-                self.ReadIORequestTime = iostats['ReadIORequestTime']
-                self.WriteHitIORequests = iostats['WriteHitIORequests']
-                self.WriteIOKiBytes = iostats['WriteIOKiBytes']
-                self.WriteIORequestTime = iostats['WriteIORequestTime']
+                    try:
+                        avs = link.jsonData['AllocatedVolumes']
+                        self.AllocatedVolumes = len(avs)
+                    except:
+                        self.AllocatedVolumes = 0
+                        pass
 
-                capacity = link.jsonData['Capacity']
-                data = capacity['Data']
-                self.AllocatedBytes = data['AllocatedBytes']
-                self.ConsumedBytes = data['ConsumedBytes']
+                    self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
 
-                status = link.jsonData['Status']
-                self.State = status['State']
-                self.Health = status['Health']
+                    iostats = link.jsonData['IOStatistics']
+                    self.ReadHitIORequests = iostats['ReadHitIORequests']
+                    self.ReadIOKiBytes = iostats['ReadIOKiBytes']
+                    self.ReadIORequestTime = iostats['ReadIORequestTime']
+                    self.WriteHitIORequests = iostats['WriteHitIORequests']
+                    self.WriteIOKiBytes = iostats['WriteIOKiBytes']
+                    self.WriteIORequestTime = iostats['WriteIORequestTime']
+    
+                    capacity = link.jsonData['Capacity']
+                    data = capacity['Data']
+                    self.AllocatedBytes = data['AllocatedBytes']
+                    self.ConsumedBytes = data['ConsumedBytes']
+    
+                    status = link.jsonData['Status']
+                    self.State = status['State']
+                    self.Health = status['Health']
+
+        return (isPool)
 
 
 ################################################################################
@@ -114,43 +129,37 @@ class CommandHandler(CommandHandlerBase):
         self.link = UrlAccess.process_request(config, UrlStatus(url))
         
         # Retrieve a listing of all pools for this system
-        # Note: Version 1.1 returns storage groups and pools, don't take StoragePools that start with 00c0ff
+        # Note: Version 1.2 returns storage groups and pools, use Oem:PoolType to determine Pool vs DiskGroup
 
         if (self.link.valid):
 
-            totalPools = 0 
-            createdPools = 0
-            poolUrls = []
+            total = 0 
+            created = 0
+            urls = []
             
             # Create a list of all the pool URLs
             for (key, value) in self.link.jsonData.items():
                 if (key == 'Members@odata.count'):
-                    totalPools = value
-                    Trace.log(TraceLevel.VERBOSE, '... GET pools total ({})'.format(totalPools))
+                    total = value
+                    Trace.log(TraceLevel.VERBOSE, '... GET total ({})'.format(total))
                 elif (key == 'Members'):
                     Trace.log(TraceLevel.TRACE, '... Members value ({})'.format(value))
                     if (value != None):
-                        for poolLink in value:
-                            url = poolLink['@odata.id']
-                            words = url.split('/')
-                            idnumber = words[len(words)-1]
-                            if (idnumber.startswith('00c0ff')):
-                                Trace.log(TraceLevel.TRACE, '... SKIP pool url ({})'.format(url))
-                                totalPools -= 1
-                            else:
-                                Trace.log(TraceLevel.VERBOSE, '... ADD pool url ({})'.format(url))
-                                poolUrls.append(url)
-                                createdPools += 1
+                        for link in value:
+                            url = link['@odata.id']
+                            Trace.log(TraceLevel.VERBOSE, '... ADD url ({})'.format(url))
+                            urls.append(url)
+                            created += 1
 
             # Create Pool object based on each drive URL
-            if (createdPools > 0 and createdPools == totalPools):
-                for i in range(len(poolUrls)):
-                    Trace.log(TraceLevel.VERBOSE, '... GET pool data ({0: >3}) of ({1: >3}) url ({2})'.format(i, len(poolUrls), poolUrls[i]))
+            if (created > 0 and created == total):
+                for i in range(len(urls)):
+                    Trace.log(TraceLevel.VERBOSE, '... GET pool data ({0: >3}) of ({1: >3}) url ({2})'.format(i, len(urls), urls[i]))
                     pool = PoolInformation()
-                    pool.init_from_url(config, poolUrls[i])
-                    self.pools.append(pool)
-            elif (createdPools > 0):
-                Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Pool information mismatch: Members@odata.count ({}), Memebers {}'.format(totalPools, createdPools))
+                    if (pool.init_from_url(config, urls[i])):
+                        self.pools.append(pool)
+            elif (created > 0):
+                Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Information mismatch: Members@odata.count ({}), Memebers {}'.format(total, created))
 
 
     @classmethod

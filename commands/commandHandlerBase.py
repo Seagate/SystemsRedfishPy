@@ -2,6 +2,8 @@
 # Command Handler base class
 #
 
+import json
+
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
 
@@ -61,6 +63,8 @@ class CommandHandlerBase():
                     Trace.log(TraceLevel.DEBUG, '   -- response {}'.format(link.response))
                     Trace.log(TraceLevel.DEBUG, '   -- urlData {}'.format(link.urlData))
                     Trace.log(TraceLevel.DEBUG, '   -- jsonData {}'.format(link.jsonData))
+
+                    Trace.log(TraceLevel.INFO, json.dumps(link.jsonData, indent=4))
 
         Trace.log(TraceLevel.INFO, '({}) DELETE commands were successful'.format(successes))
         return (successes)

@@ -1,0 +1,13 @@
+#
+# Redfish API Script to Display System Information
+#
+
+show sessions
+
+show fans
+show thermal
+
+show disks
+show diskgroups
+show pools
+show volumes

@@ -1,0 +1,16 @@
+#
+# Redfish API Script to Delete Volumes (reverses create_volumes.rfs)
+#
+
+# Delete volumes
+
+delete volumes AVolume01,AVolume02
+delete volumes BVolume01,BVolume02
+
+# Delete pools
+
+delete pools A,B
+
+show diskgroups
+show pools
+show volumes

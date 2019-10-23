@@ -150,13 +150,13 @@ class CommandHandler(CommandHandlerBase):
 
         # HTTP 201 Created
         if (link.urlStatus == 201):
-
             if (link.jsonData != None):
                 Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('SerialNumber', link.jsonData['Name']))
                 Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Id', link.jsonData['Id']))
             else:
                 Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
-
+        else:
+            Trace.log(TraceLevel.INFO, json.dumps(link.jsonData, indent=4))
 
     @classmethod
     def display_results(self, config):

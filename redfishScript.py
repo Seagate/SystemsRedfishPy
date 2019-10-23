@@ -15,6 +15,7 @@
 # -------------------------------------------------------------------------------------
 #
 
+from os import path
 from redfishConfig import RedfishConfig
 from redfishCommand import RedfishCommand
 from trace import TraceLevel, Trace
@@ -31,13 +32,18 @@ class RedfishScript:
 
     def execute_script(self, config, scriptfile):
 
-        lineCount = 1
-
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '[] Execute Redfish API script file ({})...'.format(scriptfile))
 
+        # Run script mode
+        if (path.exists(scriptfile) == False):
+            Trace.log(TraceLevel.ERROR, 'Redfish API script file ({}) does not exist!'.format(scriptfile))
+            return (-1)
+
         # Create an object to handle all commands
         command = RedfishCommand()
+
+        lineCount = 0
 
         with open(scriptfile, 'r') as fileHandle:
             for line in fileHandle:
@@ -66,3 +72,4 @@ class RedfishScript:
                     Trace.log(TraceLevel.TRACE, '   CMD: [{0: >3}] {1}'.format(len(line), line))
                     command.execute(config, line)
 
+        return (lineCount) 

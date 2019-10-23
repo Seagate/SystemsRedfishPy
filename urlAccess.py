@@ -124,8 +124,8 @@ class UrlAccess():
                 Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error START  ' + '='*60)
                 errorMessage = err.read()
                 if (errorMessage != None):
-                    jsonData = json.loads(errorMessage)
-                    Trace.log(TraceLevel.VERBOSE, json.dumps(jsonData, indent=4))
+                    link.jsonData = json.loads(errorMessage)
+                    Trace.log(TraceLevel.VERBOSE, json.dumps(link.jsonData, indent=4))
                 else:
                     Trace.log(TraceLevel.VERBOSE, '  No error data in HTTP response'.format())
                 Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
