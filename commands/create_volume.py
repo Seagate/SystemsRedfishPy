@@ -28,8 +28,8 @@ from urlAccess import UrlAccess, UrlStatus
 # Example of desired JSON data
 #
 # {
-#     "name": "TestVol01",
-#     "size": 100000000000,
+#     "Name": "TestVol01",
+#     "CapacityBytes": 100000000000,
 #     "CapacitySources" : [
 #             {
 #                 "@odata.id": "/redfish/v1/StoragePools/A
@@ -51,10 +51,10 @@ class CreateVolumeRequestBody:
     def __init__(self, name, size, pools):
 
         # Name
-        self.name = name
+        self.Name = name
 
         # Size
-        self.size = size
+        self.CapacityBytes = size
 
         # CapacitySources / ProvidingDrives
         # Build a list of dictionary items
@@ -140,6 +140,8 @@ class CommandHandler(CommandHandlerBase):
                 Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Id', link.jsonData['Id']))
             else:
                 Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
+        else:
+            Trace.log(TraceLevel.INFO, json.dumps(link.jsonData, indent=4))
 
 
     @classmethod
