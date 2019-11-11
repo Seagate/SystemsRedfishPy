@@ -32,9 +32,8 @@ class PoolInformation:
 
     Name = ''
     Id = ''
-    Manufacturer = ''
+    Description = ''
     MaxBlockSizeBytes = ''
-    PoolType = ''
     AllocatedVolumes = ''
     RemainingCapacityPercent = ''
     ReadHitIORequests = ''
@@ -60,19 +59,16 @@ class PoolInformation:
 
             self.Name = link.jsonData['Name']
             self.Id = link.jsonData['Id']
-            self.Manufacturer = link.jsonData['Manufacturer']
+            self.Description = link.jsonData['Description']
 
             if (link.jsonData['@odata.type'] == 'ERROR'):
                 self.Health = 'ERROR'
 
             else:
                 try:
-                    oem = link.jsonData['Oem']
-                    self.PoolType = oem['PoolType']
-                    if (self.PoolType == 'Pool'):
+                    if (self.Description == 'Pool'):
                         isPool = True
                 except:
-                    self.PoolType = 'Unknown'
                     isPool = False
                     pass
 
@@ -129,7 +125,7 @@ class CommandHandler(CommandHandlerBase):
         self.link = UrlAccess.process_request(config, UrlStatus(url))
         
         # Retrieve a listing of all pools for this system
-        # Note: Version 1.2 returns storage groups and pools, use Oem:PoolType to determine Pool vs DiskGroup
+        # Note: Version 1.2 returns storage groups and pools, use Description to determine Pool vs DiskGroup
 
         if (self.link.valid):
 

@@ -30,7 +30,7 @@ class StorageGroupInformation:
 
     SerialNumber = ''
     Name = ''
-    Manufacturer = ''
+    Description = ''
     MaxBlockSizeBytes = 0
     PoolType = ''
     AllocatedVolumes = []
@@ -49,22 +49,20 @@ class StorageGroupInformation:
 
         if (link.valid):
             Trace.log(TraceLevel.DEBUG, '   ++ Storage Group: ({}, {}, {}, {}, {})'.format(
-                link.jsonData['Id'], link.jsonData['Name'], link.jsonData['Manufacturer'], link.jsonData['MaxBlockSizeBytes'], link.jsonData['RemainingCapacityPercent']))
+                link.jsonData['Id'], link.jsonData['Name'], link.jsonData['Description'], link.jsonData['MaxBlockSizeBytes'], link.jsonData['RemainingCapacityPercent']))
 
             try:
-                oem = link.jsonData['Oem']
-                self.PoolType = oem['PoolType']
-                if (self.PoolType == 'DiskGroup'):
+                self.Description = link.jsonData['Description']
+                if (self.Description == 'DiskGroup'):
                     isDiskGroup = True
             except:
-                self.PoolType = 'Unknown'
+                self.Description = 'Unknown'
                 isDiskGroup = False
                 pass
 
             if (isDiskGroup):
                 self.SerialNumber = link.jsonData['Id']
                 self.Name = link.jsonData['Name']
-                self.Manufacturer = link.jsonData['Manufacturer']
                 self.MaxBlockSizeBytes = link.jsonData['MaxBlockSizeBytes']
     
                 try:
@@ -117,7 +115,7 @@ class CommandHandler(CommandHandlerBase):
         self.link = UrlAccess.process_request(config, UrlStatus(url))
 
         # Retrieve a listing of all disk groups for this system
-        # Note: Version 1.2 returns storage groups and pools, use Oem:PoolType to determine Pool vs DiskGroup
+        # Note: Version 1.2 returns storage groups and pools, use Description to determine Pool vs DiskGroup
 
         if (self.link.valid):
 

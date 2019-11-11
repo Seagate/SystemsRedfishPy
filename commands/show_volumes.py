@@ -32,13 +32,12 @@ class VolumeInformation:
 
     Name = ''
     SerialNumber = ''
-    Manufacturer = ''
     CapacityBytes = ''
     RemainingCapacityPercent = ''
     Encrypted = ''
     State = ''
     Health = ''
-    Pools = ''
+    Pool = ''
     
     def init_from_url(self, config, url):
         Trace.log(TraceLevel.DEBUG, '   ++ Volume init from URL {}'.format(url))
@@ -51,7 +50,6 @@ class VolumeInformation:
 
             self.SerialNumber = link.jsonData['Id']
             self.Name = link.jsonData['Name']
-            self.Manufacturer =link.jsonData['Manufacturer']
             self.CapacityBytes = link.jsonData['CapacityBytes']
             self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
             if (link.jsonData['Encrypted']):
@@ -63,11 +61,11 @@ class VolumeInformation:
             self.State = healthDict['State']
             self.Health = healthDict['Health']
 
-            sourcesDict = link.jsonData['CapacitySources']
-            poolsDict = sourcesDict['ProvidingPools']
-            members = poolsDict['Members']
-            self.Pools = members[0]['@odata.id']
-            
+            # This version assumes an array of one pool
+            item = link.jsonData['CapacitySources'][0]
+            ppools = item['ProvidingPools']
+            self.Pool = ppools[0]['@odata.id']
+
 
 ################################################################################
 # CommandHandler
@@ -148,4 +146,4 @@ class CommandHandler(CommandHandlerBase):
                         self.volumes[i].Encrypted,
                         self.volumes[i].State,
                         self.volumes[i].Health,
-                        self.volumes[i].Pools))
+                        self.volumes[i].Pool))
