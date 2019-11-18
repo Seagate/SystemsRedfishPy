@@ -13,6 +13,7 @@
 # @description-end
 #
 
+import config
 import json
 
 from commands.commandHandlerBase import CommandHandlerBase
@@ -65,7 +66,7 @@ class CreateDiskGroupRequestBody:
         # Build a list of dictionary items, then add to a dictionary
         driveList = []
         for i in range(len(drives)):
-            item = { "@odata.id": "/redfish/v1/StorageServices/S1/Drives/" + drives[i] }
+            item = { "@odata.id": config.drives + drives[i] }
             driveList.append(item)
         self.CapacitySources = { "ProvidingDrives": driveList }
 
@@ -73,12 +74,12 @@ class CreateDiskGroupRequestBody:
         # Build a list of dictionary items, then add to a dictionary
         poolList = []
         for i in range(len(pools)):
-            item = { "@odata.id": "/redfish/v1/StorageServices/S1/StoragePools/" + pools[i].upper() }
+            item = { "@odata.id": config.storagePools + pools[i].upper() }
             poolList.append(item)
         self.AllocatedPools = { "Members": poolList }
 
         # ClassesOfService
-        self.ClassesOfService = { "@odata.id": '/redfish/v1/StorageServices/S1/ClassesOfService/' + level.upper() }
+        self.ClassesOfService = { "@odata.id": config.classesOfService + level.upper() }
         
     def __str__(self):
         return self.Name
@@ -104,10 +105,10 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, command):
         self.command = command
-        return ('/redfish/v1/StorageServices/S1/StoragePools')
+        return (config.storagePools)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '++ Create Disk Group: ({})...'.format(self.command))
@@ -143,7 +144,7 @@ class CommandHandler(CommandHandlerBase):
 
         info = CreateDiskGroupRequestBody(name, drives, pools, level)
         requestData = json.dumps(info, default=self.convert_to_dict, indent=4)
-        link = UrlAccess.process_request(config, UrlStatus(url), 'POST', True, requestData)
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, requestData)
 
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Status', link.urlStatus))
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))
@@ -159,6 +160,6 @@ class CommandHandler(CommandHandlerBase):
             Trace.log(TraceLevel.INFO, json.dumps(link.jsonData, indent=4))
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         # Nothing to do in this case
         print(' ')

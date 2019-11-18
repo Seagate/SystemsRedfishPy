@@ -28,7 +28,7 @@ class RedfishPrompt():
 
     aliases = {'rf':'redfish'}
 
-    def cmdloop(self, config, command, prompt='redfish'):
+    def cmdloop(self, redfishConfig, command, prompt='redfish'):
 
         while 1:
             try:
@@ -59,7 +59,7 @@ class RedfishPrompt():
 
             elif (line.startswith('!')):
                 Trace.log(TraceLevel.TRACE, '   CFG: [{0: >3}] {1}'.format(len(line), line))
-                config.execute(line)
+                redfishConfig.execute(line)
 
             else:
                 # Check for the use of any alias
@@ -69,7 +69,7 @@ class RedfishPrompt():
                         line = line.replace(words[0], self.aliases[words[0]], 1)
 
                 Trace.log(TraceLevel.TRACE, '   CMD: [{0: >3}] {1}'.format(len(line), line))
-                command.execute(config, line)
+                command.execute(redfishConfig, line)
 
 
 ################################################################################
@@ -77,13 +77,13 @@ class RedfishPrompt():
 ################################################################################
 class RedfishInteractive:
 
-    def execute(self, config):
+    def execute(self, redfishConfig):
         Trace.log(TraceLevel.INFO, '[] Run Redfish API commands interactively...')
 
         # Create an object to handle all commands
         command = RedfishCommand()
 
-        RedfishPrompt().cmdloop(config, command)
+        RedfishPrompt().cmdloop(redfishConfig, command)
 
 
 

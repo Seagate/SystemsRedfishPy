@@ -35,14 +35,14 @@ class CommandHandler(CommandHandlerBase):
         return (filename)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
         Trace.log(TraceLevel.DEBUG, 'run script...START ({})'.format(url))
 
         # Run script mode
 #        rs = RedfishScript()
 #        rs.execute_script(config, url)
-        RedfishScript().execute_script(config, url)
+        RedfishScript().execute_script(redfishConfig, url)
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         Trace.log(TraceLevel.INFO, '')

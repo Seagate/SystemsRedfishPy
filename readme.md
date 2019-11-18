@@ -12,6 +12,10 @@ operations on a Indium controller using the Redfish/Swordfish API.
 The Redfish API is a standard REST API maintained by [DMTF Redfish](https://www.dmtf.org/standards/redfish). The Swordfish API
 is an extension to the Redfish API maintained by [SNIA Swordfish](https://www.snia.org/forums/smi/swordfish).
 
+|           **Contributors**           |
+| ------------------------------------ |
+| Joe Skazinski, Seagate Technologies  |
+
 
 ## Installation
 

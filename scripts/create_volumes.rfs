@@ -2,7 +2,7 @@
 # Redfish API Script to Create Volumes
 #
 
-# Create disk groups
+# Create disk groups  (StoragePools)
 
 create diskgroup name=dgA01 disks=0.1,0.2,0.3,0.4 pool=A level=raid5
 create diskgroup name=dgA02 disks=0.5,0.6,0.7,0.8 pool=A level=raid6
@@ -12,7 +12,7 @@ create diskgroup name=dgB01 disks=0.11,0.12,0.13,0.14 pool=B level=raid5
 create diskgroup name=dgB02 disks=0.15,0.16,0.17,0.18 pool=B level=raid6
 create diskgroup name=dgB03 disks=0.19,0.20 pool=B level=raid1
 
-# Create volumes
+# Create volumes (Volumes)
 
 create volume name=AVolume01 size=100000000000 pool=A
 create volume name=AVolume02 size=200000000000 pool=A
@@ -20,6 +20,17 @@ create volume name=AVolume02 size=200000000000 pool=A
 create volume name=BVolume01 size=100000000000 pool=B
 create volume name=BVolume02 size=200000000000 pool=B
 
+# Create volume mappings (StorageGroups)
+
+create storagegroup lun=1 volume=00c0ff51124600000c6bd25d01000000 access=read-write ports=A0,A1,B0,B1 initiators=500605b00ab61310
+create storagegroup lun=2 volume=00c0ff5112460000196bd25d01000000 access=read-write ports=A0,A1,B0,B1 initiators=500605b00ab61310
+
+create storagegroup lun=11 volume=00c0ff5112480000256bd25d01000000 access=read-write ports=A0,A1,B0,B1 initiators=500605b00ab61311
+create storagegroup lun=12 volume=00c0ff51124800002d6bd25d01000000 access=read-write ports=A0,A1,B0,B1 initiators=500605b00ab61311
+
+# Display Configuration
+
 show diskgroups
 show pools
 show volumes
+show storagegroups

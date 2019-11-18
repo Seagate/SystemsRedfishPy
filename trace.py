@@ -1,6 +1,6 @@
 # *************************************************************************************
 #
-# redfishConstants - Redfish API global values 
+# Trace - A common module used to produce various levels of information, info and debug. 
 #
 # -------------------------------------------------------------------------------------
 

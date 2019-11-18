@@ -1,12 +1,13 @@
 {
     "version": "1.0",
-    "http": "http",
+    "http": "https",
     "mcip": "10.235.221.119",
     "username": "manage",
     "password": "Testit123!",
     "annotate": "yes",
     "urltimeout": "15",
     "trace": "4",
-    "dumpjsondata": "1",
-    "dumppostdata": "0"
+    "dumpjsondata": "0",
+    "dumppostdata": "0",
+    "CertificateCheck": "False"
 }

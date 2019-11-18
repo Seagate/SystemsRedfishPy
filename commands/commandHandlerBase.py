@@ -44,7 +44,7 @@ class CommandHandlerBase():
     # The caller must pass in the baseUrl to be used for all DELETE calls.
     # This routine returns a count of successful DELETE calls.
     # 
-    def delete_id_list(self, config, startUrl, ids):
+    def delete_id_list(self, redfishConfig, startUrl, ids):
 
         Trace.log(TraceLevel.DEBUG, '   ++ delete_id_list ids ({}) using start URL ({})'.format(len(ids), startUrl))
         
@@ -55,7 +55,7 @@ class CommandHandlerBase():
             for i in range(len(self.ids)):
                 url = startUrl + self.ids[i]
                 Trace.log(TraceLevel.INFO, '[] DELETE ({0})'.format(url))
-                link = UrlAccess.process_request(config, UrlStatus(url), 'DELETE', True)
+                link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'DELETE', True)
                 Trace.log(TraceLevel.INFO, '   -- status={}, reason={}'.format(link.urlStatus, link.urlReason))
                 if (link.urlStatus == 200):
                     successes += 1

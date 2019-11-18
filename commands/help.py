@@ -101,7 +101,7 @@ class CommandHandler(CommandHandlerBase):
         return ('')
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
         Trace.log(TraceLevel.DEBUG, 'show help...START ({})'.format(url))
 
         list_of_files = glob.glob('commands/*.py')
@@ -126,7 +126,7 @@ class CommandHandler(CommandHandlerBase):
         return False
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
 
         Trace.log(TraceLevel.DEBUG, 'show help...DISPLAY valid={}'.format(self.valid))
 

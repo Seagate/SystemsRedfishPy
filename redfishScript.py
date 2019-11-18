@@ -30,7 +30,7 @@ from trace import TraceLevel, Trace
 ################################################################################
 class RedfishScript:
 
-    def execute_script(self, config, scriptfile):
+    def execute_script(self, redfishConfig, scriptfile):
 
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '[] Execute Redfish API script file ({})...'.format(scriptfile))
@@ -58,18 +58,18 @@ class RedfishScript:
                 elif (line.startswith('!')):
                     lineCount += 1
                     Trace.log(TraceLevel.TRACE, '   CFG: [{0: >3}] {1}'.format(len(line), line))
-                    config.execute(line)
+                    redfishConfig.execute(line)
 
                 else:
                     lineCount += 1
 
-                    if (config.get_value('annotate') == 'yes'):
+                    if (redfishConfig.get_value('annotate') == 'yes'):
                         print('')
                         print('=' * 80)
                         print('= LINE[{0}] {1}'.format(lineCount, line))
                         print('=' * 80)
 
                     Trace.log(TraceLevel.TRACE, '   CMD: [{0: >3}] {1}'.format(len(line), line))
-                    command.execute(config, line)
+                    command.execute(redfishConfig, line)
 
         return (lineCount) 

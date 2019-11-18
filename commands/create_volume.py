@@ -13,6 +13,7 @@
 # @description-end
 #
 
+import config
 import json
 
 from commands.commandHandlerBase import CommandHandlerBase
@@ -66,7 +67,7 @@ class CreateVolumeRequestBody:
         # Links / ClassOfService
         # Build a dictionary of a dictionary
         self.Links = {
-            "ClassOfService" : { "@odata.id" : "/redfish/v1/StorageServices(1)/ClassesOfService(Default)" }
+            "ClassOfService" : { "@odata.id" : config.classesOfServiceDefault }
         }
 
     def __str__(self):
@@ -93,10 +94,10 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, command):
         self.command = command
-        return ('/redfish/v1/StorageServices/S1/Volumes')
+        return (config.volumes)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '++ Create Volume: ({})...'.format(self.command))
@@ -127,7 +128,7 @@ class CommandHandler(CommandHandlerBase):
 
         info = CreateVolumeRequestBody(name, size, pools)
         requestData = json.dumps(info, default=self.convert_to_dict, indent=4)
-        link = UrlAccess.process_request(config, UrlStatus(url), 'POST', True, requestData)
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, requestData)
 
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Status', link.urlStatus))
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))
@@ -145,6 +146,6 @@ class CommandHandler(CommandHandlerBase):
 
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         # Nothing to do in this case
         print(' ')

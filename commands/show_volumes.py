@@ -20,6 +20,8 @@
 # @description-end
 #
 
+import config
+
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
@@ -39,10 +41,10 @@ class VolumeInformation:
     Health = ''
     Pool = ''
     
-    def init_from_url(self, config, url):
+    def init_from_url(self, redfishConfig, url):
         Trace.log(TraceLevel.DEBUG, '   ++ Volume init from URL {}'.format(url))
 
-        link = UrlAccess.process_request(config, UrlStatus(url))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
         if (link.valid):        
             Trace.log(TraceLevel.DEBUG, '   ++ Volume: ({}, {}, {}, {}, {})'.format(
@@ -79,13 +81,13 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, command):
         self.volumes = []
-        return ('/redfish/v1/StorageServices/S1/Volumes')
+        return (config.volumes)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
         
         # GET Volumes
-        self.link = UrlAccess.process_request(config, UrlStatus(url))
+        self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
         
         # Retrieve a listing of all volumes for this system
         if (self.link.valid):
@@ -112,14 +114,14 @@ class CommandHandler(CommandHandlerBase):
                 for i in range(len(volumeUrls)):
                     Trace.log(TraceLevel.VERBOSE, '... GET volume data ({0: >3}) of ({1: >3}) url ({2})'.format(i, len(volumeUrls), volumeUrls[i]))
                     volume = VolumeInformation()
-                    volume.init_from_url(config, volumeUrls[i])
+                    volume.init_from_url(redfishConfig, volumeUrls[i])
                     self.volumes.append(volume)
             elif (createdVolumes > 0):
                 Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Volume information mismatch: Members@odata.count ({}), Memebers {}'.format(totalVolumes, createdVolumes))
 
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         # self.print_banner(self)
         if (self.link.valid == False):
             print('')

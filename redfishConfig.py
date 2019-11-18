@@ -54,7 +54,8 @@ class RedfishConfig:
         self.dictionary['dumpjsondata'] = 0
         self.dictionary['dumppostdata'] = 0
         self.dictionary['trace'] = int(TraceLevel.INFO)
-
+        self.dictionary['CertificateCheck'] = False
+        
         Trace.log(TraceLevel.DEBUG, '++ Initilize Redfish API configuration from ({})...'.format(filename))
 
         currentvalue = 0

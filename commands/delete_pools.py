@@ -12,6 +12,8 @@
 # @description-end
 #
 
+import config
+
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
 
@@ -30,11 +32,11 @@ class CommandHandler(CommandHandlerBase):
         return ('')
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
         Trace.log(TraceLevel.DEBUG, '++ delete pools ids:  {}'.format(len(self.ids)))
-        super().delete_id_list(self, config, '/redfish/v1/StorageServices/S1/StoragePools/', self.ids)
+        super().delete_id_list(self, redfishConfig, config.storagePools, self.ids)
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         # Nothing to do in this case
         print(' ')

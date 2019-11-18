@@ -6,6 +6,7 @@
 
 import json
 import socket
+import ssl
 import sys
 import traceback
 import urllib.request, urllib.error
@@ -51,29 +52,35 @@ class UrlStatus():
 class UrlAccess():
 
     @classmethod
-    def process_request(self, config, link, method = 'GET', addAuth = True, data = None):
+    def process_request(self, redfishConfig, link, method = 'GET', addAuth = True, data = None):
 
         try:
-            Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request - {} ({}) session ({})'.format(method, link.url, config.sessionKey))
-            fullUrl = config.get_value('http') + '://' + config.get_value('mcip') + link.url
+            Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request - {} ({}) session ({})'.format(method, link.url, redfishConfig.sessionKey))
+            fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_value('mcip') + link.url
 
             request = urllib.request.Request(fullUrl, method = method)
 
             if (addAuth):
-                request.add_header('x-auth-token', config.sessionKey)
+                request.add_header('x-auth-token', redfishConfig.sessionKey)
 
             if (data):
                 request.add_header('Content-Type', 'application/json; charset=utf-8')
                 jsondataasbytes = data.encode('utf-8')                
                 request.add_header('Content-Length', len(jsondataasbytes))
                 Trace.log(TraceLevel.DEBUG, '   ++ Content-Length={}'.format(len(jsondataasbytes)))
-                if (config.get_bool('dumppostdata')):
+                if (redfishConfig.get_bool('dumppostdata')):
                     Trace.log(TraceLevel.INFO, '[[ POST DATA ({}) ]]'.format(link.url))
                     print(data)
                     Trace.log(TraceLevel.INFO, '[[ POST DATA END ]]')
-                link.response = urllib.request.urlopen(request, jsondataasbytes, timeout=config.get_urltimeout())
+                if (redfishConfig.get_bool('CertificateCheck') == False):
+                    link.response = urllib.request.urlopen(request, jsondataasbytes, timeout=redfishConfig.get_urltimeout(), context=ssl._create_unverified_context())
+                else:
+                    link.response = urllib.request.urlopen(request, jsondataasbytes, timeout=redfishConfig.get_urltimeout())
             else:
-                link.response = urllib.request.urlopen(request, timeout=config.get_urltimeout())
+                if (redfishConfig.get_bool('CertificateCheck') == False):
+                    link.response = urllib.request.urlopen(request, timeout=redfishConfig.get_urltimeout(), context=ssl._create_unverified_context())
+                else:
+                    link.response = urllib.request.urlopen(request, timeout=redfishConfig.get_urltimeout())
 
             Trace.log(TraceLevel.DEBUG, '   >> link.response={}'.format(link.response))
                 
@@ -95,7 +102,7 @@ class UrlAccess():
 
             link.update_status(link.response.status, link.response.reason)
 
-            if (config.get_bool('dumpjsondata')):
+            if (redfishConfig.get_bool('dumpjsondata')):
                 if (link.jsonData != None):
                     Trace.log(TraceLevel.INFO, '[[ JSON DATA ({}) ]]'.format(link.url))
                     print(json.dumps(link.jsonData, indent=4))
@@ -123,6 +130,7 @@ class UrlAccess():
             if (callable(read_op)):
                 Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error START  ' + '='*60)
                 errorMessage = err.read()
+                Trace.log(TraceLevel.VERBOSE, '  errorMessage = {}'.format(errorMessage))
                 if (errorMessage != None):
                     link.jsonData = json.loads(errorMessage)
                     Trace.log(TraceLevel.VERBOSE, json.dumps(link.jsonData, indent=4))

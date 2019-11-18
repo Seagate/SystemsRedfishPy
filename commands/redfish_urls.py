@@ -34,6 +34,7 @@
 #
 #
 
+import config
 import time
 
 from collections import OrderedDict
@@ -110,9 +111,9 @@ class CommandHandler(CommandHandlerBase):
 
 
     @classmethod
-    def process_next_url(self, config, link):
-        Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // process_next_url ({}) session ({})'.format(link.url, config.sessionKey))
-        UrlAccess.process_request(config, link, 'GET', True)
+    def process_next_url(self, redfishConfig, link):
+        Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // process_next_url ({}) session ({})'.format(link.url, redfishConfig.sessionKey))
+        UrlAccess.process_request(redfishConfig, link, 'GET', True)
         self.add_links(self, link.jsonData, '')
 
 
@@ -124,18 +125,18 @@ class CommandHandler(CommandHandlerBase):
         if (len(words) > 2):
             self.startingurl = words[2]
         else:
-            self.startingurl = '/redfish/v1/'
+            self.startingurl = config.redfishV1
             
         Trace.log(TraceLevel.INFO, '   ++ CommandHandler: redfish urls // starting url ({})'.format(self.startingurl))
 
         return (self.startingurl)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
         Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // process_json url ({})'.format(url))
 
-        link = UrlAccess.process_request(config, UrlStatus(url), 'GET', True)
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', True)
         self.allLinks[url] = link
         self.dump_links(self)
         self.add_links(self, link.jsonData, '')
@@ -143,7 +144,7 @@ class CommandHandler(CommandHandlerBase):
         # While there are still URLs to check, continue to GET links and process until all links have been checked
         while self.links_to_check(self):
 
-            sleepTime = config.get_value('linktestdelay')
+            sleepTime = redfishConfig.get_value('linktestdelay')
             if (sleepTime):
                 time.sleep(sleepTime)
             Trace.log(TraceLevel.INFO, '   .. urls total ({}) urls to process ({})'.format(len(self.allLinks), self.total_links_to_check(self)))
@@ -151,10 +152,10 @@ class CommandHandler(CommandHandlerBase):
             nextLink = self.get_next_link(self)
             if (nextLink != None):
                 Trace.log(TraceLevel.DEBUG, '... process_url ({})'.format(nextLink.url))
-                self.process_next_url(config, nextLink)
+                self.process_next_url(redfishConfig, nextLink)
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
 
         print('')
         print(' Redfish URL Validation')

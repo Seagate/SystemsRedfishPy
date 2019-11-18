@@ -60,18 +60,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Load configuration settings, which can be overwritten at the command line or in a script file
-    config = RedfishConfig('redfishAPI.json')
+    redfishConfig = RedfishConfig('redfishAPI.json')
 
     if (args.tracelevel != None):
-        config.update('trace', args.tracelevel)
+        redfishConfig.update('trace', args.tracelevel)
 
     if (args.scriptfile == None):
         # Run interactive mode
         ri = RedfishInteractive()
-        ri.execute(config)
+        ri.execute(redfishConfig)
     else:
         # Run script mode
         rs = RedfishScript()
-        returncode = rs.execute_script(config, args.scriptfile)
+        returncode = rs.execute_script(redfishConfig, args.scriptfile)
 
     sys.exit(returncode)

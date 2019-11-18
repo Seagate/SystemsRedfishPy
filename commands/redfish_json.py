@@ -46,14 +46,14 @@ class CommandHandler(CommandHandlerBase):
         return (self.startingurl)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
         Trace.log(TraceLevel.INFO, '   ++ CommandHandler: redfish json // process_url ({})'.format(url))
-        link = UrlAccess.process_request(config, UrlStatus(url), 'GET', True)
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', True)
         self.link = link
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
 
         print('')
         print('[] URL        : {}'.format(self.startingurl))

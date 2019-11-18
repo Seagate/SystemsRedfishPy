@@ -19,6 +19,7 @@
 # @description-end
 #
 
+import config
 import json
 
 from commands.commandHandlerBase import CommandHandlerBase
@@ -33,18 +34,18 @@ class CommandHandler(CommandHandlerBase):
     name = 'create session'
 
     def prepare_url(self, command):
-        return ('/redfish/v1/SessionService/Sessions')
+        return (config.sessions)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
-        config.sessionValid = False
+        redfishConfig.sessionValid = False
 
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '++ Establish Redfish session: ({})...'.format(url))
         
-        authenticationData = {'UserName' : config.get_value('username'), 'Password' : config.get_value('password') }
-        link = UrlAccess.process_request(config, UrlStatus(url), 'POST', False, json.dumps(authenticationData, indent=4))
+        authenticationData = {'UserName' : redfishConfig.get_value('username'), 'Password' : redfishConfig.get_value('password') }
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', False, json.dumps(authenticationData, indent=4))
         
         Trace.log(TraceLevel.TRACE, '   -- urlStatus={} urlReason={}'.format(link.urlStatus, link.urlReason))
 
@@ -60,14 +61,14 @@ class CommandHandler(CommandHandlerBase):
                 Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
             
             link.sessionKey = link.response.getheader('x-auth-token', '')
-            config.sessionKey = link.sessionKey
-            if (config.sessionKey != ''):
-                config.sessionValid = True
+            redfishConfig.sessionKey = link.sessionKey
+            if (redfishConfig.sessionKey != ''):
+                redfishConfig.sessionValid = True
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
 
-        if (config.sessionValid == True):            
-            Trace.log(TraceLevel.INFO, '[] Redfish session established (key={})'.format(config.sessionKey))
+        if (redfishConfig.sessionValid == True):            
+            Trace.log(TraceLevel.INFO, '[] Redfish session established (key={})'.format(redfishConfig.sessionKey))
         else:            
             Trace.log(TraceLevel.ERROR, 'Unable to establish a Redfish session, connection, check ip address, username and password')

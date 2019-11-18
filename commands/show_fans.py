@@ -20,6 +20,7 @@
 #
 # @description-end
 #
+import config
 
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
@@ -58,14 +59,14 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, command):
         self.readings = []
-        return ('/redfish/v1/Chassis/enclosure_0/Thermal')
+        return (config.thermal)
         
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
         # GET DriveCollection
         Trace.log(TraceLevel.VERBOSE, '++ GET collection from ({})'.format(url))
-        self.link = UrlAccess.process_request(config, UrlStatus(url))
+        self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
         
         # Retrieve a listing of all fans for this system
         if (self.link.valid):
@@ -88,7 +89,7 @@ class CommandHandler(CommandHandlerBase):
                         self.readings.append(item)
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         # self.print_banner(self)
         if (self.link.valid == False):
             print('')

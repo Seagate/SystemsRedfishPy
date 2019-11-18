@@ -35,7 +35,7 @@ def dynamic_import(module):
 ################################################################################
 class RedfishCommand:
 
-    def execute(self, config, command):
+    def execute(self, redfishConfig, command):
         
         Trace.log(TraceLevel.TRACE, '   -- Run command: ({})...'.format(command))
         startTime = time.time()
@@ -68,8 +68,8 @@ class RedfishCommand:
             url = handler.CommandHandler().prepare_url(command)
             Trace.log(TraceLevel.DEBUG, '      ++ URL: {}'.format(url))
     
-            handler.CommandHandler().process_json(config, url)
-            handler.CommandHandler().display_results(config)
+            handler.CommandHandler().process_json(redfishConfig, url)
+            handler.CommandHandler().display_results(redfishConfig)
             
             endTime = time.time()
             elapsedSeconds = int(math.ceil((endTime - startTime)/ 1.0))

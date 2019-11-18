@@ -29,6 +29,8 @@
 # @description-end
 #
 
+import config
+
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
@@ -44,10 +46,10 @@ class SessionInformation:
     Description = ''
     UserName = ''
     
-    def init_from_url(self, config, url):
+    def init_from_url(self, redfishConfig, url):
         Trace.log(TraceLevel.DEBUG, '   ++ Init from URL {}'.format(url))
 
-        link = UrlAccess.process_request(config, UrlStatus(url))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
         if (link.valid):        
             Trace.log(TraceLevel.DEBUG, '   ++ Session: ({}, {}, {}, {})'.format(
@@ -70,14 +72,14 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, command):
         self.sessions = []
-        return ('/redfish/v1/SessionService/Sessions')
+        return (config.sessions)
         
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
         # GET DriveCollection
         Trace.log(TraceLevel.VERBOSE, '++ GET Session collection from ({})'.format(url))
-        self.link = UrlAccess.process_request(config, UrlStatus(url))
+        self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
         # Retrieve a listing of all sessions
         if (self.link.valid):
@@ -106,14 +108,14 @@ class CommandHandler(CommandHandlerBase):
                 for i in range(len(urls)):
                     Trace.log(TraceLevel.VERBOSE, '   -- GET data ({0: >3}) of ({1: >3}) url ({2})'.format(i, len(urls), urls[i]))
                     session = SessionInformation()
-                    session.init_from_url(config, urls[i])
+                    session.init_from_url(redfishConfig, urls[i])
                     self.sessions.append(session)
             else:
                 Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Information mismatch: Members@odata.count ({}), Memebers {}'.format(total, created))
 
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         # self.print_banner(self)
         if (self.link.valid == False):
             print('')

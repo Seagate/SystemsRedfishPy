@@ -17,6 +17,8 @@
 # @description-end
 #
 
+import config
+
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
@@ -32,12 +34,12 @@ class CommandHandler(CommandHandlerBase):
     versionUrl = ''
 
     def prepare_url(self, command):
-        return ('/redfish')
+        return (config.redfish)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
-        link = UrlAccess.process_request(config, UrlStatus(url), 'GET', False, None)
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', False, None)
 
         self.valid = link.valid
 
@@ -51,7 +53,7 @@ class CommandHandler(CommandHandlerBase):
             
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
 
         if (self.valid):
             print('  Version    VersionURL')

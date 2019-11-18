@@ -18,6 +18,8 @@
 # @description-end
 #
 
+import config
+
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
@@ -41,11 +43,11 @@ class StorageGroupInformation:
     Health = ''
     ClassofService = ''
 
-    def init_from_url(self, config, url):
+    def init_from_url(self, redfishConfig, url):
 
         isDiskGroup = False
         Trace.log(TraceLevel.DEBUG, '   ++ Storage Group init from URL {}'.format(url))
-        link = UrlAccess.process_request(config, UrlStatus(url))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
         if (link.valid):
             Trace.log(TraceLevel.DEBUG, '   ++ Storage Group: ({}, {}, {}, {}, {})'.format(
@@ -90,7 +92,7 @@ class StorageGroupInformation:
                 self.Health = status['Health']
                 
                 dcos = link.jsonData['DefaultClassOfService']
-                self.ClassofService = dcos['@odata.id'].replace('/redfish/v1/StorageServices/S1/ClassesOfService/', '')
+                self.ClassofService = dcos['@odata.id'].replace(config.classesOfService, '')
                 
         return (isDiskGroup)
 
@@ -106,13 +108,13 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, command):
         self.groups = []
-        return ('/redfish/v1/StorageServices/S1/StoragePools')
+        return (config.storagePools)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
         # GET list of pools and disk groups
-        self.link = UrlAccess.process_request(config, UrlStatus(url))
+        self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
         # Retrieve a listing of all disk groups for this system
         # Note: Version 1.2 returns storage groups and pools, use Description to determine Pool vs DiskGroup
@@ -142,14 +144,14 @@ class CommandHandler(CommandHandlerBase):
                 for i in range(len(urls)):
                     Trace.log(TraceLevel.VERBOSE, '... GET Storage Group data ({0: >3}) of ({1: >3}) url ({2})'.format(i, len(urls), urls[i]))
                     group = StorageGroupInformation()
-                    if (group.init_from_url(config, urls[i])):
+                    if (group.init_from_url(redfishConfig, urls[i])):
                         self.groups.append(group)
             elif (created > 0):
-                Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Information mismatch: Members@odata.count ({}), Memebers {}'.format(total, created))
+                Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Information mismatch: Members@odata.count ({}), Members {}'.format(total, created))
 
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         #self.print_banner(self)
         if (self.link.valid == False):
             print('')

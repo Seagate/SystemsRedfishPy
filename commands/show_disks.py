@@ -42,6 +42,8 @@
 # @description-end
 #
 
+import config
+
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
@@ -63,10 +65,10 @@ class DiskInformation:
     BlockSizeBytes = ''
     Health = ''
     
-    def init_from_url(self, config, url):
+    def init_from_url(self, redfishConfig, url):
         Trace.log(TraceLevel.DEBUG, '   ++ Disk init from URL {}'.format(url))
 
-        link = UrlAccess.process_request(config, UrlStatus(url))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
         if (link.valid):        
             Trace.log(TraceLevel.DEBUG, '   ++ Disk: ({}, {}, {}, {}, {})'.format(
@@ -99,14 +101,14 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, command):
         self.disks = []
-        return ('/redfish/v1/StorageServices/S1/Drives')
+        return (config.drives)
         
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
         # GET DriveCollection
         Trace.log(TraceLevel.VERBOSE, '++ GET Drive collection from ({})'.format(url))
-        self.link = UrlAccess.process_request(config, UrlStatus(url))
+        self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
         
         # Retrieve a listing of all drives for this system
         if (self.link.valid):
@@ -128,14 +130,14 @@ class CommandHandler(CommandHandlerBase):
                 for i in range(len(driveUrls)):
                     Trace.log(TraceLevel.VERBOSE, '   -- GET Drive data ({0: >3}) of ({1: >3}) url ({2})'.format(i, len(driveUrls), driveUrls[i]))
                     disk = DiskInformation()
-                    disk.init_from_url(config, driveUrls[i])
+                    disk.init_from_url(redfishConfig, driveUrls[i])
                     self.disks.append(disk)
             else:
                 Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Drive information mismatch: Members@odata.count ({}), Memebers {}'.format(totalDrives, createdDrives))
 
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         # self.print_banner(self)
         if (self.link.valid == False):
             print('')

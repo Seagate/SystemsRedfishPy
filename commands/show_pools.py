@@ -20,6 +20,8 @@
 # @description-end
 # 
 
+import config
+
 from commands.commandHandlerBase import CommandHandlerBase
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
@@ -47,11 +49,11 @@ class PoolInformation:
     State = ''
     Health = ''
 
-    def init_from_url(self, config, url):
+    def init_from_url(self, redfishConfig, url):
 
         isPool = False
         Trace.log(TraceLevel.DEBUG, '   ++ Pool init from URL {}'.format(url))
-        link = UrlAccess.process_request(config, UrlStatus(url))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
         if (link.valid):
 
@@ -116,13 +118,13 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, command):
         self.pools = []
-        return ('/redfish/v1/StorageServices/S1/StoragePools')
+        return (config.storagePools)
 
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
         
         # GET Pools
-        self.link = UrlAccess.process_request(config, UrlStatus(url))
+        self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
         
         # Retrieve a listing of all pools for this system
         # Note: Version 1.2 returns storage groups and pools, use Description to determine Pool vs DiskGroup
@@ -152,14 +154,14 @@ class CommandHandler(CommandHandlerBase):
                 for i in range(len(urls)):
                     Trace.log(TraceLevel.VERBOSE, '... GET pool data ({0: >3}) of ({1: >3}) url ({2})'.format(i, len(urls), urls[i]))
                     pool = PoolInformation()
-                    if (pool.init_from_url(config, urls[i])):
+                    if (pool.init_from_url(redfishConfig, urls[i])):
                         self.pools.append(pool)
             elif (created > 0):
                 Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Information mismatch: Members@odata.count ({}), Memebers {}'.format(total, created))
 
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
         #self.print_banner(self)
         if (self.link.valid == False):
             print('')

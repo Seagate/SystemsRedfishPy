@@ -49,6 +49,7 @@
 # @description-end
 #
 
+import config
 import json
 
 from commands.commandHandlerBase import CommandHandlerBase
@@ -64,15 +65,15 @@ class CommandHandler(CommandHandlerBase):
     link = None
 
     def prepare_url(self, command):
-        return ('/redfish/v1')
+        return (config.redfishV1)
         
     @classmethod
-    def process_json(self, config, url):
+    def process_json(self, redfishConfig, url):
 
-        self.link = UrlAccess.process_request(config, UrlStatus(url), 'GET', False)
+        self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', False)
 
     @classmethod
-    def display_results(self, config):
+    def display_results(self, redfishConfig):
 
         print('Redfish Services')
         print('---------------------')
