@@ -14,3 +14,4 @@ delete pools A,B
 show diskgroups
 show pools
 show volumes
+show storagegroups
