@@ -150,9 +150,9 @@ Example:
 #
 ```
  
-## JsonData
+## JsonBuilder
 
-The JsonData class provides an easy way to create JSON data used for POST and PATCH operations.
+The JsonBuilder class provides an easy way to create JSON data used for POST and PATCH operations.
 
 To create a simple JSON object, follow these steps:
 
