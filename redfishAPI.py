@@ -23,7 +23,7 @@ from redfishScript import RedfishScript
 from redfishInteractive import RedfishInteractive
 from trace import TraceLevel, Trace
 
-version = '1.0.6'
+version = '1.0.7'
 
 ################################################################################
 # main()

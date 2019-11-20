@@ -150,3 +150,27 @@ Example:
 #
 ```
  
+## JsonData
+
+The JsonData class provides an easy way to create JSON data used for POST and PATCH operations.
+
+To create a simple JSON object, follow these steps:
+
+1. Clear all elements by calling startNew(). This is only needed once.
+2. Create a new element and name it using the newElement() call. The name is used for adding other items to it.
+3. Add as many new elements to the named object as desired using addElement().
+4. Use the same name to retrieve the JSON object.
+
+```
+    JsonBuilder.startNew()
+    JsonBuilder.newElement('main', JsonType.DICT)
+    JsonBuilder.addElement('main', JsonType.STRING, 'UserName', redfishConfig.get_value('username'))
+    JsonBuilder.addElement('main', JsonType.STRING, 'Password', redfishConfig.get_value('password'))
+    jsonData = JsonBuilder.getElement('main')
+```
+
+There are more complex objects created by commands such as map_volume.py. The more complex objects allow you to nest dictionaries
+and arrays, as well as adding strings to multiple arrays or dictionaries. The example in map_volume.py provides examples of at least
+four different types of complex objects, as well as command line argument parsing.
+
+To debug, use the '!dumppostdata 1' command to see the JSON data created and being posted or patched.

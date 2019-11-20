@@ -23,6 +23,7 @@ import config
 import json
 
 from commands.commandHandlerBase import CommandHandlerBase
+from jsonBuilder import JsonBuilder, JsonType
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
 
@@ -43,10 +44,13 @@ class CommandHandler(CommandHandlerBase):
 
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '++ Establish Redfish session: ({})...'.format(url))
-        
-        authenticationData = {'UserName' : redfishConfig.get_value('username'), 'Password' : redfishConfig.get_value('password') }
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', False, json.dumps(authenticationData, indent=4))
-        
+
+        JsonBuilder.startNew()
+        JsonBuilder.newElement('main', JsonType.DICT)
+        JsonBuilder.addElement('main', JsonType.STRING, 'UserName', redfishConfig.get_value('username'))
+        JsonBuilder.addElement('main', JsonType.STRING, 'Password', redfishConfig.get_value('password'))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', False, json.dumps(JsonBuilder.getElement('main'), indent=4))
+
         Trace.log(TraceLevel.TRACE, '   -- urlStatus={} urlReason={}'.format(link.urlStatus, link.urlReason))
 
         # HTTP 201 Created

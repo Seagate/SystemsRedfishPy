@@ -5,7 +5,7 @@
 #
 # @description-start
 #
-# 'create diskgroup lun=[LogicalUnitNumber] volume=[serial-number] access=[read|read-write] ports=[A0,B0,A1,B1] initiators=[endpoint]
+# 'create storagegroup lun=[LogicalUnitNumber] volume=[serial-number] access=[read|read-write] ports=[A0,B0,A1,B1] initiators=[endpoint]
 #
 # Example:
 # create storagegroup lun=1 volume=00c0ff511246000026fdc35d01000000 access=read-write ports=A0,B0 initiators=500605b00ab61310
@@ -114,10 +114,9 @@ class CommandHandler(CommandHandlerBase):
         Trace.log(TraceLevel.INFO, '++ Create Storage Group: ({})...'.format(self.command))
 
         # From the command, build up the required JSON data
-        # Example: 'create diskgroup lun=[LogicalUnitNumber] volume=[serial-number] access=[read|read-write] ports=[A0,B0,A1,B1] initiators=[endpoint]
-# Example: 'create diskgroup name=dgA01 disks=0.7,0.8 pool=A level=raid1'
+        # Example: create storagegroup lun=1 volume=00c0ff511246000026fdc35d01000000 access=read-write ports=A0,B0 initiators=500605b00ab61310
         # For now, use a simple split based on spaces
-        
+
         lun = ''
         volume = ''
         access = ''
