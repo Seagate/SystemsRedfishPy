@@ -147,7 +147,12 @@ class JsonBuilder:
             if (jsonType == JsonType.STRING):
                 jsonEntity.update({label: value})
             elif (jsonType == JsonType.INTEGER):
-                jsonEntity.update({label: value})
+                try:
+                    jsonEntity.update({label: int(value)})
+                except:
+                    Trace.log(TraceLevel.WARN, 'JsonBuilder.addElement could not convert value={} to integer, label={}'.format(value, label))
+                    jsonEntity.update({label: 0})
+                    pass
             elif (jsonType == JsonType.DICT):
                 if (label == ''):
                     jsonEntity.update(value)

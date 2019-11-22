@@ -98,9 +98,7 @@ class CommandHandler(CommandHandlerBase):
         # ServerEndpointGroups
         jsonType, ports = JsonBuilder.getValue('ports', self.command)
         if (jsonType is not JsonType.NONE):
-
             JsonBuilder.newElement('array', JsonType.ARRAY)
-            
             if (jsonType is JsonType.ARRAY):
                 for i in range(len(ports)):
                     JsonBuilder.newElement('dict', JsonType.DICT, True)
@@ -110,7 +108,6 @@ class CommandHandler(CommandHandlerBase):
                 JsonBuilder.newElement('dict', JsonType.DICT, True)
                 JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpointGroups + ports)
                 JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
-
             JsonBuilder.addElement('main', JsonType.DICT, 'ServerEndpointGroups', JsonBuilder.getElement('array'))
 
         # ClientEndpointGroups

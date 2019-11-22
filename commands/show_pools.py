@@ -54,8 +54,9 @@ class PoolInformation:
         isPool = False
         Trace.log(TraceLevel.DEBUG, '   ++ Pool init from URL {}'.format(url))
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
+        Trace.log(TraceLevel.DEBUG, '   ++ Pool UrlAccess: link.valid={} link.jsonData={}'.format(link.valid, link.jsonData is not None))
 
-        if (link.valid):
+        if (link.valid and link.jsonData is not None):
 
             Trace.log(TraceLevel.DEBUG, '   ++ Pool: ({}, {}, {})'.format(link.jsonData['Id'], link.jsonData['Name'], link.jsonData['@odata.type']))
 

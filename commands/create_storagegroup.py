@@ -17,6 +17,7 @@ import config
 import json
 
 from commands.commandHandlerBase import CommandHandlerBase
+from jsonBuilder import JsonBuilder, JsonType
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
 
@@ -48,41 +49,11 @@ from urlAccess import UrlAccess, UrlStatus
 #         {
 #             "LogicalUnitNumber": "1",
 #             "Volume": {
-#                "@odata.id": "/redfish/v1/StorageServices/S1/Volumes/00c0ff511246000026fdc35d01000000"
+#                "@odata.id": "/redfish/v1/StorageServices/S1/Volumes/AVolume01"
 #             }
 #         }
 #     ]
 # }
-
-#
-# This class creates a JSON representation of the desired request body
-#
-class CreateRequestBody:
-
-    def __init__(self, lun, volume, access, ports, initiators):
-
-        # ServerEndpointGroups
-        self.ServerEndpointGroups = []
-        for i in range(len(ports)):
-            item = { "@odata.id": config.endpointGroups + ports[i] }
-            self.ServerEndpointGroups.append(item)
-
-        # ClientEndpointGroups
-        self.ClientEndpointGroups = { "@odata.id": config.endpoints + initiators }
-
-        # AccessCapabilities
-        if (access == 'read'):
-            self.AccessCapabilities = [ "Read" ]
-        elif (access == 'read-write'):
-            self.AccessCapabilities = [ "Read", "Write" ]
-        else:
-            self.AccessCapabilities = [ "Read", "Write" ]
-
-        # MappedVolumes
-        self.MappedVolumes = [ { "LogicalUnitNumber": lun, "Volume": { "@odata.id": config.volumes + volume  } }]
-
-    def __str__(self):
-        return self.Name
 
 
 ################################################################################
@@ -93,15 +64,6 @@ class CommandHandler(CommandHandlerBase):
     name = 'create storagegroup'
     command = ''
 
-    #
-    #  Return a dictionary representation of an object
-    #
-    @classmethod
-    def convert_to_dict(self, obj):
-        obj_dict = {}
-        obj_dict.update(obj.__dict__)
-        return obj_dict
-  
     @classmethod
     def prepare_url(self, command):
         self.command = command
@@ -117,39 +79,79 @@ class CommandHandler(CommandHandlerBase):
         # Example: create storagegroup lun=1 volume=00c0ff511246000026fdc35d01000000 access=read-write ports=A0,B0 initiators=500605b00ab61310
         # For now, use a simple split based on spaces
 
-        lun = ''
-        volume = ''
-        access = ''
-        ports = []
-        initiators = ''
+        jsonType, volume = JsonBuilder.getValue('volume', self.command)
+        if (jsonType is JsonType.NONE):
+            Trace.log(TraceLevel.ERROR, 'The volume paramter is required, parse results (volume={})...'.format(volume))
+            return
 
-        words = self.command.split(' ')
-        if (len(words) >= 3):
-            for i in range(len(words)):
-                if (i > 1):
-                    Trace.log(TraceLevel.TRACE, '   ++ Process: {}'.format(words[i]))
-                    tokens = words[i].split('=')
-                    if (len(tokens) >= 2):
-                        if (tokens[0] == 'lun'):
-                            lun = tokens[1]
-                            Trace.log(TraceLevel.TRACE, '      -- Adding {}={}'.format(tokens[0], lun))
-                        elif (tokens[0] == 'volume'):
-                            volume = tokens[1]
-                            Trace.log(TraceLevel.TRACE, '      -- Adding {}={}'.format(tokens[0], volume))
-                        elif (tokens[0] == 'access'):
-                            access = tokens[1]
-                            Trace.log(TraceLevel.TRACE, '      -- Adding {}={}'.format(tokens[0], access))
-                        elif (tokens[0] == 'ports'):
-                            newports = tokens[1].split(',')
-                            for port in range(len(newports)):
-                                ports.append(newports[port])
-                        elif (tokens[0] == 'initiators'):
-                            initiators = tokens[1]
-                            Trace.log(TraceLevel.TRACE, '      -- Adding {}={}'.format(tokens[0], initiators))
+        JsonBuilder.startNew()
+        JsonBuilder.newElement('main', JsonType.DICT)
 
-        info = CreateRequestBody(lun, volume, access, ports, initiators)
-        requestData = json.dumps(info, default=self.convert_to_dict, indent=4)
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, requestData)
+        # ServerEndpointGroups
+        jsonType, ports = JsonBuilder.getValue('ports', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.newElement('array', JsonType.ARRAY)
+            if (jsonType is JsonType.ARRAY):
+                for i in range(len(ports)):
+                    JsonBuilder.newElement('dict', JsonType.DICT, True)
+                    JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpointGroups + ports[i])
+                    JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
+            else:
+                JsonBuilder.newElement('dict', JsonType.DICT, True)
+                JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpointGroups + ports)
+                JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
+            JsonBuilder.addElement('main', JsonType.DICT, 'ServerEndpointGroups', JsonBuilder.getElement('array'))
+
+        # ClientEndpointGroups
+        jsonType, initiators = JsonBuilder.getValue('initiators', self.command)
+        if (jsonType is not JsonType.NONE):
+
+# Use ARRAY (should be)
+#            JsonBuilder.newElement('array', JsonType.ARRAY, True)
+#            if (jsonType is JsonType.ARRAY):
+#                for i in range(len(initiators)):
+#                    JsonBuilder.newElement('dict2', JsonType.DICT, True)
+#                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.endpoints + initiators[i])
+#                    JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
+#            else:
+#                JsonBuilder.newElement('dict2', JsonType.DICT, True)
+#                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.endpoints + initiators)
+#                JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
+#            JsonBuilder.addElement('main', JsonType.DICT, 'ClientEndpointGroups', JsonBuilder.getElement('array'))
+
+# Use DICT (current)
+            JsonBuilder.newElement('dict', JsonType.DICT, True)
+            JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpoints + initiators)
+            JsonBuilder.addElement('main', JsonType.DICT, 'ClientEndpointGroups', JsonBuilder.getElement('dict'))
+
+        # AccessCapabilities
+        jsonType, access = JsonBuilder.getValue('access', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.newElement('array', JsonType.ARRAY, True)
+            JsonBuilder.addElement('array', JsonType.STRING, '', 'Read')
+            if (access == 'read-write'):
+                JsonBuilder.addElement('array', JsonType.STRING, '', 'Write')
+            JsonBuilder.addElement('main', JsonType.DICT, 'AccessCapabilities', JsonBuilder.getElement('array'))
+
+        # MappedVolumes
+        JsonBuilder.newElement('array', JsonType.ARRAY, True)
+        JsonBuilder.newElement('dict', JsonType.DICT, True)
+
+        jsonType, lun = JsonBuilder.getValue('lun', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.addElement('dict', jsonType, 'LogicalUnitNumber', lun)
+
+        JsonBuilder.newElement('dict2', JsonType.DICT, True)
+        JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.volumes + volume)
+        JsonBuilder.addElement('dict', JsonType.DICT, 'Volume', JsonBuilder.getElement('dict2'))
+        JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
+        JsonBuilder.addElement('main', JsonType.DICT, 'MappedVolumes', JsonBuilder.getElement('array'))
+
+        # Debug
+        # JsonBuilder.displayElements()
+        # JsonBuilder.displayJson('main')
+
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))
 
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Status', link.urlStatus))
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))

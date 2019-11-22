@@ -60,15 +60,6 @@ class CommandHandler(CommandHandlerBase):
     """Command - create diskgroup"""
     name = 'create diskgroup'
     command = ''
-
-    #
-    #  Return a dictionary representation of an object
-    #
-    @classmethod
-    def convert_to_dict(self, obj):
-        obj_dict = {}
-        obj_dict.update(obj.__dict__)
-        return obj_dict
   
     @classmethod
     def prepare_url(self, command):

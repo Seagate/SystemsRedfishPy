@@ -17,6 +17,7 @@ import config
 import json
 
 from commands.commandHandlerBase import CommandHandlerBase
+from jsonBuilder import JsonBuilder, JsonType
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
 
@@ -29,49 +30,19 @@ from urlAccess import UrlAccess, UrlStatus
 # Example of desired JSON data
 #
 # {
-#     "Name": "TestVol01",
+#     "Name": "AVolume01",
 #     "CapacityBytes": 100000000000,
-#     "CapacitySources" : [
-#             {
-#                 "@odata.id": "/redfish/v1/StoragePools/A
-#             }
+#     "CapacitySources": [
+#         {
+#             "@odata.id": "/redfish/v1/StorageServices/S1/StoragePools/A"
+#         }
 #     ],
 #     "Links": {
-#         "ClassOfService":
-#             {
-#                 "@odata.id": "/redfish/v1/StorageServices(1)/ClassesOfService(Default)"
-#             }
-#     }         
+#         "ClassOfService": {
+#             "@odata.id": "/redfish/v1/StorageServices(1)/ClassesOfService(Default)"
+#         }
+#     }
 # }
-
-#
-# This class creates a JSON representation of the desired request body
-#
-class CreateVolumeRequestBody:
-
-    def __init__(self, name, size, pools):
-
-        # Name
-        self.Name = name
-
-        # Size
-        self.CapacityBytes = size
-
-        # CapacitySources / ProvidingDrives
-        # Build a list of dictionary items
-        self.CapacitySources = []
-        for i in range(len(pools)):
-            item = { "@odata.id": "/redfish/v1/StoragePools/" + pools[i] }
-            self.CapacitySources.append(item)
-
-        # Links / ClassOfService
-        # Build a dictionary of a dictionary
-        self.Links = {
-            "ClassOfService" : { "@odata.id" : config.classesOfServiceDefault }
-        }
-
-    def __str__(self):
-        return self.Name
 
 
 ################################################################################
@@ -82,15 +53,6 @@ class CommandHandler(CommandHandlerBase):
     name = 'create volume'
     command = ''
 
-    #
-    #  Return a dictionary representation of an object
-    #
-    @classmethod
-    def convert_to_dict(self, obj):
-        obj_dict = {}
-        obj_dict.update(obj.__dict__)
-        return obj_dict
-  
     @classmethod
     def prepare_url(self, command):
         self.command = command
@@ -105,30 +67,43 @@ class CommandHandler(CommandHandlerBase):
         # From the command, build up the required JSON data
         # Example: create volume name=[name] size=[size] lun=[lun] pool=[A|B] diskgroup=[group]
         # For now, use a simple split based on spaces
-        
-        name = ''
-        size = 0
-        pools = []
 
-        words = self.command.split(' ')
-        if (len(words) >= 3):
-            for i in range(len(words)):
-                if (i > 1):
-                    Trace.log(TraceLevel.TRACE, '   ++ Process: {}'.format(words[i]))
-                    tokens = words[i].split('=')
-                    if (len(tokens) >= 2):
-                        if (tokens[0] == 'name'):
-                            name = tokens[1]
-                            Trace.log(TraceLevel.TRACE, '      -- Adding {}={}'.format(tokens[0], name))
-                        elif (tokens[0] == 'size'):
-                            size = int(tokens[1])
-                            Trace.log(TraceLevel.TRACE, '      -- Adding {}={}'.format(tokens[0], size))
-                        elif (tokens[0] == 'pool'):
-                            pools.append(tokens[1])
+        JsonBuilder.startNew()
+        JsonBuilder.newElement('main', JsonType.DICT)
 
-        info = CreateVolumeRequestBody(name, size, pools)
-        requestData = json.dumps(info, default=self.convert_to_dict, indent=4)
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, requestData)
+        # Name
+        jsonType, name = JsonBuilder.getValue('name', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.addElement('main', JsonType.STRING, 'Name', name)
+
+        # CapacityBytes
+        jsonType, size = JsonBuilder.getValue('size', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.addElement('main', JsonType.INTEGER, 'CapacityBytes', size)
+
+        # CapacitySources
+        jsonType, pool = JsonBuilder.getValue('pool', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.newElement('array', JsonType.ARRAY, True)
+            if (jsonType is JsonType.ARRAY):
+                for i in range(len(pool)):
+                    JsonBuilder.newElement('dict2', JsonType.DICT, True)
+                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.storagePools + pool[i])
+                    JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
+            else:
+                JsonBuilder.newElement('dict2', JsonType.DICT, True)
+                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.storagePools + pool)
+                JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
+            JsonBuilder.addElement('main', JsonType.DICT, 'CapacitySources', JsonBuilder.getElement('array'))
+
+        # Links / ClassOfService
+        JsonBuilder.newElement('dict', JsonType.DICT, True)
+        JsonBuilder.newElement('dict2', JsonType.DICT, True)
+        JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.classesOfServiceDefault)
+        JsonBuilder.addElement('dict', JsonType.DICT, 'ClassOfService', JsonBuilder.getElement('dict2'))
+        JsonBuilder.addElement('main', JsonType.DICT, 'Links', JsonBuilder.getElement('dict'))
+
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))
 
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Status', link.urlStatus))
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))
@@ -137,8 +112,8 @@ class CommandHandler(CommandHandlerBase):
         if (link.urlStatus == 201):
 
             if (link.jsonData != None):
-                Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('SerialNumber', link.jsonData['Name']))
-                Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Id', link.jsonData['Id']))
+                Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Name', link.jsonData['Name']))
+                Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('SerialNumber', link.jsonData['Id']))
             else:
                 Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
         else:
