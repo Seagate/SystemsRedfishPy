@@ -1,5 +1,5 @@
 #
-# Redfish API Script to Create Volumes
+# Redfish API Script to Create Volumes (Paged)
 #
 
 # Create disk groups  (StoragePools)

@@ -67,8 +67,8 @@ from urlAccess import UrlAccess, UrlStatus
 # CommandHandler
 ################################################################################
 class CommandHandler(CommandHandlerBase):
-    """Command - create storagegroup"""
-    name = 'create storagegroup'
+    """Command - map volume"""
+    name = 'map volume'
     command = ''
 
     @classmethod

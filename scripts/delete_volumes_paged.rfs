@@ -1,0 +1,18 @@
+#
+# Redfish API Script to Delete Volumes (Paged)
+#     This cleans up after scripts/create_volumes_paged.rfs
+#
+
+# Delete volumes
+
+delete volumes AVolume01,AVolume02
+delete volumes BVolume01,BVolume02
+
+# Delete pools
+
+delete pools A,B
+
+show diskgroups
+show pools
+show volumes
+show storagegroups

@@ -17,6 +17,7 @@ import config
 import json
 
 from commands.commandHandlerBase import CommandHandlerBase
+from jsonBuilder import JsonBuilder, JsonType
 from trace import TraceLevel, Trace
 from urlAccess import UrlAccess, UrlStatus
 
@@ -52,39 +53,6 @@ from urlAccess import UrlAccess, UrlStatus
 #     }
 # }
 
-#
-# This class creates a JSON representation of the desired request body
-#
-class CreateDiskGroupRequestBody:
-
-    def __init__(self, name, drives, pools, level):
-
-        # Name
-        self.Name = name
-
-        # CapacitySources / ProvidingDrives
-        # Build a list of dictionary items, then add to a dictionary
-        driveList = []
-        for i in range(len(drives)):
-            item = { "@odata.id": config.drives + drives[i] }
-            driveList.append(item)
-        self.CapacitySources = { "ProvidingDrives": driveList }
-
-        # AllocatedPools / Members
-        # Build a list of dictionary items, then add to a dictionary
-        poolList = []
-        for i in range(len(pools)):
-            item = { "@odata.id": config.storagePools + pools[i].upper() }
-            poolList.append(item)
-        self.AllocatedPools = { "Members": poolList }
-
-        # ClassesOfService
-        self.ClassesOfService = { "@odata.id": config.classesOfService + level.upper() }
-        
-    def __str__(self):
-        return self.Name
-
-
 ################################################################################
 # CommandHandler
 ################################################################################
@@ -116,35 +84,59 @@ class CommandHandler(CommandHandlerBase):
         # From the command, build up the required JSON data
         # Example: 'create diskgroup name=dgA01 disks=0.7,0.8 pool=A level=raid1'
         # For now, use a simple split based on spaces
+
+        JsonBuilder.startNew()
+        JsonBuilder.newElement('main', JsonType.DICT)
         
-        name = ''
-        drives = []
-        pools = []
-        level = ''
+        # Name
+        jsonType, name = JsonBuilder.getValue('name', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.addElement('main', JsonType.STRING, 'Name', name)
 
-        words = self.command.split(' ')
-        if (len(words) >= 3):
-            for i in range(len(words)):
-                if (i > 1):
-                    Trace.log(TraceLevel.TRACE, '   ++ Process: {}'.format(words[i]))
-                    tokens = words[i].split('=')
-                    if (len(tokens) >= 2):
-                        if (tokens[0] == 'name'):
-                            name = tokens[1]
-                            Trace.log(TraceLevel.TRACE, '      -- Adding {}={}'.format(tokens[0], name))
-                        elif (tokens[0] == 'disks'):
-                            disks = tokens[1].split(',')
-                            for disk in range(len(disks)):
-                                drives.append(disks[disk])
-                        elif (tokens[0] == 'pool'):
-                            pools.append(tokens[1])
-                        elif (tokens[0] == 'level'):
-                            level = tokens[1].upper()
-                            Trace.log(TraceLevel.TRACE, '      -- Adding {}={}'.format(tokens[0], level))
+        # CapacitySources
+        jsonType, disks = JsonBuilder.getValue('disks', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.newElement('dict', JsonType.DICT, True)
+            JsonBuilder.newElement('array', JsonType.ARRAY, True)
+            if (jsonType is JsonType.ARRAY):
+                for i in range(len(disks)):
+                    JsonBuilder.newElement('dict2', JsonType.DICT, True)
+                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.drives + disks[i])
+                    JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
+            else:
+                JsonBuilder.newElement('dict2', JsonType.DICT, True)
+                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.drives + disks)
+                JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
 
-        info = CreateDiskGroupRequestBody(name, drives, pools, level)
-        requestData = json.dumps(info, default=self.convert_to_dict, indent=4)
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, requestData)
+            JsonBuilder.addElement('dict', JsonType.DICT, 'ProvidingDrives', JsonBuilder.getElement('array'))
+            JsonBuilder.addElement('main', JsonType.DICT, 'CapacitySources', JsonBuilder.getElement('dict'))
+
+        # AllocatedPools
+        jsonType, pool = JsonBuilder.getValue('pool', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.newElement('dict', JsonType.ARRAY, True)
+            JsonBuilder.newElement('array', JsonType.ARRAY, True)
+            if (jsonType is JsonType.ARRAY):
+                for i in range(len(pool)):
+                    JsonBuilder.newElement('dict2', JsonType.DICT, True)
+                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.storagePools + pool[i])
+                    JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
+            else:
+                JsonBuilder.newElement('dict2', JsonType.DICT, True)
+                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.storagePools + pool)
+                JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
+
+            JsonBuilder.addElement('dict', JsonType.DICT, 'Members', JsonBuilder.getElement('array'))
+            JsonBuilder.addElement('main', JsonType.DICT, 'AllocatedPools', JsonBuilder.getElement('dict'))
+
+        # ClassesOfService
+        jsonType, level = JsonBuilder.getValue('level', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.newElement('dict', JsonType.DICT, True)
+            JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.classesOfService + level.upper())
+            JsonBuilder.addElement('main', JsonType.DICT, 'ClassesOfService', JsonBuilder.getElement('dict'))
+
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))
 
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Status', link.urlStatus))
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))
