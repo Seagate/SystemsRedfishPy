@@ -12,10 +12,9 @@
 # 
 # (redfish) show volumes
 # 
-#             Name                      SerialNumber   CapacityBytes  Remaining %  Encrypted      State  Health  Pool
-#  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#      TestVolume1  00c0ff51124600006358975d01000000      2000000000           99       true    Enabled      OK  /redfish/v1/StorageServices/S1/StoragePools/A
-#      TestVolume2  00c0ff51124600007658975d01000000      2000000000           99       true    Enabled      OK  /redfish/v1/StorageServices/S1/StoragePools/A
+#             Name                      SerialNumber            Consumed/Allocated  Remaining %       Access  Encrypted      State  Health                                      CapacitySources
+#  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#      TestVolume1  00c0ff51124600006358975d01000000         146800640/99996401664           99   Read,Write       true    Enabled      OK        /redfish/v1/StorageServices/S1/StoragePools/A
 #
 # @description-end
 #
@@ -35,11 +34,14 @@ class VolumeInformation:
     Name = ''
     SerialNumber = ''
     CapacityBytes = ''
+    AllocatedBytes = ''
+    ConsumedBytes = ''
     RemainingCapacityPercent = ''
     Encrypted = ''
     State = ''
     Health = ''
     Pool = ''
+    AccessCapabilities = ''
     
     def init_from_url(self, redfishConfig, url):
         Trace.log(TraceLevel.DEBUG, '   ++ Volume init from URL {}'.format(url))
@@ -58,10 +60,27 @@ class VolumeInformation:
                 self.Encrypted = 'true'
             else:
                 self.Encrypted = 'false'
-            
+
+            # Status
             healthDict = link.jsonData['Status']
             self.State = healthDict['State']
             self.Health = healthDict['Health']
+
+            # Capacity
+            capacity = link.jsonData['Capacity']
+            data = capacity['Data']
+            self.AllocatedBytes = data['AllocatedBytes']
+            self.ConsumedBytes = data['ConsumedBytes']
+
+            # AccessCapabilities
+            try:
+                self.AccessCapabilities = ','.join(link.jsonData['AccessCapabilities'])
+            except:
+                self.AccessCapabilities = 'Unknown'
+            
+            data = capacity['Data']
+            self.AllocatedBytes = data['AllocatedBytes']
+            self.ConsumedBytes = data['ConsumedBytes']
 
             # This version assumes an array of one pool
             item = link.jsonData['CapacitySources'][0]
@@ -130,21 +149,21 @@ class CommandHandler(CommandHandlerBase):
             print(' [] Reason     : {}'.format(self.link.urlReason))
         else:
             print('')
-            #                0                                 1               2            3          4          5       6  7
-            #             Name                      SerialNumber   CapacityBytes  Remaining %  Encrypted      State  Health  Pool
-            # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            #      TestVolume1  00c0ff51124600006358975d01000000      2000000000           99       true    Enabled      OK  /redfish/v1/StorageServices/S1/StoragePools/A
-            #      TestVolume2  00c0ff51124600007658975d01000000      2000000000           99       true    Enabled      OK  /redfish/v1/StorageServices/S1/StoragePools/A
-            print('            Name                      SerialNumber   CapacityBytes  Remaining %  Encrypted      State  Health  Pool')
-            print(' --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+                #                0                                 1                             2            3            4          5          6       7                                                    8   
+                #             Name                      SerialNumber            Consumed/Allocated  Remaining %       Access  Encrypted      State  Health                                      CapacitySources
+                #  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                #      TestVolume1  00c0ff51124600006358975d01000000         146800640/99996401664           99   Read,Write       true    Enabled      OK        /redfish/v1/StorageServices/S1/StoragePools/A
+            print('            Name                      SerialNumber            Consumed/Allocated  Remaining %       Access  Encrypted      State  Health                                      CapacitySources')
+            print(' --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
             
             if (self.volumes != None):
                 for i in range(len(self.volumes)):
-                    print('{0: >16}  {1: >31}  {2: >14}  {3: >11}  {4: >9}  {5: >9}  {6: >6}  {7}'.format(
+                    print('{0: >16}  {1: >31}  {2: >28}  {3: >11}  {4: >11}  {5: >9}  {6: >9}  {7: >6}  {8: >51}'.format(
                         self.volumes[i].Name,
                         self.volumes[i].SerialNumber,
-                        self.volumes[i].CapacityBytes,
+                        str(self.volumes[i].ConsumedBytes) + '/' + str(self.volumes[i].AllocatedBytes),
                         self.volumes[i].RemainingCapacityPercent,
+                        self.volumes[i].AccessCapabilities,
                         self.volumes[i].Encrypted,
                         self.volumes[i].State,
                         self.volumes[i].Health,

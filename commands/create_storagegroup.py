@@ -7,8 +7,14 @@
 #
 # 'create storagegroup lun=[LogicalUnitNumber] volume=[serial-number] access=[read|read-write] ports=[A0,B0,A1,B1] initiators=[endpoint]
 #
+# Required: volume, lun, initiators
+#
+# Optional: access (default to read-write) and ports (defaults to all ports)
+#
+# Note: Only one initiator and one volume is allowed with this revision.
+#
 # Example:
-# create storagegroup lun=1 volume=00c0ff511246000026fdc35d01000000 access=read-write ports=A0,B0 initiators=500605b00ab61310
+# create storagegroup lun='1' volume=00c0ff511246000026fdc35d01000000 access=read-write ports=A0,B0 initiators=500605b00ab61310
 #
 # @description-end
 #
@@ -38,9 +44,11 @@ from urlAccess import UrlAccess, UrlStatus
 #             "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/B0"
 #         }
 #     ],
-#     "ClientEndpointGroups": {
-#         "@odata.id": "/redfish/v1/StorageServices/S1/Endpoints/500605b00ab61310"
-#     },
+#     "ClientEndpointGroups": [
+#         {
+#             "@odata.id": "/redfish/v1/StorageServices/S1/Endpoints/500605b00ab61310"
+#         }
+#     ],
 #     "AccessCapabilities": [
 #         "Read",
 #         "Write"
@@ -84,6 +92,16 @@ class CommandHandler(CommandHandlerBase):
             Trace.log(TraceLevel.ERROR, 'The volume paramter is required, parse results (volume={})...'.format(volume))
             return
 
+        jsonType, lun = JsonBuilder.getValue('lun', self.command)
+        if (jsonType is JsonType.NONE):
+            Trace.log(TraceLevel.ERROR, 'The lun paramter is required, parse results (lun={})...'.format(lun))
+            return
+
+        jsonType, initiators = JsonBuilder.getValue('initiators', self.command)
+        if (jsonType is JsonType.NONE):
+            Trace.log(TraceLevel.ERROR, 'The initiators paramter is required, parse results (initiators={})...'.format(initiators))
+            return
+
         JsonBuilder.startNew()
         JsonBuilder.newElement('main', JsonType.DICT)
 
@@ -105,24 +123,17 @@ class CommandHandler(CommandHandlerBase):
         # ClientEndpointGroups
         jsonType, initiators = JsonBuilder.getValue('initiators', self.command)
         if (jsonType is not JsonType.NONE):
-
-# Use ARRAY (should be)
-#            JsonBuilder.newElement('array', JsonType.ARRAY, True)
-#            if (jsonType is JsonType.ARRAY):
-#                for i in range(len(initiators)):
-#                    JsonBuilder.newElement('dict2', JsonType.DICT, True)
-#                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.endpoints + initiators[i])
-#                    JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
-#            else:
-#                JsonBuilder.newElement('dict2', JsonType.DICT, True)
-#                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.endpoints + initiators)
-#                JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
-#            JsonBuilder.addElement('main', JsonType.DICT, 'ClientEndpointGroups', JsonBuilder.getElement('array'))
-
-# Use DICT (current)
-            JsonBuilder.newElement('dict', JsonType.DICT, True)
-            JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpoints + initiators)
-            JsonBuilder.addElement('main', JsonType.DICT, 'ClientEndpointGroups', JsonBuilder.getElement('dict'))
+            JsonBuilder.newElement('array', JsonType.ARRAY, True)
+            if (jsonType is JsonType.ARRAY):
+                for i in range(len(initiators)):
+                    JsonBuilder.newElement('dict', JsonType.DICT, True)
+                    JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpoints + initiators[i])
+                    JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
+            else:
+                JsonBuilder.newElement('dict', JsonType.DICT, True)
+                JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpoints + initiators)
+                JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
+            JsonBuilder.addElement('main', JsonType.DICT, 'ClientEndpointGroups', JsonBuilder.getElement('array'))
 
         # AccessCapabilities
         jsonType, access = JsonBuilder.getValue('access', self.command)
