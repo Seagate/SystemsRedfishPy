@@ -49,6 +49,7 @@ class CommandHandler(CommandHandlerBase):
         JsonBuilder.newElement('main', JsonType.DICT)
         JsonBuilder.addElement('main', JsonType.STRING, 'UserName', redfishConfig.get_value('username'))
         JsonBuilder.addElement('main', JsonType.STRING, 'Password', redfishConfig.get_value('password'))
+
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', False, json.dumps(JsonBuilder.getElement('main'), indent=4))
 
         Trace.log(TraceLevel.TRACE, '   -- urlStatus={} urlReason={}'.format(link.urlStatus, link.urlReason))
@@ -68,6 +69,12 @@ class CommandHandler(CommandHandlerBase):
             redfishConfig.sessionKey = link.sessionKey
             if (redfishConfig.sessionKey != ''):
                 redfishConfig.sessionValid = True
+        else:
+            print('')
+            print('[] URL        : {}'.format(link.url))
+            print('[] Status     : {}'.format(link.urlStatus))
+            print('[] Reason     : {}'.format(link.urlReason))
+            print('')
 
     @classmethod
     def display_results(self, redfishConfig):
