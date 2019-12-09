@@ -23,7 +23,7 @@ from redfishScript import RedfishScript
 from redfishInteractive import RedfishInteractive
 from trace import TraceLevel, Trace
 
-version = '1.0.7'
+version = '1.1.0'
 
 ################################################################################
 # main()
@@ -71,7 +71,6 @@ if __name__ == '__main__':
         ri.execute(redfishConfig)
     else:
         # Run script mode
-        rs = RedfishScript()
-        returncode = rs.execute_script(redfishConfig, args.scriptfile)
+        returncode = RedfishScript.execute_script(redfishConfig, args.scriptfile)
 
     sys.exit(returncode)

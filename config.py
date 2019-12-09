@@ -18,6 +18,7 @@
 ################################################################################
 # Redfish 
 ################################################################################
+defaultConfigFile = 'redfishAPI.json'
 
 ################################################################################
 # Storage Services URIs
@@ -38,3 +39,9 @@ storagePools = '/redfish/v1/StorageServices/S1/StoragePools/'
 thermal = '/redfish/v1/Chassis/enclosure_0/Thermal/'
 volumes = '/redfish/v1/StorageServices/S1/Volumes/'
 
+################################################################################
+# Testing
+################################################################################
+reportFolder = 'reports'
+sleepTimeAfterDelete = 2
+testFolder = 'tests'

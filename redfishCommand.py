@@ -35,7 +35,8 @@ def dynamic_import(module):
 ################################################################################
 class RedfishCommand:
 
-    def execute(self, redfishConfig, command):
+    @classmethod
+    def execute(cls, redfishConfig, command):
         
         Trace.log(TraceLevel.TRACE, '   -- Run command: ({})...'.format(command))
         startTime = time.time()
