@@ -80,12 +80,12 @@ class UrlAccess():
                     Trace.log(TraceLevel.INFO, '[[ POST DATA ({}) ]]'.format(link.url))
                     print(data)
                     Trace.log(TraceLevel.INFO, '[[ POST DATA END ]]')
-                if (redfishConfig.get_bool('CertificateCheck') == False):
+                if (redfishConfig.get_bool('certificatecheck') == False):
                     link.response = urllib.request.urlopen(request, jsondataasbytes, timeout=redfishConfig.get_urltimeout(), context=ssl._create_unverified_context())
                 else:
                     link.response = urllib.request.urlopen(request, jsondataasbytes, timeout=redfishConfig.get_urltimeout())
             else:
-                if (redfishConfig.get_bool('CertificateCheck') == False):
+                if (redfishConfig.get_bool('certificatecheck') == False):
                     link.response = urllib.request.urlopen(request, timeout=redfishConfig.get_urltimeout(), context=ssl._create_unverified_context())
                 else:
                     link.response = urllib.request.urlopen(request, timeout=redfishConfig.get_urltimeout())

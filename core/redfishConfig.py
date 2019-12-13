@@ -55,7 +55,7 @@ class RedfishConfig:
         self.dictionary['trace'] = int(TraceLevel.INFO)
         self.dictionary['brand'] = 'systems'
         self.dictionary['showelapsed'] = False
-        self.dictionary['CertificateCheck'] = False
+        self.dictionary['certificatecheck'] = False
         
         Trace.log(TraceLevel.DEBUG, '++ Initilize Redfish API configuration from ({})...'.format(filename))
 

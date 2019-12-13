@@ -10,6 +10,6 @@
     "dumpjsondata": "0",
     "dumppostdata": "0",
     "showelapsed": "0",
-    "CertificateCheck": "False",
+    "certificatecheck": "False",
     "brand": "systems"
 }

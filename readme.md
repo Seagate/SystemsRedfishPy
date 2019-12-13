@@ -1,4 +1,4 @@
-[![License: The MIT License](https://img.shields.io/badge/license-MIT-green?longCache=true)](https://opensource.org/licenses/MIT)
+[![License: The MIT License](https://img.shields.io/badge/license-MIT-green?longCache=true)](https://opensource.org/licenses/MIT)  [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)  [![GitHub release](https://img.shields.io/github/release/Naereen/StrapDown.js.svg)](https://GitHub.com/Naereen/StrapDown.js/releases/)
 
 # SystemsRedfishPy
 
@@ -10,8 +10,8 @@
 
 ***SystemsRedfishPy*** is a command line tool that implements the client side of the Redfish RESTful API for Storage System Management.
 
-Source code files of the SystemsRedfishPy open source project are available to you under [THe MIT License](https://opensource.org/licenses/MIT).  The
-SystemsRedfishPy project repository is maintained at https://github.com/Seagate/SystemsRedfishPy.
+Source code files of the SystemsRedfishPy open source project are available to you under [The MIT License](https://opensource.org/licenses/MIT).  The
+SystemsRedfishPy project repository is maintained at https://github.com/Seagate.
 
 **Redfish** is the new RESTful API for hardware management defined by the DMTF Scalable Platform Management Forum (SPMF).  It provides a 
 modern, secure, multi-node, extendable interface for hardware management. **Swordfish** authored by SNIA provides extensions for handling
@@ -29,7 +29,7 @@ this package are:
 * Help text built in to each command file
 * Built in unittest for quick regression testing of a Redfish service
 * Debug logging and tracing built in for command line usage or unit test cases 
-* Class modules to simply working with URIs and JSON data 
+* Class modules to simplify working with URIs and JSON data 
 
 ## Background
 
@@ -46,7 +46,7 @@ is an extension to the Redfish API maintained by [SNIA Swordfish](https://www.sn
 
 1. **SystemsRedfishPy** was originally written during the development of the Redfish storage service, helpful for validating
 storage service operations and to quickly and easily display JSON data from various URIs.
-2. **SystemsRedfishPy** was extended to provide unit test cases to quickly validate and report on the status of the current
+2. **SystemsRedfishPy** was extended to provide test cases to quickly validate and report on the status of the current
 Redfish service version. 
 3. **SystemsRedfishPy** provides an example implementation for how a client can execute common storage management functions
 like create a RAID disk group, create a storage pool, create a storage volume, and map that volume to a host computer.
@@ -56,9 +56,9 @@ storage or check on the health of a storage system.
 
 ## Installation
 
-This project is maintained under [GitHub SystemsRedfishPy](https://github.com/Seagate/SystemsRedfishPy).
+This project is maintained under [GitHub SystemsRedfishPy](https://github.com/Seagate).
 
-The process to use this client is to clone a copy of the project on your local hard drive.
+The process to use this client is to clone a copy of the project to your local hard drive.
 
 Clone the project
 ```
@@ -74,7 +74,8 @@ Your client computer must have Python3 installed. You will also need network acc
 IP Address of the target controller running the Redfish Service. User credentials are required in order to create a Redfish
 sessions and provision storage.
 
-Using **SystemsRedfishPy** does not rely on any other packages. But HTML and XML packages are used if you desire to run unit test cases.
+Using **SystemsRedfishPy** does not rely on any other packages. But HTML and XML packages are used if you desire to run unit test cases. 
+See the [test document](UNITTEST.md) for more information.
 
 
 ## Quick Tutorial
@@ -120,16 +121,23 @@ To configure which controller to talk to:
 | !username [name]     | Change the username to '[name]' that is used to log in to the Redfish Service. |
 | !password [password] | Change the password to '[password]' that is used to log in to the Redfish Service. |
 
-When running commands, you have several options to help debug issues:
+When running commands, you have several options to help debug issues, and to configure the system:
 
-| Command              | Description |
-| -------------------- | ----------- |
-| !dumpjsondata 1      | Display all JSON data read from the Redfish Service. Zero will turn it off. |
-| !dumppostdata 1      | Display all data that is sent via an HTTP POST operation. Zero will turn it off. |
-| !trace 5             | Turn on additional tracing at a VERBOSE level. |
-| !trace 6             | Turn on additional tracing at a DEBUG level. |
-| !trace 7             | Turn on additional tracing at a TRACE level. |
-| !trace 4             | Reset tracing to the default INFO level. |
+| Command                         | Description |
+| ------------------------------- | ----------- |
+| !http [https|https]             | Switch between use http:// and https:// |
+| !certificatecheck [True|False]  | Perform a SSH certificate check or don't. |
+| !annotate [0|1]                 | Display a banner of the script file line. |
+| !urltimeout [seconds]           | How long to wait for a URL request before timing out. |
+| !urltimeout [seconds]           | How long to wait for a URL request before timing out. |
+| !brand [product]                | SPecifies the folder to retrieve commands from. Default is systems, but example is also provided. |
+| !showelapsed [0|1]              | Display how long each command took. |
+| !dumpjsondata [0|1]             | Display all JSON data read from the Redfish Service. Zero will turn it off. |
+| !dumppostdata [0|1]             | Display all data that is sent via an HTTP POST operation. Zero will turn it off. |
+| !trace 5                        | Turn on additional tracing at a VERBOSE level. |
+| !trace 6                        | Turn on additional tracing at a DEBUG level. |
+| !trace 7                        | Turn on additional tracing at a TRACE level. |
+| !trace 4                        | Reset tracing to the default INFO level. |
 
 ### Redfish Commands
 
