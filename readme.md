@@ -1,76 +1,80 @@
+[![License: The MIT License](https://img.shields.io/badge/license-MIT-green?longCache=true)](https://opensource.org/licenses/MIT)
 
-# Seagate Systems Redfish Python Reference Client
+# SystemsRedfishPy
 
+## Cross platform Python tool for provisioning and managing storage systems using the RESTful Redfish/Swordfish API.
+
+#### Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 
 ## Introduction
 
-The Seagate Systems (aka EDS) provides a Redfish/Swordfish Service that was first released in 2019. This new service was first
-featured on the Seagate Indium product line, and then the PODs product line. This package provides a reference client that can
-be used on any computer with Python installed. This reference client enables you to perform configuration and maintenance
-operations on a Indium controller using the Redfish/Swordfish API.
+***SystemsRedfishPy*** is a command line tool that implements the client side of the Redfish RESTful API for Storage System Management.
+
+Source code files of the SystemsRedfishPy open source project are available to you under [THe MIT License](https://opensource.org/licenses/MIT).  The
+SystemsRedfishPy project repository is maintained at https://github.com/Seagate/SystemsRedfishPy.
+
+**Redfish** is the new RESTful API for hardware management defined by the DMTF Scalable Platform Management Forum (SPMF).  It provides a 
+modern, secure, multi-node, extendable interface for hardware management. **Swordfish** authored by SNIA provides extensions for handling
+storage specific provisioning and management. 
+
+**SystemsRedfishPy** goes beyond common HTTP tools such as curl to provide quick and easy storage management and storage volume creation. This
+tool provides simple one-step commands handling multiple Redfish URI requests in order to carry out storage management. The main features of
+this package are:
+ 
+* Command line or script file execution
+* Set up is a breeze and configuration settings are modified with a **bang** (`!setting <value>`)
+* Add new configuration variables via a single line with easy access routines
+* Handles multiple command sets for various product brands - `!brand <product>` to switch between command sets 
+* Drop in new commands to increase desired functionality - with no modifications to the infrastructure 
+* Help text built in to each command file
+* Built in unittest for quick regression testing of a Redfish service
+* Debug logging and tracing built in for command line usage or unit test cases 
+* Class modules to simply working with URIs and JSON data 
+
+## Background
+
+Seagate Systems (Enterprise Data Solutions (EDS)) provides a Redfish/Swordfish Service that was first released in 2019. This
+new service was first featured on the Seagate Indium product line. This package provides a reference client that can be used on
+any computer with Python installed. This reference client enables you to perform configuration and maintenance operations on a
+storage controller using the Redfish/Swordfish API.
 
 The Redfish API is a standard REST API maintained by [DMTF Redfish](https://www.dmtf.org/standards/redfish). The Swordfish API
 is an extension to the Redfish API maintained by [SNIA Swordfish](https://www.snia.org/forums/smi/swordfish).
 
-|           **Contributors**           |
-| ------------------------------------ |
-| Joe Skazinski, Seagate Technologies  |
+
+## Why SystemsRedfishPy?
+
+1. **SystemsRedfishPy** was originally written during the development of the Redfish storage service, helpful for validating
+storage service operations and to quickly and easily display JSON data from various URIs.
+2. **SystemsRedfishPy** was extended to provide unit test cases to quickly validate and report on the status of the current
+Redfish service version. 
+3. **SystemsRedfishPy** provides an example implementation for how a client can execute common storage management functions
+like create a RAID disk group, create a storage pool, create a storage volume, and map that volume to a host computer.
+4. **SystemsRedfishPy** can also be called from other scripts, used as a command line tool, or execute scripts to quickly provision
+storage or check on the health of a storage system. 
 
 
 ## Installation
 
-This project is maintained under the [EDS ADT seagit repository](https://seagit.okla.seagate.com/eds-adt/SystemsRedfishPy).
+This project is maintained under [GitHub SystemsRedfishPy](https://github.com/Seagate/SystemsRedfishPy).
 
-The process to use this client is to clone a copy of the project on your local hard drive. Once you have the project run:
+The process to use this client is to clone a copy of the project on your local hard drive.
 
-### Using SSH to Clone the Project Under Linux
-
-You won't be able to pull or push project code via SSH until you add an SSH key to your profile. SSH keys allow you to establish a secure connection between your computer and GitLab.
-
-1. Check for an existing SSH Key - [Seagit Readme](https://seagit.okla.seagate.com/help/ssh/README)
-
-2) Generate a new SSH key pair, follow the prompts and use the default filename suggested
-```
-ssh-keygen -t rsa -C "your.email@example.com" -b 4096
-```
-
-3) Copy your public SSH key to the clipboard
-```
-cat ~/.ssh/id_rsa.pub
-```
-Then select and copy the output.
-
-4) Paste this key into the GitLab Settings page
-
-* Open a web browser to - (https://seagit.okla.seagate.com/groups/eds-adt)
-* Click on the down-arrow in the upper right-hand corner, next to your picture
-* Choose Settings
-* Click on SSH Keys
-* Paste your publick Key into the 'Key' text box
-* Click Add Key
-
-5) Clone the project
+Clone the project
 ```
 cd base_directory
-git clone git@seagit.okla.seagate.com:eds-adt/SystemsRedfishPy.git (Enter your password for your private key)
+git clone SystemsRedfishPy.git
 cd SystemsRedfishPy
 python3 redfishAPI.py
 ```
 
-### Using HTTPS to Clone the Project Under Windows
-
-```
-$ cd <working-folder>
-$ git clone https://seagit.okla.seagate.com/eds-adt/SystemsRedfishPy.git
-$ cd SystemsRedfishPy
-$ python redfishAPI.py -h
-```
-
-
 ## Requirements
 
 Your client computer must have Python3 installed. You will also need network access to the desired controller, and know the 
-IP Address of the target controller running the Redfish Service.
+IP Address of the target controller running the Redfish Service. User credentials are required in order to create a Redfish
+sessions and provision storage.
+
+Using **SystemsRedfishPy** does not rely on any other packages. But HTML and XML packages are used if you desire to run unit test cases.
 
 
 ## Quick Tutorial
@@ -103,10 +107,10 @@ help [command name] - provides details on a command
 
 There are several configuration commands useful to set up communications and tracing.
 
-| Command           | Description |
-| ----------------- | ----------- |
-| !dump             | Print out all configuration options. This is useful to learn what settings are available. |
-| ![option] [value] | Change the value for that setting. |
+| Command            | Description |
+| ------------------ | ----------- |
+| !dump              | Print out all configuration options. This is useful to learn what settings are available. |
+| ![setting] [value] | Change the value for that setting. |
 
 To configure which controller to talk to:
 
@@ -170,9 +174,13 @@ For example:
 
 ### Design
 
-If you want to make changes to this reference client, there is a [design document](design.md) that provides an overview
+If you want to make changes to this reference client, there is a [design document](DESIGN.md) that provides an overview
 of how to make changes and add new commands. The main system design allows you to add commands, and help for
 commands, without having to change any of the underlying core files. The only step needed is to add your new
 command to the 'commands' folder using the prescribed template.
 
- 
+
+### Unit Testing
+
+If you want to run unit testing, the [unit test document](UNITTEST.md) provides an overview of how to install
+the reporting packages, run unit tests, and also add new unit tests.

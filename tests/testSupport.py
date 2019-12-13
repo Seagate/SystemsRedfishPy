@@ -1,30 +1,27 @@
-# *************************************************************************************
 #
-# testSupport - Methods supporting Redfish unit test cases
+# Do NOT modify or remove this copyright and license
 #
-# -------------------------------------------------------------------------------------
-
-# Copyright 2019 Seagate Technology LLC or one of its affiliates.
+# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# The code contained herein is CONFIDENTIAL to Seagate Technology LLC.
-# Portions may also be trade secret. Any use, duplication, derivation, distribution
-# or disclosure of this code, for any reason, not expressly authorized in writing by
-# Seagate Technology LLC is prohibited. All rights are expressly reserved by
-# Seagate Technology LLC.
+# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
-# -------------------------------------------------------------------------------------
+# ******************************************************************************************
+#
+# testSupport.py - Methods supporting Redfish unit test cases. 
+#
+# ******************************************************************************************
 #
 
 import config
 import time
-
-from jsonExtract import JsonExtract
-from redfishCommand import RedfishCommand
+from core.jsonExtract import JsonExtract
+from core.redfishCommand import RedfishCommand
+from core.urlAccess import UrlAccess, UrlStatus
 from tests.testSystem import TestSystem
-from urlAccess import UrlAccess, UrlStatus
 
 ################################################################################
-# JsonExtract
+# TestSupport
 ################################################################################
 
 class TestSupport:
@@ -78,13 +75,12 @@ class TestSupport:
     def create_diskgroup_paged(cls, testObject, redfishConfig, desiredName, poolName, driveCount, raidLevel):
 
         # Create a disk group
-        count = driveCount
         command = 'create diskgroup name=' + desiredName + ' disks='
-        for x in range(driveCount):
-            drive1Url, drive1Number, drive1Serial = TestSystem.get_next_available_drive()
-            command = command + drive1Number
-            count -= 1
-            if count:
+        while driveCount > 0:
+            drive = TestSystem.get_next_available_drive()
+            command = command + drive['number']
+            driveCount -= 1
+            if driveCount:
                 command = command + ','
 
         command = command + ' pool=' + poolName + ' level=' + raidLevel

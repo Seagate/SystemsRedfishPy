@@ -1,13 +1,15 @@
 {
-    "version": "1.0.7",
+    "version": "1.1.0",
     "http": "https",
-    "mcip": "10.235.221.119",
-    "username": "manage",
-    "password": "Testit123!",
+    "mcip": "",
+    "username": "",
+    "password": "",
     "annotate": "yes",
     "urltimeout": "30",
     "trace": "4",
     "dumpjsondata": "0",
     "dumppostdata": "0",
-    "CertificateCheck": "False"
+    "showelapsed": "0",
+    "CertificateCheck": "False",
+    "brand": "systems"
 }

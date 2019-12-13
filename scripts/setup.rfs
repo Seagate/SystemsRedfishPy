@@ -1,0 +1,20 @@
+#
+# SystemsRedfishPy
+#
+# This script should be modified to replace all <tag> values so
+# that they match your system. Then run the script once to set up
+# your system to match your target.
+#
+# Replace <ipaddress>, <username>, and <password> with proper values.
+# For example:
+#     !mcip 10.235.221.119
+#
+# Use: python redfishAPI.py -s scripts\setup.rfs
+#
+
+!http https
+!mcip <ipaddress>
+!username <username>
+!password <password>
+!CertificateCheck False
+!brand systems

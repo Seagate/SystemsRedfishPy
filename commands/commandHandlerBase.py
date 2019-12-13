@@ -1,11 +1,21 @@
 #
-# Command Handler base class
+# Do NOT modify or remove this copyright and license
+#
+# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+#
+# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
+#
+# ******************************************************************************************
+#
+# commandHandlerBase.py - Command Handler base class. 
+#
+# ******************************************************************************************
 #
 
 import json
-
-from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, UrlStatus
+from core.trace import TraceLevel, Trace
+from core.urlAccess import UrlAccess, UrlStatus
 
 ################################################################################
 # CommandHandlerBase

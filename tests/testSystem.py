@@ -1,43 +1,40 @@
-# *************************************************************************************
 #
-# testSystem - Routines to discover and retrieve available system resources. 
+# Do NOT modify or remove this copyright and license
 #
-# -------------------------------------------------------------------------------------
-
-# Copyright 2019 Seagate Technology LLC or one of its affiliates.
+# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# The code contained herein is CONFIDENTIAL to Seagate Technology LLC.
-# Portions may also be trade secret. Any use, duplication, derivation, distribution
-# or disclosure of this code, for any reason, not expressly authorized in writing by
-# Seagate Technology LLC is prohibited. All rights are expressly reserved by
-# Seagate Technology LLC.
+# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
-# -------------------------------------------------------------------------------------
+# ******************************************************************************************
+#
+# testSystem.py - Routines to discover and retrieve available system resources. 
+#
+# ******************************************************************************************
 #
 
 import config
-
-from jsonExtract import JsonExtract
-from trace import TraceLevel, Trace
-from urlAccess import UrlAccess, UrlStatus
+from core.jsonExtract import JsonExtract
+from core.trace import TraceLevel, Trace
+from core.urlAccess import UrlAccess, UrlStatus
 
 
 ################################################################################
-# JsonExtract
+# TestSystem
 ################################################################################
 
 class TestSystem:
 
-    # An array of tuples storing disk information.
-    #   disks[0] = [inUse, 'id', 'serial-number', 'speed', 'capacity', 'block-size', 'state', 'health']
-    #   disks[N] = [inUse, 'id', 'serial-number', 'speed', 'capacity', 'block-size', 'state', 'health']
+    # An array of dictionary items storing disk information.
+    #   drives[0] = { 'inUse': inUse, 'number': id, 'serial': serial_number, 'speed': speed, 'capacity': capacity, 'size': block_size, 'state': state, 'health': health]
+    #   drives[N] = { 'inUse': inUse, 'number': id, 'serial': serial_number, 'speed': speed, 'capacity': capacity, 'size': block_size, 'state': state, 'health': health]
     drives = []
 
     #
-    # Initialize an array of disks.
+    # Initialize an array of disks by using the Redfish API.
     #
     @classmethod
-    def initialize_disks(cls, testObject, redfishConfig):
+    def initialize_drives(cls, testObject, redfishConfig):
 
         cls.drives = []
         url = config.drives
@@ -73,13 +70,14 @@ class TestSystem:
             state = JsonExtract.get_value(link.jsonData, 'Status', 'State', 1)
             health = JsonExtract.get_value(link.jsonData, 'Status', 'Health', 1)
 
-            driveInfo = [False, drive_number, serial_number, speed, capacity, block_size, state, health]
+            driveInfo = {'inUse': False, 'number': drive_number, 'serial': serial_number, 'speed': speed, 'capacity': capacity, 'size': block_size, 'state': state, 'health': health}
+
             cls.drives.append(driveInfo)
 
-        cls.drives.sort(key=lambda tup: tup[1], reverse=False)
+        cls.drives.sort(key=lambda k: k['number'], reverse=False)
 
         Trace.log(TraceLevel.DEBUG, '++ initialize_disks: {} drives added'.format(len(cls.drives)))
-        Trace.log(TraceLevel.DEBUG, '@@ drives: {}'.format(cls.drives))
+        Trace.log(TraceLevel.TRACE, '@@ drives: {}'.format(cls.drives))
 
     #
     # Initialize all needed system information. This must be called once at
@@ -87,8 +85,13 @@ class TestSystem:
     #
     @classmethod
     def initialize_system(cls, testObject, redfishConfig):
-        cls.initialize_disks(testObject, redfishConfig)
+        cls.initialize_drives(testObject, redfishConfig)
 
+    #
+    # Returns the next available drive from the system information table.
+    #
+    # Returns a dictionary with url, drive number, and serial number.
+    #
     @classmethod
     def get_next_available_drive(cls):
         url = None
@@ -96,13 +99,14 @@ class TestSystem:
         serial_number = ''
 
         for drive in cls.drives:
-            if drive[0] == False:
-                drive_number = drive[1]
-                serial_number = drive[2]
+            if drive['inUse'] == False:
+                drive_number = drive['number']
+                serial_number = drive['serial']
                 url = config.drives + drive_number
-                drive[0] = True
-                Trace.log(TraceLevel.DEBUG, '++ get_next_available_drive: return drive {}, in use {}'.format(drive[1], drive[0]))
+                drive['inUse'] = True
+                Trace.log(TraceLevel.DEBUG, '++ get_next_available_drive: return drive {}, in use {}'.format(drive_number, drive['inUse']))
                 break
 
-        return url, drive_number, serial_number
+        return {'url': url, 'number': drive_number ,'serial': serial_number}
+
 

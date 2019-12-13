@@ -13,7 +13,15 @@ redfishAPI.json.
 
 All modules rely heavily on a Trace facility and a common UrlAccess class.
 
-The bulk of this client is implemented using commands, all of which are defined in the 'commands' sub-folder. 
+The bulk of this client is implemented using commands, all of which are defined in the 'commands' sub-folder. The
+**commands** folder must contain one or more sub-folders. Each subfolder represents commands for a different **brand**
+of products. The !brand configuration setting determines which subfolder of commands is used.
+
+This feature supports commands for multiple product brands. To create a new set of commands, for a new product, create
+a new comamnds/brand folder. Then copy all files from the example folder into the new folder. This provides
+help by default and a single example command. You can then copy other commands from the **systems** folder, or
+create commands from scratch using the other command files as examples. To use the new set of commands, execute
+**!brand <newbrand>** and run help and all your new commands.
 
 
 ## Main Module
@@ -40,18 +48,18 @@ JSON file automatically. There are also several RedfishConfig routines that shou
 
 ## Commands
 
-All available commands are located in the 'commands' folder. The name of the file must match the desired command. The
-'show volumes' command will be handled by a Python module labeled 'commands/show_volumes.py'. To add a new command, just
-create a new file in the 'commands' folder and implement the three required methods.
+All available commands are located in the 'commands/<brand>' folder. The name of the file must match the desired command. The
+'show volumes' command will be handled by a Python module labeled 'commands/<brand>/show_volumes.py'. To add a new command, just
+create a new file in the 'commands/<brand>' folder and implement the three required methods.
 
-For example, to create a 'my command' create a file called 'commands/my_command.py' and implement prepare_url(), process_json(),
+For example, to create a 'my command' create a file called 'commands/<brand>/my_command.py' and implement prepare_url(), process_json(),
 and display_results(). These methods were chosen since this is a REST API client which relies on HTTP requests to URLs.  
 
 __Note:__ Adding new commands does not require any changes to the other modules (redfishAPI, redfishCommand, etc.). The
 RedfishCommand() uses the importlib to dynamically import the required Python code for a given command. The current requirement
-though is that all commands be two words and the Pythoin code reside in a file called 'word1_word2.py' in the 'commands' folder.
+though is that all commands be two words and the Pythoin code reside in a file called 'word1_word2.py' in the 'commands/<brand>' folder.
 
-All commands are derived from the base class __CommandHandlerBase__ which provides several common routines to be used by commands.
+All commands are derived from the base class **CommandHandlerBase** which provides several common routines to be used by commands.
 
 All commands are executed in three steps, although simple comamnds can do nothing in the first and last step.
 

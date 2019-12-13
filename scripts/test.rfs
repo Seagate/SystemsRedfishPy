@@ -1,13 +1,19 @@
 #
-# Redfish API Test Script
+# Redfish API Test Script - Example
+#
+# Note: you must replace all <tags> with valid values for ip address, username, and password.
+#       Any line starting with a hashtag is commented out.
+#
+
+
 #
 # !version
-# !mcip 10.235.221.119
-# !username manage
-# !password Testit123!
+# !mcip <ipaddress>
+# !username <username>
+# !password <password>
 # !annotate yes
-# !trace 6
-# !urltimeout 10
+# !trace 4
+# !urltimeout 30
 !dumpjsondata 0
 !dump
 
@@ -41,6 +47,6 @@ create session
 # create diskgroup name=dgA03 disks=0.9,0.10 pool=A level=raid1
 # create diskgroup name=dgA04 disks=0.11,0.12 pool=A level=raid1
 
-# show disks
-# show volumes
+show disks
+show volumes
 show pools

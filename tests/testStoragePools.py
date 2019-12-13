@@ -1,28 +1,29 @@
-# *************************************************************************************
 #
-# testStoragePools - Redfish StoragePools test cases
+# Do NOT modify or remove this copyright and license
 #
-# -------------------------------------------------------------------------------------
-
-# Copyright 2019 Seagate Technology LLC or one of its affiliates.
+# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# The code contained herein is CONFIDENTIAL to Seagate Technology LLC.
-# Portions may also be trade secret. Any use, duplication, derivation, distribution
-# or disclosure of this code, for any reason, not expressly authorized in writing by
-# Seagate Technology LLC is prohibited. All rights are expressly reserved by
-# Seagate Technology LLC.
+# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
-# -------------------------------------------------------------------------------------
+# ******************************************************************************************
+#
+# testStoragePools.py - Unit test cases for Redfish/Swordfish StoragePools capabilities. 
+#
+# ******************************************************************************************
 #
 
 import config
 import unittest
 
-from redfishCommand import RedfishCommand
-from redfishConfig import RedfishConfig
+from core.redfishCommand import RedfishCommand
+from core.redfishConfig import RedfishConfig
 from tests.testSupport import TestSupport
 from tests.testSystem import TestSystem
 
+################################################################################
+# TestStoragePools
+################################################################################
 
 class TestStoragePools(unittest.TestCase):
 
@@ -37,11 +38,11 @@ class TestStoragePools(unittest.TestCase):
         TestSupport.delete_pool(self, self.redfishConfig, 'A')
 
     def test_create_diskgroup_paged_raid5(self):
-        # Create a RAID1 disk group
+        # Create a RAID5 disk group
         TestSupport.create_diskgroup_paged(self, self.redfishConfig, 'dgA02', 'A', 4, 'raid5')
         TestSupport.delete_pool(self, self.redfishConfig, 'A')
 
     def test_create_diskgroup_paged_raid6(self):
-        # Create a RAID1 disk group
+        # Create a RAID6 disk group
         TestSupport.create_diskgroup_paged(self, self.redfishConfig, 'dgA03', 'A', 6, 'raid6')
         TestSupport.delete_pool(self, self.redfishConfig, 'A')

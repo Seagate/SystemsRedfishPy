@@ -1,29 +1,25 @@
-# *************************************************************************************
 #
-# redfishAPI - Module to run commands using the Systems Redfish API
+# Do NOT modify or remove this copyright and license
 #
-# -------------------------------------------------------------------------------------
-
-# Copyright 2019 Seagate Technology LLC or one of its affiliates.
+# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# The code contained herein is CONFIDENTIAL to Seagate Technology LLC.
-# Portions may also be trade secret. Any use, duplication, derivation, distribution
-# or disclosure of this code, for any reason, not expressly authorized in writing by
-# Seagate Technology LLC is prohibited. All rights are expressly reserved by
-# Seagate Technology LLC.
+# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
-# -------------------------------------------------------------------------------------
+# ******************************************************************************************
+#
+# redfishAPI.py - Module to run commands using the Systems Redfish API. 
+#
+# ******************************************************************************************
 #
 
 import argparse
 import sys
+from core.redfishConfig import RedfishConfig
+from core.redfishScript import RedfishScript
+from core.redfishInteractive import RedfishInteractive
+from version import __version__
 
-from redfishConfig import RedfishConfig
-from redfishScript import RedfishScript
-from redfishInteractive import RedfishInteractive
-from trace import TraceLevel, Trace
-
-version = '1.1.0'
 
 ################################################################################
 # main()
@@ -44,7 +40,7 @@ if __name__ == '__main__':
     
     print('')
     print('-' * 80)
-    print('[{}] Redfish API'.format(version))
+    print('[{}] Redfish API'.format(__version__))
     print('-' * 80)
 
     returncode = 0

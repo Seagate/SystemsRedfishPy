@@ -1,0 +1,97 @@
+#
+# Do NOT modify or remove this copyright and license
+#
+# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+#
+# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
+#
+# ******************************************************************************************
+#
+# create_session.py 
+#
+# ******************************************************************************************
+#
+# @command create session
+#
+# @synopsis Establish a session with the Redfish Service (using mcip, username, and password)
+#
+# @description-start
+#
+# This command attempts to establish a session with the Redfish Service. It will use the
+# mcip, username, and password that are defined in the configuration settings. Use '!dump' to
+# view all configuration settings. Use '!setting value' to update the setting and value.
+#
+# Example:
+# 
+# (redfish) create session
+# 
+# ++ Establish Redfish session: (/redfish/v1/SessionService/Sessions)...
+# [] Redfish session established (key=5ecff24c0259db2b810327047538dc9f)
+# 
+# @description-end
+#
+
+import config
+import json
+from commands.commandHandlerBase import CommandHandlerBase
+from core.jsonBuilder import JsonBuilder, JsonType
+from core.trace import TraceLevel, Trace
+from core.urlAccess import UrlAccess, UrlStatus
+
+################################################################################
+# CommandHandler
+################################################################################
+class CommandHandler(CommandHandlerBase):
+    """Command - create session """
+    name = 'create session'
+
+    def prepare_url(self, command):
+        return (config.sessions)
+
+    @classmethod
+    def process_json(self, redfishConfig, url):
+
+        redfishConfig.sessionValid = False
+
+        Trace.log(TraceLevel.INFO, '')
+        Trace.log(TraceLevel.INFO, '++ Establish Redfish session: ({})...'.format(url))
+
+        JsonBuilder.startNew()
+        JsonBuilder.newElement('main', JsonType.DICT)
+        JsonBuilder.addElement('main', JsonType.STRING, 'UserName', redfishConfig.get_value('username'))
+        JsonBuilder.addElement('main', JsonType.STRING, 'Password', redfishConfig.get_value('password'))
+
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', False, json.dumps(JsonBuilder.getElement('main'), indent=4))
+
+        Trace.log(TraceLevel.TRACE, '   -- urlStatus={} urlReason={}'.format(link.urlStatus, link.urlReason))
+
+        # HTTP 201 Created
+        if (link.urlStatus == 201):
+
+            if (link.jsonData != None):
+                Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Id', link.jsonData['Id']))
+                Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Name', link.jsonData['Name']))
+                Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Description', link.jsonData['Description']))
+                Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('UserName', link.jsonData['UserName']))
+            else:
+                Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
+            
+            link.sessionKey = link.response.getheader('x-auth-token', '')
+            redfishConfig.sessionKey = link.sessionKey
+            if (redfishConfig.sessionKey != ''):
+                redfishConfig.sessionValid = True
+        else:
+            print('')
+            print('[] URL        : {}'.format(link.url))
+            print('[] Status     : {}'.format(link.urlStatus))
+            print('[] Reason     : {}'.format(link.urlReason))
+            print('')
+
+    @classmethod
+    def display_results(self, redfishConfig):
+
+        if (redfishConfig.sessionValid == True):            
+            Trace.log(TraceLevel.INFO, '[] Redfish session established (key={})'.format(redfishConfig.sessionKey))
+        else:            
+            Trace.log(TraceLevel.ERROR, 'Unable to establish a Redfish session, connection, check ip address, username and password')

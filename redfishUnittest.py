@@ -1,28 +1,25 @@
-# *************************************************************************************
 #
-# redfishUnittest - Module to run and report on all unit tests.
+# Do NOT modify or remove this copyright and license
 #
-# -------------------------------------------------------------------------------------
-
-# Copyright 2019 Seagate Technology LLC or one of its affiliates.
+# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# The code contained herein is CONFIDENTIAL to Seagate Technology LLC.
-# Portions may also be trade secret. Any use, duplication, derivation, distribution
-# or disclosure of this code, for any reason, not expressly authorized in writing by
-# Seagate Technology LLC is prohibited. All rights are expressly reserved by
-# Seagate Technology LLC.
+# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
-# -------------------------------------------------------------------------------------
+# ******************************************************************************************
+#
+# redfishUnittest.py - Module to run and report on all unit tests. 
+#
+# ******************************************************************************************
 #
 
 import argparse
 import config
-import HtmlTestRunner
 import sys
 import unittest
+from core.redfishConfig import RedfishConfig
+import HtmlTestRunner
 import xmlrunner
-
-from redfishConfig import RedfishConfig
 
 
 ################################################################################
@@ -64,8 +61,7 @@ if __name__ == '__main__':
         print('++ Generate XML Report')
         extension = 'xml'
         tests = unittest.TestLoader().discover(config.testFolder)
-        # testRunner = xmlrunner.XMLTestRunner(output=config.reportFolder, )
-        testRunner = xmlrunner.XMLTestRunner(file('testOut.xml', 'w'))
+        testRunner = xmlrunner.XMLTestRunner(output=config.reportFolder)
         testRunner.run(tests)
     else:
         print('++ Generate HTML Report')
