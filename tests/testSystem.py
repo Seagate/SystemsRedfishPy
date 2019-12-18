@@ -49,7 +49,7 @@ class TestSystem:
         totalDrives = int(membersCount)
         odataIds = JsonExtract.get_values(link.jsonData, "@odata.id")
         
-        Trace.log(TraceLevel.INFO, '++ initialize_disks: membersCount={}, totalDrives={}'.format(membersCount, totalDrives))
+        Trace.log(TraceLevel.INFO, '++ initialize_drives: membersCount={}, totalDrives={}'.format(membersCount, totalDrives))
 
         # Don't include the main @odata.id for the Drive Collection, all others are Drives/#.#
         odataIds.remove('/redfish/v1/StorageServices/S1/Drives')
@@ -70,8 +70,14 @@ class TestSystem:
             state = JsonExtract.get_value(link.jsonData, 'Status', 'State', 1)
             health = JsonExtract.get_value(link.jsonData, 'Status', 'Health', 1)
 
-            driveInfo = {'inUse': False, 'number': drive_number, 'serial': serial_number, 'speed': speed, 'capacity': capacity, 'size': block_size, 'state': state, 'health': health}
+            # If the drive is linked to one or more volumes, it is already in use.
+            volumes = JsonExtract.get_value(link.jsonData, 'Volumes', '@odata.id', 1)
+            inUse = False
+            if volumes is not None:
+                inUse = True
 
+            driveInfo = {'inUse': inUse, 'number': drive_number, 'serial': serial_number, 'speed': speed, 'capacity': capacity, 'size': block_size, 'state': state, 'health': health}
+            Trace.log(TraceLevel.VERBOSE, '++ initialize_drives: {0: >6} / {1} - {2: >24}'.format(drive_number, inUse, serial_number))
             cls.drives.append(driveInfo)
 
         cls.drives.sort(key=lambda k: k['number'], reverse=False)
