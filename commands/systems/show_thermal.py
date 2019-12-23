@@ -87,18 +87,19 @@ class ThermalInformation:
     Enclosure = 0
     MemberId = ''
     Name = ''
-    ReadingCelcius = ''
+    ReadingCelsius = ''
     SensorName = ''
     StatusState = ''
     StatusHealth = ''
 
-    def __init__(self, MemberId, Name, ReadingCelcius, SensorName, StatusState, StatusHealth):
+    def __init__(self, MemberId, Name, ReadingCelsius, SensorName, StatusState, StatusHealth, Enclosure):
         self.MemberId = MemberId
         self.Name = Name
-        self.ReadingCelcius =ReadingCelcius
+        self.ReadingCelsius =ReadingCelsius
         self.SensorName = SensorName
         self.StatusState = StatusState
         self.StatusHealth = StatusHealth
+        self.Enclosure = Enclosure
 
 ################################################################################
 # CommandHandler
@@ -131,21 +132,19 @@ class CommandHandler(CommandHandlerBase):
                     for link in value:
                         Trace.log(TraceLevel.TRACE, '   ++ process item {}'.format(link['@odata.id']))
 
+                        odataid = link['@odata.id']
+                        Enclosure = odataid.replace('/redfish/v1/Chassis/enclosure_', '')[0:1]
                         MemberId = link['MemberId']
                         Name = link['Name']
-                        ReadingCelcius = str(link['ReadingCelcius'])
-                        test = link['test']
+                        ReadingCelsius = str(link['ReadingCelsius'])
                         statusDict = link['Status']
                         StatusState = statusDict['State']
                         StatusHealth = statusDict['Health']
-                        
+
                         # Adjust certain strings
-                        ReadingCelcius = ReadingCelcius.replace('.0', ' C')
-                        SensorName = test
-                        if (SensorName == 'Temperature Loc: Disk'):
-                            SensorName = 'Disk ' + Name.replace('sensor_temp_disk_', '')
-                        
-                        item = ThermalInformation(MemberId, Name, ReadingCelcius, SensorName, StatusState, StatusHealth)
+                        SensorName = Name.replace('sensor_temp_', '')
+
+                        item = ThermalInformation(MemberId, Name, ReadingCelsius, SensorName, StatusState, StatusHealth, Enclosure)
                         self.readings.append(item)
 
     @classmethod
@@ -159,13 +158,13 @@ class CommandHandler(CommandHandlerBase):
 
         else:
             print('')
-            print('                                    SensorName  Reading    Health  Enclosure')
-            print('  --------------------------------------------------------------------------')
-            #        SBB IOM Inlet Temperature Loc: lower-IOM BL     100 C        OK           0
+            print('      SensorName  Reading    Health  Enclosure')
+            print('  --------------------------------------------')
+
             for i in range(len(self.readings)):
 
-                print('  {0: >44}  {1: >7}  {2: >8}  {3: >9}'.format(
+                print('  {0: >14}  {1: >7}  {2: >8}  {3: >9}'.format(
                     self.readings[i].SensorName,
-                    self.readings[i].ReadingCelcius,
+                    self.readings[i].ReadingCelsius,
                     self.readings[i].StatusHealth,
                     self.readings[i].Enclosure))

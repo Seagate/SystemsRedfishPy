@@ -26,10 +26,10 @@
 # 
 #     SensorName       Reading    Health  Enclosure
 #   -----------------------------------------------
-#          Fan 0      7440 RPM        OK          0
-#          Fan 1      7380 RPM        OK          0
-#          Fan 2      7380 RPM        OK          0
-#          Fan 3      7140 RPM        OK          0
+#          Fan 0          6720        OK          0
+#          Fan 1          6660        OK          0
+#          Fan 2          6840        OK          0
+#          Fan 3          6720        OK          0
 #
 # @description-end
 #
@@ -46,15 +46,15 @@ class FanInformation:
 
     Enclosure = 0
     MemberId = ''
-    ReadingRPM = 0
+    Reading = 0
     Name = ''
     StatusState = ''
     StatusHealth = ''
 
-    def __init__(self, Enclosure, MemberId, ReadingRPM, Name, StatusState, StatusHealth):
+    def __init__(self, Enclosure, MemberId, Reading, Name, StatusState, StatusHealth):
         self.Enclosure = Enclosure
         self.MemberId = MemberId
-        self.ReadingRPM =ReadingRPM
+        self.Reading = Reading
         self.Name = Name
         self.StatusState = StatusState
         self.StatusHealth = StatusHealth
@@ -91,13 +91,13 @@ class CommandHandler(CommandHandlerBase):
                         Trace.log(TraceLevel.TRACE, '   ++ process item {}'.format(link['@odata.id']))
 
                         MemberId = link['MemberId']
-                        ReadingRPM = str(link['ReadingRPM']) + ' RPM'
+                        Reading = str(link['Reading'])
                         Name = link['Name']
                         statusDict = link['Status']
                         StatusState = statusDict['State']
                         StatusHealth = statusDict['Health']
                         
-                        item = FanInformation(0, MemberId, ReadingRPM, Name, StatusState, StatusHealth)
+                        item = FanInformation(0, MemberId, Reading, Name, StatusState, StatusHealth)
                         self.readings.append(item)
 
     @classmethod
@@ -118,6 +118,6 @@ class CommandHandler(CommandHandlerBase):
 
                 print('  {0: >12}  {1: >12}  {2: >8}  {3: >9}'.format(
                     self.readings[i].Name,
-                    self.readings[i].ReadingRPM,
+                    self.readings[i].Reading,
                     self.readings[i].StatusHealth,
                     self.readings[i].Enclosure))
