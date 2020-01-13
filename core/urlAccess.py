@@ -13,13 +13,15 @@
 # ******************************************************************************************
 #
 
+from core.label import Label
+from core.trace import TraceLevel, Trace
+import config
 import json
 import socket
 import ssl
 import sys
 import traceback
 import urllib.request, urllib.error
-from core.trace import TraceLevel, Trace
 
 ################################################################################
 # UrlStatus
@@ -63,12 +65,12 @@ class UrlAccess():
     def process_request(self, redfishConfig, link, method = 'GET', addAuth = True, data = None):
 
         try:
-            Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request - {} ({}) session ({})'.format(method, link.url, redfishConfig.sessionKey))
+            Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request - {} ({}) session ({}:{})'.format(method, link.url, Label.decode(config.sessionIdVariable), redfishConfig.sessionKey))
             fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_value('mcip') + link.url
 
             request = urllib.request.Request(fullUrl, method = method)
 
-            if (addAuth):
+            if (addAuth and redfishConfig.sessionKey is not None):
                 request.add_header('x-auth-token', redfishConfig.sessionKey)
 
             if (data):
@@ -142,7 +144,7 @@ class UrlAccess():
                 if (errorMessage != None):
                     try:
                         link.jsonData = json.loads(errorMessage.decode('utf-8'))
-                        Trace.log(TraceLevel.INFO, '   -- ErrorMessage:\n{}'.format(json.dumps(link.jsonData, indent=4)))
+                        Trace.log(TraceLevel.INFO, ' -- ErrorMessage:\n{}'.format(json.dumps(link.jsonData, indent=4)))
                     except Exception as e:
                         Trace.log(TraceLevel.INFO, '   -- Exception: {}'.format(e))
                         Trace.log(TraceLevel.INFO, '   -- ErrorMessage: {}'.format(errorMessage))

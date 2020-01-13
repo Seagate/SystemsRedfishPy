@@ -1,0 +1,18 @@
+#
+# Simple test script for a quick test to confirm Redfish interface and framework
+#
+
+redfish version
+
+create session
+show sessions
+
+show volumes
+show pools
+show diskgroups
+show disks
+
+redfish json /redfish/v1/StorageServices/S1/Volumes
+redfish json /redfish/v1/StorageServices/S1/StoragePools
+
+delete sessions $sessionid

@@ -36,6 +36,7 @@ import config
 import json
 from commands.commandHandlerBase import CommandHandlerBase
 from core.jsonBuilder import JsonBuilder, JsonType
+from core.label import Label
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -70,6 +71,7 @@ class CommandHandler(CommandHandlerBase):
         if (link.urlStatus == 201):
 
             if (link.jsonData != None):
+                Label.encode(config.sessionIdVariable, link.jsonData['Id'])
                 Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Id', link.jsonData['Id']))
                 Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Name', link.jsonData['Name']))
                 Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('Description', link.jsonData['Description']))
@@ -92,6 +94,6 @@ class CommandHandler(CommandHandlerBase):
     def display_results(self, redfishConfig):
 
         if (redfishConfig.sessionValid == True):            
-            Trace.log(TraceLevel.INFO, '[] Redfish session established (key={})'.format(redfishConfig.sessionKey))
+            Trace.log(TraceLevel.INFO, '[] Redfish session established ({}:{})'.format(Label.decode(config.sessionIdVariable), redfishConfig.sessionKey))
         else:            
             Trace.log(TraceLevel.ERROR, 'Unable to establish a Redfish session, connection, check ip address, username and password')

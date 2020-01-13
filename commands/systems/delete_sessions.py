@@ -18,8 +18,12 @@
 #
 # @description-start
 #
-# 'delete sessions Id1'          - to delete session Id1
-# 'delete sessions Id1,Id2,Id3'  - to delete sessions Id1, Id2, and Id3
+# This command will delete one or more sessions. To delete the current session, use
+# use the special internal variable $sessionid
+#  
+# 'delete sessions $sessionid'   - delete the current active session
+# 'delete sessions Id1'          - delete session Id1
+# 'delete sessions Id1,Id2,Id3'  - delete sessions Id1, Id2, and Id3
 #
 # Example:
 #
@@ -43,16 +47,16 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def prepare_url(self, command):
-        Trace.log(TraceLevel.DEBUG, '++ delete sessions command: {}'.format(command))
+        Trace.log(TraceLevel.DEBUG, '++ delete sessions: command={}'.format(command))
         self.ids = super().get_id_list(self, command, 2)
         return ('')
         
     @classmethod
     def process_json(self, redfishConfig, url):
-        Trace.log(TraceLevel.DEBUG, '++ delete sessions ids:  {}'.format(len(self.ids)))
+        Trace.log(TraceLevel.DEBUG, '++ delete sessions: ids={}'.format(self.ids))
         super().delete_id_list(self, redfishConfig, config.sessions, self.ids)
 
     @classmethod
     def display_results(self, redfishConfig):
         # Nothing to do in this case
-        print(' ')
+        Trace.log(TraceLevel.DEBUG, ' ')

@@ -56,4 +56,4 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def display_results(self, redfishConfig):
         # Nothing to do in this case
-        print(' ')
+        Trace.log(TraceLevel.DEBUG, ' ')

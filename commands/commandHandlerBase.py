@@ -13,9 +13,10 @@
 # ******************************************************************************************
 #
 
-import json
+from core.label import Label
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
+import json
 
 ################################################################################
 # CommandHandlerBase
@@ -61,9 +62,9 @@ class CommandHandlerBase():
         successes = 0
         
         if (len(ids) >= 1):
-            print(' ')
+            Trace.log(TraceLevel.INFO, ' ')
             for i in range(len(self.ids)):
-                url = startUrl + self.ids[i]
+                url = startUrl + Label.decode(self.ids[i], self.ids[i], 0)
                 Trace.log(TraceLevel.INFO, '[] DELETE ({0})'.format(url))
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'DELETE', True)
                 Trace.log(TraceLevel.INFO, '   -- status={}, reason={}'.format(link.urlStatus, link.urlReason))
@@ -74,7 +75,7 @@ class CommandHandlerBase():
                     Trace.log(TraceLevel.DEBUG, '   -- urlData {}'.format(link.urlData))
                     Trace.log(TraceLevel.DEBUG, '   -- jsonData {}'.format(link.jsonData))
 
-                    Trace.log(TraceLevel.INFO, json.dumps(link.jsonData, indent=4))
+        if (successes > 1):
+            Trace.log(TraceLevel.INFO, '({}) DELETE commands were successful'.format(successes))
 
-        Trace.log(TraceLevel.INFO, '({}) DELETE commands were successful'.format(successes))
         return (successes)

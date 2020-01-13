@@ -13,14 +13,16 @@
 # ******************************************************************************************
 #
 
-import config
-import unittest
-
 from core.jsonExtract import JsonExtract
 from core.redfishCommand import RedfishCommand
 from core.redfishConfig import RedfishConfig
+from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 from tests.testSupport import TestSupport
+from core.label import Label
+import config
+import unittest
+import sys
 
 ################################################################################
 # TestServiceRoot
@@ -28,14 +30,18 @@ from tests.testSupport import TestSupport
 
 class TestServiceRoot(unittest.TestCase):
 
-    def setUp(self):
-        self.root = '/redfish'
-        self.version = 'v1'
-        self.versionUrl = '/redfish/v1/'
-        self.redfishConfig = RedfishConfig(config.defaultConfigFile)
+    redfishConfig = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = '/redfish'
+        cls.version = 'v1'
+        cls.versionUrl = '/redfish/v1/'
+        cls.redfishConfig = RedfishConfig(Label.decode(config.sessionConfig))
 
     def test_version(self):
         # Verify GET /redfish returns JSON data with /redfish/v1/
+        Trace.log(TraceLevel.VERBOSE, '>> Run {}.{}:{}'.format(type(self).__name__, sys._getframe(  ).f_code.co_name, sys._getframe(  ).f_lineno))
         url = self.root
         link = UrlAccess.process_request(self.redfishConfig, UrlStatus(url), 'GET', False, None)
         TestSupport.test_link_status(self, link, url)
@@ -45,6 +51,7 @@ class TestServiceRoot(unittest.TestCase):
 
     def test_serviceroot(self):
         # Verify GET /redfish/v1 returns expected JSON data 
+        Trace.log(TraceLevel.VERBOSE, '>> Run {}.{}:{}'.format(type(self).__name__, sys._getframe(  ).f_code.co_name, sys._getframe(  ).f_lineno))
         url = self.versionUrl
         link = UrlAccess.process_request(self.redfishConfig, UrlStatus(url), 'GET', False, None)
         TestSupport.test_link_status(self, link, url)
@@ -71,6 +78,7 @@ class TestServiceRoot(unittest.TestCase):
         TestSupport.test_nested_tags(self, link.jsonData, expected)
         
     def test_links(self):
+        Trace.log(TraceLevel.VERBOSE, '>> Run {}.{}:{}'.format(type(self).__name__, sys._getframe(  ).f_code.co_name, sys._getframe(  ).f_lineno))
         url = self.versionUrl
         link = UrlAccess.process_request(self.redfishConfig, UrlStatus(url), 'GET', False, None)
         TestSupport.test_link_status(self, link, url)
@@ -82,3 +90,7 @@ class TestServiceRoot(unittest.TestCase):
             link = UrlAccess.process_request(self.redfishConfig, UrlStatus(url), 'GET', True, None)
             self.assertTrue(link.valid, 'Link valid for URL ({})'.format(url))
 
+        # Delete any current active session
+        sessionId = Label.decode(config.sessionIdVariable)
+        if sessionId is not None:
+            RedfishCommand.execute(self.redfishConfig, f'delete sessions {sessionId}')

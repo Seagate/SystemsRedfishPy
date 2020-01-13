@@ -13,14 +13,14 @@
 # ******************************************************************************************
 #
 
+from core.label import Label
+from core.trace import TraceLevel, Trace
 import argparse
 import config
 import sys
 import unittest
-from core.redfishConfig import RedfishConfig
 import HtmlTestRunner
 import xmlrunner
-
 
 ################################################################################
 # main()
@@ -48,25 +48,27 @@ if __name__ == '__main__':
         epilog=redfishUnittestEpilog,
         formatter_class=argparse.RawTextHelpFormatter)
 
+    parser.add_argument('-c', '--config', help='Specify the Redfish API JSON configuration file.')
     parser.add_argument('--html', help='Generate an HTML unit test report', action='store_true', required=False)
     parser.add_argument('--xml', help='Generate an XML unit test report', action='store_true')
 
     args = parser.parse_args()
 
-    redfishConfig = RedfishConfig('redfishAPI.json')
+    Label.encode(config.sessionConfig, config.defaultConfigFile if args.config == None else args.config)
 
     extension = ''
-    
+    testFiles = 'test*.py'
+
     if (args.xml):
-        print('++ Generate XML Report')
+        Trace.log(TraceLevel.INFO, '++ Generate XML Report')
         extension = 'xml'
-        tests = unittest.TestLoader().discover(config.testFolder)
+        tests = unittest.TestLoader().discover(config.testFolder, pattern=testFiles)
         testRunner = xmlrunner.XMLTestRunner(output=config.reportFolder)
         testRunner.run(tests)
     else:
-        print('++ Generate HTML Report')
+        Trace.log(TraceLevel.INFO, '++ Generate HTML Report')
         extension = 'html'
-        tests = unittest.TestLoader().discover(config.testFolder)
+        tests = unittest.TestLoader().discover(config.testFolder, pattern=testFiles)
         testRunner = HtmlTestRunner.HTMLTestRunner(combine_reports=True, open_in_browser=True, add_timestamp=True) 
         testRunner.run(tests)
 

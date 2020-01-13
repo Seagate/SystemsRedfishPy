@@ -13,12 +13,15 @@
 # ******************************************************************************************
 #
 
-import argparse
-import sys
+from core.label import Label
+from core.redfishCommand import RedfishCommand
 from core.redfishConfig import RedfishConfig
 from core.redfishScript import RedfishScript
 from core.redfishInteractive import RedfishInteractive
 from version import __version__
+import argparse
+import config
+import sys
 
 
 ################################################################################
@@ -50,13 +53,14 @@ if __name__ == '__main__':
         epilog=redfishCLIEpilog,
         formatter_class=argparse.RawTextHelpFormatter)
 
+    parser.add_argument('-c', '--config', help='Specify the Redfish API JSON configuration file.')
     parser.add_argument('-s', '--scriptfile', help='Specify the Redfish API script file.')
     parser.add_argument('-t', '--tracelevel', help='Set the trace level (4, 5, 6, or 7) INFO=4, VERBOSE=5, DEBUG=5, TRACE=6', nargs='?', const=1, type=int)
 
     args = parser.parse_args()
 
     # Load configuration settings, which can be overwritten at the command line or in a script file
-    redfishConfig = RedfishConfig('redfishAPI.json')
+    redfishConfig = RedfishConfig(config.defaultConfigFile if args.config == None else args.config)
 
     if (args.tracelevel != None):
         redfishConfig.update('trace', args.tracelevel)
@@ -68,5 +72,10 @@ if __name__ == '__main__':
     else:
         # Run script mode
         returncode = RedfishScript.execute_script(redfishConfig, args.scriptfile)
+
+    # Before existing, delete any current active session
+    sessionId = Label.decode(config.sessionIdVariable)
+    if sessionId is not None:
+        RedfishCommand.execute(redfishConfig, f'delete sessions {sessionId}')
 
     sys.exit(returncode)

@@ -1,5 +1,15 @@
 # Change Log
 
+## [1.1.4] - 2020-01-10
+- Added new command 'delete sessions $sessionid' so that a script can automatically delete the current
+  session and not leave it active after the python redfishAPI exits.
+- Added a new simple Label object to encode and decode interal variables, such as $sessionid.
+- Added new redfishAPI command line option to pass in a user config file. The user can now call
+  python redfishAPI --config myconfig.json or -c myconfig.json and not have to modify the checked in
+  version. This also applies to python redfishUnittest --config myconfig.json or -c myconfig.json.
+- Added logic to automatically delete the current session before redfishAPI exits.
+- Modified urlAccess to handle a byte stream
+- Updated the unittest tests to only create a single session, and initialize system data only once.
 
 ## [1.1.3] - 2019-12-23
 - Corrected the 'show fans' command since the reported JSON data was modified

@@ -29,69 +29,73 @@ class TestSystem:
     #   drives[0] = { 'inUse': inUse, 'number': id, 'serial': serial_number, 'speed': speed, 'capacity': capacity, 'size': block_size, 'state': state, 'health': health]
     #   drives[N] = { 'inUse': inUse, 'number': id, 'serial': serial_number, 'speed': speed, 'capacity': capacity, 'size': block_size, 'state': state, 'health': health]
     drives = []
+    successfulInitialization = False
 
     #
     # Initialize an array of disks by using the Redfish API.
     #
     @classmethod
-    def initialize_drives(cls, testObject, redfishConfig):
+    def initialize_drives(cls, redfishConfig):
 
         cls.drives = []
         url = config.drives
+        cls.successfulInitialization = False
 
-        # GET DriveCollection
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', True, None)
-        testObject.assertTrue(link.valid, 'Link valid for URL ({})'.format(url))
-        testObject.assertIsNotNone(link.jsonData, 'JSON data valid for URL ({})'.format(url))
+        try:
+            # GET DriveCollection
+            link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', True, None)
+    
+            # Retrieve a listing of all drives for this system
+            membersCount = JsonExtract.get_value(link.jsonData, None, 'Members@odata.count', 1)
+            totalDrives = int(membersCount)
+            odataIds = JsonExtract.get_values(link.jsonData, "@odata.id")
+            
+            Trace.log(TraceLevel.INFO, '++ initialize_drives: membersCount={}, totalDrives={}'.format(membersCount, totalDrives))
 
-        # Retrieve a listing of all drives for this system
-        membersCount = JsonExtract.get_value(link.jsonData, None, 'Members@odata.count', 1)
-        totalDrives = int(membersCount)
-        odataIds = JsonExtract.get_values(link.jsonData, "@odata.id")
-        
-        Trace.log(TraceLevel.INFO, '++ initialize_drives: membersCount={}, totalDrives={}'.format(membersCount, totalDrives))
+            # Don't include the main @odata.id for the Drive Collection, all others are Drives/#.#
+            odataIds.remove('/redfish/v1/StorageServices/S1/Drives')
 
-        # Don't include the main @odata.id for the Drive Collection, all others are Drives/#.#
-        odataIds.remove('/redfish/v1/StorageServices/S1/Drives')
+            for driveUrl in odataIds: 
+                link = UrlAccess.process_request(redfishConfig, UrlStatus(driveUrl), 'GET', True, None)
+    
+                drive_number = JsonExtract.get_value(link.jsonData, None, 'Id', 1)
+                serial_number = JsonExtract.get_value(link.jsonData, None, 'SerialNumber', 1)
+                speed = JsonExtract.get_value(link.jsonData, None, 'NegotiatedSpeedGbs', 1)
+                capacity = JsonExtract.get_value(link.jsonData, None, 'CapacityBytes', 1)
+                block_size = JsonExtract.get_value(link.jsonData, None, 'BlockSizeBytes', 1)
+                state = JsonExtract.get_value(link.jsonData, 'Status', 'State', 1)
+                health = JsonExtract.get_value(link.jsonData, 'Status', 'Health', 1)
+    
+                # If the drive is linked to one or more volumes, it is already in use.
+                volumes = JsonExtract.get_value(link.jsonData, 'Volumes', '@odata.id', 1)
+                inUse = False
+                if volumes is not None:
+                    inUse = True
+    
+                driveInfo = {'inUse': inUse, 'number': drive_number, 'serial': serial_number, 'speed': speed, 'capacity': capacity, 'size': block_size, 'state': state, 'health': health}
+                Trace.log(TraceLevel.VERBOSE, '++ initialize_drives: {0: >6} / {1} - {2: >24}'.format(drive_number, inUse, serial_number))
+                cls.drives.append(driveInfo)
 
-        testObject.assertGreater(totalDrives, 0, 'Drives Members@odata.count ({})'.format(membersCount))
-        testObject.assertGreater(len(odataIds), 0, 'Drives @odata.id length error ({})'.format(len(odataIds)))
-        testObject.assertEqual(totalDrives, len(odataIds), 'Drives Members vs @odata.id error ({}, {})'.format(totalDrives, len(odataIds)))
+                cls.drives.sort(key=lambda k: k['number'], reverse=False)
 
-        for driveUrl in odataIds: 
-            link = UrlAccess.process_request(redfishConfig, UrlStatus(driveUrl), 'GET', True, None)
-            testObject.assertTrue(link.valid, 'Drive link valid for URL ({})'.format(driveUrl))
+                cls.successfulInitialization = True
 
-            drive_number = JsonExtract.get_value(link.jsonData, None, 'Id', 1)
-            serial_number = JsonExtract.get_value(link.jsonData, None, 'SerialNumber', 1)
-            speed = JsonExtract.get_value(link.jsonData, None, 'NegotiatedSpeedGbs', 1)
-            capacity = JsonExtract.get_value(link.jsonData, None, 'CapacityBytes', 1)
-            block_size = JsonExtract.get_value(link.jsonData, None, 'BlockSizeBytes', 1)
-            state = JsonExtract.get_value(link.jsonData, 'Status', 'State', 1)
-            health = JsonExtract.get_value(link.jsonData, 'Status', 'Health', 1)
-
-            # If the drive is linked to one or more volumes, it is already in use.
-            volumes = JsonExtract.get_value(link.jsonData, 'Volumes', '@odata.id', 1)
-            inUse = False
-            if volumes is not None:
-                inUse = True
-
-            driveInfo = {'inUse': inUse, 'number': drive_number, 'serial': serial_number, 'speed': speed, 'capacity': capacity, 'size': block_size, 'state': state, 'health': health}
-            Trace.log(TraceLevel.VERBOSE, '++ initialize_drives: {0: >6} / {1} - {2: >24}'.format(drive_number, inUse, serial_number))
-            cls.drives.append(driveInfo)
-
-        cls.drives.sort(key=lambda k: k['number'], reverse=False)
+        except Exception as e:
+            Trace.log(TraceLevel.INFO, '-- Unable to initialize drives, exception: {}'.format(e))
+            cls.successfulInitialization = False
 
         Trace.log(TraceLevel.DEBUG, '++ initialize_disks: {} drives added'.format(len(cls.drives)))
         Trace.log(TraceLevel.TRACE, '@@ drives: {}'.format(cls.drives))
+
+        return cls.successfulInitialization
 
     #
     # Initialize all needed system information. This must be called once at
     # before testing begins.
     #
     @classmethod
-    def initialize_system(cls, testObject, redfishConfig):
-        cls.initialize_drives(testObject, redfishConfig)
+    def initialize_system(cls, redfishConfig):
+        return cls.initialize_drives(redfishConfig)
 
     #
     # Returns the next available drive from the system information table.

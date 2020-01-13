@@ -13,13 +13,15 @@
 # ******************************************************************************************
 #
 
-import config
-import unittest
+from core.label import Label
 from core.redfishCommand import RedfishCommand
 from core.redfishConfig import RedfishConfig
+from core.trace import TraceLevel, Trace
 from tests.testSupport import TestSupport
 from tests.testSystem import TestSystem
-
+import config
+import unittest
+import sys
 
 ################################################################################
 # TestSupport
@@ -27,13 +29,26 @@ from tests.testSystem import TestSystem
 
 class TestVolumes(unittest.TestCase):
 
-    def setUp(self):
-        self.redfishConfig = RedfishConfig(config.defaultConfigFile)
-        RedfishCommand.execute(self.redfishConfig, 'create session')
-        TestSystem.initialize_system(self, self.redfishConfig)
+    redfishConfig = None
+    systemInitialized = False
+
+    @classmethod
+    def setUpClass(cls):
+        cls.redfishConfig = RedfishConfig(Label.decode(config.sessionConfig))
+        RedfishCommand.execute(cls.redfishConfig, 'create session')
+        cls.systemInitialized = TestSystem.initialize_system(cls.redfishConfig)
 
     def test_create_volume_1(self):
+        Trace.log(TraceLevel.VERBOSE, '>> Run {}.{}:{}'.format(type(self).__name__, sys._getframe(  ).f_code.co_name, sys._getframe(  ).f_lineno))
+        self.assertTrue(self.systemInitialized, 'System could not be initialized ({})'.format(self.systemInitialized))
         TestSupport.create_diskgroup_paged(self, self.redfishConfig, 'dgA01', 'A', 4, 'raid5')
         TestSupport.create_volume_paged(self, self.redfishConfig, 'TestVolume01', 'A', 10000000)
         TestSupport.delete_volume(self, self.redfishConfig, 'TestVolume01')
         TestSupport.delete_pool(self, self.redfishConfig, 'A')
+
+    @classmethod
+    def tearDownClass(cls):
+        # Delete any current active session
+        sessionId = Label.decode(config.sessionIdVariable)
+        if sessionId is not None:
+            RedfishCommand.execute(cls.redfishConfig, f'delete sessions {sessionId}')

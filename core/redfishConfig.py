@@ -32,7 +32,7 @@ from version import __version__
 class RedfishConfig:
 
     dictionary = OrderedDict()
-    sessionKey = ''
+    sessionKey = None
     sessionValid = False
 
     @classmethod
