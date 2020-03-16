@@ -8,47 +8,55 @@
 #
 # ******************************************************************************************
 #
-# delete_pools.py 
+# show_system.py 
 #
 # ******************************************************************************************
 #
-# @command delete pools
+# @command show system
 #
-# @synopsis Delete one or more comma-separated pools by name or serial number
+# @synopsis Display all storage groups, volumes, pools, and disk groups.
 #
 # @description-start
 #
-# 'delete pools A'                                - to delete pool named 'A'
-# 'delete pools 00c0ff5112460000f75a925d01000000' - to delete pool with serial number '00c0ff5112460000f75a925d01000000'
-# 'delete pools A,B                               - to delete pools A and B
+# 'show system' will display all storage groups, volumes, pools, and disk groups.
 #
 # @description-end
 #
 
 from commands.commandHandlerBase import CommandHandlerBase
+from core.label import Label
+from core.redfishCommand import RedfishCommand
 from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
+import config
+
 
 ################################################################################
 # CommandHandler
 ################################################################################
 class CommandHandler(CommandHandlerBase):
-    """Command - delete pools"""
-    name = 'delete pools'
-    ids = []
+    """Command - purge system"""
+    name = 'purge system'
 
     @classmethod
     def prepare_url(self, redfishConfig, command):
-        Trace.log(TraceLevel.DEBUG, '++ delete pools command:  {}'.format(command))
-        self.ids = super().get_id_list(self, command, 2)
-        return ('')
+        return (None)
 
     @classmethod
     def process_json(self, redfishConfig, url):
-        Trace.log(TraceLevel.DEBUG, '++ delete pools ids:  {}'.format(len(self.ids)))
-        super().delete_id_list(self, redfishConfig, RedfishSystem.get_uri(redfishConfig, 'StoragePools'), self.ids)
+
+        # Don't attempt to purge if a session is not active
+        sessionId = Label.decode(config.sessionIdVariable)
+        if sessionId is None:
+            Trace.log(TraceLevel.INFO, '-- A valid session ({}) was not found!'.format(sessionId))
+            return
+
+        RedfishCommand.execute(redfishConfig, 'show storagegroups', True)
+        RedfishCommand.execute(redfishConfig, 'show volumes', True)
+        RedfishCommand.execute(redfishConfig, 'show pools', True)
+        RedfishCommand.execute(redfishConfig, 'show diskgroups', True)
 
     @classmethod
     def display_results(self, redfishConfig):
         # Nothing to do in this case
-        Trace.log(TraceLevel.DEBUG, ' ')
+        print(' ')

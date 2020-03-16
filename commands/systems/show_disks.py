@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -55,8 +55,8 @@
 # @description-end
 #
 
-import config
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -111,10 +111,10 @@ class CommandHandler(CommandHandlerBase):
     disks = []
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.disks = []
-        return (config.drives)
-        
+        return (RedfishSystem.get_uri(redfishConfig, 'Drives'))
+
     @classmethod
     def process_json(self, redfishConfig, url):
 
@@ -123,7 +123,7 @@ class CommandHandler(CommandHandlerBase):
         self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
         
         # Retrieve a listing of all drives for this system
-        if (self.link.valid):
+        if (self.link.valid and self.link.jsonData):
             totalDrives = 0 
             createdDrives = 0
             driveUrls = []
@@ -150,7 +150,10 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-        # self.print_banner(self)
+
+        if (len(self.disks) == 0):
+            return
+
         if (self.link.valid == False):
             print('')
             print(' [] URL        : {}'.format(self.link.url))

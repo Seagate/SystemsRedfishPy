@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -31,8 +31,8 @@
 # @description-end
 #
 
-import config
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -55,7 +55,7 @@ class StorageGroupInformation:
     Health = ''
     ClassofService = ''
 
-    def init_from_url(self, redfishConfig, url):
+    def init_from_url(self, redfishConfig, url, cos):
 
         isDiskGroup = False
         Trace.log(TraceLevel.DEBUG, '   ++ Storage Group init from URL {}'.format(url))
@@ -104,7 +104,7 @@ class StorageGroupInformation:
                 self.Health = status['Health']
                 
                 dcos = link.jsonData['DefaultClassOfService']
-                self.ClassofService = dcos['@odata.id'].replace(config.classesOfService, '')
+                self.ClassofService = dcos['@odata.id'].replace(cos, '')
                 
         return (isDiskGroup)
 
@@ -118,12 +118,15 @@ class CommandHandler(CommandHandlerBase):
     link = None
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.groups = []
-        return (config.storagePools)
+        return (RedfishSystem.get_uri(redfishConfig, 'StoragePools'))
 
     @classmethod
     def process_json(self, redfishConfig, url):
+
+        if (not url):
+            return
 
         # GET list of pools and disk groups
         self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
@@ -131,11 +134,12 @@ class CommandHandler(CommandHandlerBase):
         # Retrieve a listing of all disk groups for this system
         # Note: Version 1.2 returns storage groups and pools, use Description to determine Pool vs DiskGroup
 
-        if (self.link.valid):
+        if (self.link.valid and self.link.jsonData != None):
 
             total = 0 
             created = 0
             urls = []
+            cos = RedfishSystem.get_uri(redfishConfig, 'ClassesOfService')
             
             # Create a list of all the pool URLs
             for (key, value) in self.link.jsonData.items():
@@ -156,7 +160,7 @@ class CommandHandler(CommandHandlerBase):
                 for i in range(len(urls)):
                     Trace.log(TraceLevel.VERBOSE, '... GET Storage Group data ({0: >3}) of ({1: >3}) url ({2})'.format(i, len(urls), urls[i]))
                     group = StorageGroupInformation()
-                    if (group.init_from_url(redfishConfig, urls[i])):
+                    if (group.init_from_url(redfishConfig, urls[i], cos)):
                         self.groups.append(group)
             elif (created > 0):
                 Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Information mismatch: Members@odata.count ({}), Members {}'.format(total, created))
@@ -164,7 +168,10 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-        #self.print_banner(self)
+
+        if (self.link == None):
+            return 
+
         if (self.link.valid == False):
             print('')
             print(' [] URL        : {}'.format(self.link.url))

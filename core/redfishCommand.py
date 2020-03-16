@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -33,8 +33,12 @@ def dynamic_import(module):
 class RedfishCommand:
 
     @classmethod
-    def execute(cls, redfishConfig, command):
-        
+    def execute(cls, redfishConfig, command, echo = False):
+
+        if (echo):
+            Trace.log(TraceLevel.INFO, ' ')
+            Trace.log(TraceLevel.INFO, '[] {}'.format(command))
+
         Trace.log(TraceLevel.TRACE, '   -- Run command: ({})...'.format(command))
         startTime = time.time()
         
@@ -70,7 +74,7 @@ class RedfishCommand:
             Trace.log(TraceLevel.DEBUG, '++ input command handler ({})'.format(handlerName))
             handler = dynamic_import(handlerName)
 
-            url = handler.CommandHandler().prepare_url(command)
+            url = handler.CommandHandler().prepare_url(redfishConfig, command)
             Trace.log(TraceLevel.DEBUG, '      ++ URL: {}'.format(url))
     
             handler.CommandHandler().process_json(redfishConfig, url)

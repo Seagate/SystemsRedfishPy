@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -14,9 +14,9 @@
 #
 
 from core.label import Label
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
-import json
 
 ################################################################################
 # CommandHandlerBase
@@ -51,6 +51,36 @@ class CommandHandlerBase():
         return (ids)
 
     #
+    # Return a list of command-separated ids by requesting a collection
+    # 
+    def get_members_list(self, redfishConfig, collection, qualifier = ''):
+
+        ids = []
+        Trace.log(TraceLevel.DEBUG, '   ++ get_members_list from Redfish service: collection={}'.format(collection))
+
+        itemUrl = RedfishSystem.get_uri(redfishConfig, collection)
+        if (not itemUrl):
+            return 
+
+        Trace.log(TraceLevel.TRACE, '  Checking ({})'.format(itemUrl))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(itemUrl))
+        if (link.valid and link.jsonData is not None):
+            if ('Members' in link.jsonData and 'Members@odata.count' in link.jsonData and int(link.jsonData['Members@odata.count']) > 0):
+                members =  link.jsonData['Members']
+                for member in members:
+                    if ('@odata.id' in member):
+                        item = member['@odata.id']
+                        words = item.split('/')
+                        if (len(words) > 1):
+                            itemId =  words[len(words) - 1]
+                            if (qualifier == '' or itemId in qualifier):
+                                Trace.log(TraceLevel.TRACE, '      -- adding ({})'.format(itemId))
+                                ids.append(itemId)
+
+        Trace.log(TraceLevel.DEBUG, '      -- get_members_list returning ({})'.format(ids))
+        return (ids)
+
+    #
     # Execute a DELETE action for a list of ids.
     # The caller must pass in the baseUrl to be used for all DELETE calls.
     # This routine returns a count of successful DELETE calls.
@@ -63,11 +93,14 @@ class CommandHandlerBase():
         
         if (len(ids) >= 1):
             Trace.log(TraceLevel.INFO, ' ')
-            for i in range(len(self.ids)):
-                url = startUrl + Label.decode(self.ids[i], self.ids[i], 0)
+            for i in range(len(ids)):
+                url = startUrl + Label.decode(ids[i], ids[i], 0)
                 Trace.log(TraceLevel.INFO, '[] DELETE ({0})'.format(url))
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'DELETE', True)
                 Trace.log(TraceLevel.INFO, '   -- status={}, reason={}'.format(link.urlStatus, link.urlReason))
+                if (redfishConfig.get_bool('dumphttpdata')):
+                    Trace.log(TraceLevel.INFO, '   -- httpData {}'.format(link.jsonData))
+                
                 if (link.urlStatus == 200):
                     successes += 1
                 else:

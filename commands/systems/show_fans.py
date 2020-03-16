@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -23,18 +23,18 @@
 # Example:
 #
 # (redfish) show fans
-# 
-#     SensorName       Reading    Health  Enclosure
-#   -----------------------------------------------
-#          Fan 0          6720        OK          0
-#          Fan 1          6660        OK          0
-#          Fan 2          6840        OK          0
-#          Fan 3          6720        OK          0
+#
+#          Chassis    SensorName       Reading    Health
+#   ----------------------------------------------------
+#      enclosure_0         Fan 0          7680        OK
+#      enclosure_0         Fan 1          7380        OK
+#      enclosure_0         Fan 2          7620        OK
+#      enclosure_0         Fan 3          7500        OK 
 #
 # @description-end
 #
-import config
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -44,7 +44,7 @@ from core.urlAccess import UrlAccess, UrlStatus
 class FanInformation:
     """Fan Information"""
 
-    Enclosure = 0
+    Enclosure = ''
     MemberId = ''
     Reading = 0
     Name = ''
@@ -69,55 +69,62 @@ class CommandHandler(CommandHandlerBase):
     readings = []
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.readings = []
-        return (config.thermal)
+        return (RedfishSystem.get_uri(redfishConfig, 'Thermals'))
         
     @classmethod
     def process_json(self, redfishConfig, url):
 
-        # GET DriveCollection
-        Trace.log(TraceLevel.VERBOSE, '++ GET collection from ({})'.format(url))
-        self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
+        # GET Thermal Collection
+        for thermalUrl in url:
+            Trace.log(TraceLevel.DEBUG, '++ GET collection from ({})'.format(thermalUrl))
+            self.link = UrlAccess.process_request(redfishConfig, UrlStatus(thermalUrl))
         
-        # Retrieve a listing of all fans for this system
-        if (self.link.valid):
-            
-            # Create a list of all the URLs
-            for (key, value) in self.link.jsonData.items():
-                Trace.log(TraceLevel.TRACE, '   ++ Fans collection: key={} value={}'.format(key, value))
-                if (key == 'Fans'):
-                    for link in value:
-                        Trace.log(TraceLevel.TRACE, '   ++ process item {}'.format(link['@odata.id']))
+            # Retrieve a listing of all fans for this system
+            if (self.link.valid):
+                
+                # Create a list of all the URLs
+                for (key, value) in self.link.jsonData.items():
+                    Trace.log(TraceLevel.TRACE, '   ++ Fans collection: key={} value={}'.format(key, value))
+                    if (key == 'Fans'):
+                        for link in value:
+                            Trace.log(TraceLevel.DEBUG, '   ++ process item {}'.format(link['@odata.id']))
 
-                        MemberId = link['MemberId']
-                        Reading = str(link['Reading'])
-                        Name = link['Name']
-                        statusDict = link['Status']
-                        StatusState = statusDict['State']
-                        StatusHealth = statusDict['Health']
-                        
-                        item = FanInformation(0, MemberId, Reading, Name, StatusState, StatusHealth)
-                        self.readings.append(item)
+                            words = link['@odata.id'].split('/')
+                            if (len(words) >= 4):
+                                enclosure = words[4]
+                            else:
+                                enclosure = 'unknown'
+    
+                            MemberId = link['MemberId']
+                            Reading = str(link['Reading'])
+                            Name = link['Name']
+                            statusDict = link['Status']
+                            StatusState = statusDict['State']
+                            StatusHealth = statusDict['Health']
+                            
+                            item = FanInformation(enclosure, MemberId, Reading, Name, StatusState, StatusHealth)
+                            self.readings.append(item)
 
     @classmethod
     def display_results(self, redfishConfig):
-        # self.print_banner(self)
-        if (self.link.valid == False):
-            print('')
-            print(' [] URL        : {}'.format(self.link.url))
-            print(' [] Status     : {}'.format(self.link.urlStatus))
-            print(' [] Reason     : {}'.format(self.link.urlReason))
-
-        else:
-            print('')
-            print('    SensorName       Reading    Health  Enclosure')
-            print('  -----------------------------------------------')
-            #               Fan 0     7440 RPM        OK           0
-            for i in range(len(self.readings)):
-
-                print('  {0: >12}  {1: >12}  {2: >8}  {3: >9}'.format(
-                    self.readings[i].Name,
-                    self.readings[i].Reading,
-                    self.readings[i].StatusHealth,
-                    self.readings[i].Enclosure))
+        if (self.link != None):
+            if (self.link.valid == False):
+                print('')
+                print(' [] URL        : {}'.format(self.link.url))
+                print(' [] Status     : {}'.format(self.link.urlStatus))
+                print(' [] Reason     : {}'.format(self.link.urlReason))
+    
+            else:
+                print('')
+                print('         Chassis    SensorName       Reading    Health')
+                print('  ----------------------------------------------------')
+                #           enclosure_0         Fan 0      7440 RPM        OK
+                for i in range(len(self.readings)):
+    
+                    print('  {0: >14}  {1: >12}  {2: >12}  {3: >8}'.format(
+                        self.readings[i].Enclosure,
+                        self.readings[i].Name,
+                        self.readings[i].Reading,
+                        self.readings[i].StatusHealth))

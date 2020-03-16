@@ -1,15 +1,18 @@
 {
-    "version": "1.1.0",
+    "configurationfile": "redfishAPI.json",
+    "version": "1.1.5",
     "http": "https",
     "mcip": "",
     "username": "",
     "password": "",
     "annotate": "yes",
     "urltimeout": "30",
-    "trace": "4",
+    "linktestdelay": 0,
     "dumpjsondata": "0",
     "dumppostdata": "0",
+    "trace": "4",
+    "brand": "systems",
     "showelapsed": "0",
     "certificatecheck": "False",
-    "brand": "systems"
+    "entertoexit": "True"
 }

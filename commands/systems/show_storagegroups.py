@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -31,8 +31,8 @@
 # @description-end
 #
 
-import config
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -66,6 +66,8 @@ class StorageGroupInformation:
         Trace.log(TraceLevel.DEBUG, '   ++ Storage Group init from URL {}'.format(url))
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
+        endpointGroupsUrl = RedfishSystem.get_uri(redfishConfig, 'EndpointGroups')
+
         if (link.valid):
             Trace.log(TraceLevel.VERBOSE, '   ++ Storage Group: ({}, {})'.format(link.jsonData['Id'], link.jsonData['Name']))
 
@@ -81,21 +83,21 @@ class StorageGroupInformation:
                 ceg = link.jsonData['ClientEndpointGroups']
                 for i in range(len(ceg)):
                     # Example: "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/500605b00ab61310"
-                    url = ceg[i]['@odata.id'].replace(config.endpointGroups, '')
+                    url = ceg[i]['@odata.id'].replace(endpointGroupsUrl, '')
                     self.ClientEndpointGroups.append(url)
 
                 self.ServerEndpointGroups = []
                 seg = link.jsonData['ServerEndpointGroups']
                 for i in range(len(seg)):
                     # Example: "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/500605b00ab61310"
-                    url = seg[i]['@odata.id'].replace(config.endpointGroups, '')
+                    url = seg[i]['@odata.id'].replace(endpointGroupsUrl, '')
                     self.ServerEndpointGroups.append(url)
 
                 mv = link.jsonData['MappedVolumes']
                 for i in range(len(mv)):
                     # Example: "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/500605b00ab61310"
                     self.LogicalUnitNumber = mv[i]['LogicalUnitNumber']
-                    self.Volume = mv[i]['Volume']['@odata.id'].replace(config.volumes, '')
+                    self.Volume = mv[i]['Volume']['@odata.id'].replace(RedfishSystem.get_uri(redfishConfig, 'Volumes'), '')
 
                 status = link.jsonData['Status']
                 self.State = status['State']
@@ -120,9 +122,9 @@ class CommandHandler(CommandHandlerBase):
     link = None
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.groups = []
-        return (config.storageGroups)
+        return (RedfishSystem.get_uri(redfishConfig, 'StorageGroups'))
 
     @classmethod
     def process_json(self, redfishConfig, url):
@@ -132,7 +134,7 @@ class CommandHandler(CommandHandlerBase):
 
         # Retrieve a listing of all storage groups for this system
 
-        if (self.link.valid):
+        if (self.link.valid and self.link.jsonData):
 
             total = 0 
             created = 0
@@ -165,7 +167,9 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-        #self.print_banner(self)
+        if (len(self.groups) == 0):
+            return 
+
         if (self.link.valid == False):
             print('')
             print(' [] URL        : {}'.format(self.link.url))

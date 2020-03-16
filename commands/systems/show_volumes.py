@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -32,8 +32,8 @@
 # @description-end
 #
 
-import config
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -97,7 +97,7 @@ class VolumeInformation:
             # This version assumes an array of one pool
             item = link.jsonData['CapacitySources'][0]
             ppools = item['ProvidingPools']
-            self.Pool = ppools[0]['@odata.id']
+            self.Pool = ppools['Members'][0]['@odata.id']
 
 
 ################################################################################
@@ -110,9 +110,9 @@ class CommandHandler(CommandHandlerBase):
     volumes = []
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.volumes = []
-        return (config.volumes)
+        return (RedfishSystem.get_uri(redfishConfig, 'Volumes'))
 
     @classmethod
     def process_json(self, redfishConfig, url):
@@ -121,7 +121,7 @@ class CommandHandler(CommandHandlerBase):
         self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
         
         # Retrieve a listing of all volumes for this system
-        if (self.link.valid):
+        if (self.link.valid and self.link.jsonData is not None):
 
             totalVolumes = 0 
             createdVolumes = 0
@@ -153,7 +153,7 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-        # self.print_banner(self)
+
         if (self.link.valid == False):
             print('')
             print(' [] URL        : {}'.format(self.link.url))
@@ -167,16 +167,15 @@ class CommandHandler(CommandHandlerBase):
                 #      TestVolume1  00c0ff51124600006358975d01000000         146800640/99996401664           99   Read,Write       true    Enabled      OK        /redfish/v1/StorageServices/S1/StoragePools/A
             print('            Name                      SerialNumber            Consumed/Allocated  Remaining %       Access  Encrypted      State  Health                                      CapacitySources')
             print(' --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
-            
-            if (self.volumes != None):
-                for i in range(len(self.volumes)):
-                    print('{0: >16}  {1: >31}  {2: >28}  {3: >11}  {4: >11}  {5: >9}  {6: >9}  {7: >6}  {8: >51}'.format(
-                        self.volumes[i].Name,
-                        self.volumes[i].SerialNumber,
-                        str(self.volumes[i].ConsumedBytes) + '/' + str(self.volumes[i].AllocatedBytes),
-                        self.volumes[i].RemainingCapacityPercent,
-                        self.volumes[i].AccessCapabilities,
-                        self.volumes[i].Encrypted,
-                        self.volumes[i].State,
-                        self.volumes[i].Health,
-                        self.volumes[i].Pool))
+
+            for i in range(len(self.volumes)):
+                print('{0: >16}  {1: >31}  {2: >28}  {3: >11}  {4: >11}  {5: >9}  {6: >9}  {7: >6}  {8: >51}'.format(
+                    self.volumes[i].Name,
+                    self.volumes[i].SerialNumber,
+                    str(self.volumes[i].ConsumedBytes) + '/' + str(self.volumes[i].AllocatedBytes),
+                    self.volumes[i].RemainingCapacityPercent,
+                    self.volumes[i].AccessCapabilities,
+                    self.volumes[i].Encrypted,
+                    self.volumes[i].State,
+                    self.volumes[i].Health,
+                    self.volumes[i].Pool))

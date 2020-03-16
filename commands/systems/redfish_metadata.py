@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -24,7 +24,7 @@
 # 
 # (redfish) redfish metadata
 # Redfish Metadata
-# ---------------------
+# ---------------------------------------------------------------------------------------------------------
 # <?xml version="1.0" ?>
 # <edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
 #     <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/ServiceRoot_v1.xml">
@@ -42,9 +42,9 @@
 # @description-end
 #
 
-import config
 import xml.dom.minidom
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -57,9 +57,10 @@ class CommandHandler(CommandHandlerBase):
     name = 'redfish metadata'
     link = None
 
-    def prepare_url(self, command):
-        return (config.metadata)
-        
+    def prepare_url(self, redfishConfig, command):
+        RedfishSystem.initialize_service_root_uris(redfishConfig)
+        return (RedfishSystem.get_uri(redfishConfig, 'metadata'))
+
     @classmethod
     def process_json(self, redfishConfig, url):
 
@@ -69,7 +70,7 @@ class CommandHandler(CommandHandlerBase):
     def display_results(self, redfishConfig):
 
         print('Redfish Metadata')
-        print('---------------------')
+        print('---------------------------------------------------------------------------------------------------------')
         
         if (self.link.valid):
             dom = xml.dom.minidom.parseString(self.link.urlData)

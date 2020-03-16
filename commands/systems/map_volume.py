@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -35,11 +35,11 @@
 # @description-end
 #
 
-import config
 import json
 from commands.commandHandlerBase import CommandHandlerBase
 from commands.storagegroup import CreateStorageGroupRequestProperties
 from core.jsonBuilder import JsonBuilder, JsonType
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -53,9 +53,9 @@ class CommandHandler(CommandHandlerBase):
     command = ''
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.command = command
-        return (config.storageGroups)
+        return (RedfishSystem.get_uri(redfishConfig, 'StorageGroups'))
 
     @classmethod
     def process_json(self, redfishConfig, url):
@@ -68,7 +68,7 @@ class CommandHandler(CommandHandlerBase):
             Trace.log(TraceLevel.ERROR, 'The storagegroup parameter is required, parse results (storagegroup={})...'.format(storagegroup))
             return
 
-        jsonRequest = CreateStorageGroupRequestProperties(self.command, False)
+        jsonRequest = CreateStorageGroupRequestProperties(redfishConfig, self.command, False)
 
         if jsonRequest is not None:
             url = url + storagegroup

@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -20,6 +20,7 @@ import json
 import socket
 import ssl
 import sys
+import time
 import traceback
 import urllib.request, urllib.error
 
@@ -36,6 +37,7 @@ class UrlStatus():
     sessionKey = ''
     checked = False
     valid = False
+    elapsedMicroseconds = 0
 
     def __init__(self, url):
         self.url = url
@@ -54,7 +56,7 @@ class UrlStatus():
         if (status == 200 or status == 201):
             self.valid = True
 
-        Trace.log(TraceLevel.DEBUG, '   ++ UrlStatus(update_status): status={} reason={} valid={}'.format(status, reason, self.valid))
+        Trace.log(TraceLevel.TRACE, '   ++ UrlStatus(update_status): status={} reason={} valid={}'.format(status, reason, self.valid))
 
 ################################################################################
 # UrlAccess
@@ -73,11 +75,14 @@ class UrlAccess():
             if (addAuth and redfishConfig.sessionKey is not None):
                 request.add_header('x-auth-token', redfishConfig.sessionKey)
 
+            startTime = time.time()
+            Trace.log(TraceLevel.TRACE, '   >> startTime={}'.format(startTime))
+
             if (data):
                 request.add_header('Content-Type', 'application/json; charset=utf-8')
                 jsondataasbytes = data.encode('utf-8')                
                 request.add_header('Content-Length', len(jsondataasbytes))
-                Trace.log(TraceLevel.DEBUG, '   ++ Content-Length={}'.format(len(jsondataasbytes)))
+                Trace.log(TraceLevel.TRACE, '   ++ Content-Length={}'.format(len(jsondataasbytes)))
                 if (redfishConfig.get_bool('dumppostdata')):
                     Trace.log(TraceLevel.INFO, '[[ POST DATA ({}) ]]'.format(link.url))
                     print(data)
@@ -92,17 +97,25 @@ class UrlAccess():
                 else:
                     link.response = urllib.request.urlopen(request, timeout=redfishConfig.get_urltimeout())
 
-            Trace.log(TraceLevel.DEBUG, '   >> link.response={}'.format(link.response))
-                
+            endTime = time.time()
+            elapsed = (endTime - startTime) * 1000000
+            Trace.log(TraceLevel.TRACE, '   >> endTime={}'.format(endTime))
+            Trace.log(TraceLevel.TRACE, '   >> elapsed={}'.format(elapsed))
+
+            link.elapsedMicroseconds = elapsed
             link.urlData = link.response.read()
-            Trace.log(TraceLevel.DEBUG, '   >> link.urlData={}'.format(link.urlData))
 
             if (link.urlData):
                 try:
-                    link.jsonData = json.loads(link.urlData.decode('utf-8'))
+                    headers = link.response.getheaders()
+                    Trace.log(TraceLevel.TRACE, '@@ headers={}'.format(json.dumps(headers, indent=4)))
+                    contentType = headers[1][1]
+                    if ('json' in contentType):
+                        link.jsonData = json.loads(link.urlData.decode('utf-8'))
 
                 except Exception as inst:
-                    Trace.log(TraceLevel.INFO, '   -- Exception: Trying to convert to JSON data, jsonData={} -- {}'.format(link.jsonData, sys.exc_info()[0], inst))
+                    Trace.log(TraceLevel.INFO, '   -- Exception: Trying to convert to JSON data, url={}'.format(fullUrl))
+                    Trace.log(TraceLevel.INFO, '   -- jsonData={} -- {}'.format(link.jsonData, sys.exc_info()[0], inst))
                     Trace.log(TraceLevel.INFO, '-'*100)
                     Trace.log(TraceLevel.INFO, '   -- urlData={}'.format(link.urlData))
                     Trace.log(TraceLevel.INFO, '-'*100)
@@ -119,10 +132,10 @@ class UrlAccess():
                     Trace.log(TraceLevel.INFO, '[[ JSON DATA END ]]')
 
             link.response.close()
-                
+
         except socket.timeout:
             link.update_status(598, 'socket.timeout')
-            Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): Socket Error {}: {}'.format(link.url, 598, 'socket.timeout'))
+            Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): Socket Error {}: {}'.format(link.url, 598, 'socket.timeout'))
             pass
 
         except urllib.error.URLError as err:
@@ -132,7 +145,7 @@ class UrlAccess():
             errorReason = 'Unknown'
             if hasattr(err,'reason'):
                 errorReason = err.reason
-            Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): URL Error code={} reason={}'.format(link.url, errorCode, errorReason))
+            Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): URL Error code={} reason={}'.format(link.url, errorCode, errorReason))
             link.update_status(errorCode, errorReason)
 
             # Print the contents of the HTTP message response
@@ -141,21 +154,13 @@ class UrlAccess():
                 Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error START  ' + '='*60)
                 errorMessage = err.read()
                 Trace.log(TraceLevel.VERBOSE, '  errorMessage = {}'.format(errorMessage))
-                if (errorMessage != None):
-                    try:
-                        link.jsonData = json.loads(errorMessage.decode('utf-8'))
-                        Trace.log(TraceLevel.INFO, ' -- ErrorMessage:\n{}'.format(json.dumps(link.jsonData, indent=4)))
-                    except Exception as e:
-                        Trace.log(TraceLevel.INFO, '   -- Exception: {}'.format(e))
-                        Trace.log(TraceLevel.INFO, '   -- ErrorMessage: {}'.format(errorMessage))
-                    Trace.log(TraceLevel.VERBOSE, '  No error data in HTTP response'.format())
                 Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
 
             pass
 
         except urllib.error.HTTPError as err:
             link.update_status(err.code, err.reason)
-            Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): HTTP Error {}: {}'.format(link.url, err.code, err.reason))
+            Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): HTTP Error {}: {}'.format(link.url, err.code, err.reason))
             pass
         
         return link

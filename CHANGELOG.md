@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.1.5] - 2020-03-13
+- Added a new configuration variable for the interactive session. The new value is 'entertoexit'. When True,
+  the user can press Enter to exit the shell. When False, the user must type exit or quit.
+- Added a new 'run loop' command to run and time multiple HTTP GET URI operations. Updated urlAccess.py to
+  time and store in UrlStatus a new elapsedMicroseconds value.
+- Corrected the storage of the current version in the JSON config file.
+- Replaced hard-coded URIs with discovered values from the Root Service and beyond.
+- Corrected a typo in the prologue of most files.
+- Added testStorageGroup.py
+- Added new command 'purge system' and 'show system'
+
 ## [1.1.4] - 2020-01-10
 - Added new command 'delete sessions $sessionid' so that a script can automatically delete the current
   session and not leave it active after the python redfishAPI exits.

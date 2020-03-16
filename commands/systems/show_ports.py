@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -34,8 +34,8 @@
 # @description-end
 #
 
-import config
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -109,9 +109,9 @@ class CommandHandler(CommandHandlerBase):
     items = []
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.items = []
-        return (config.endpointGroups)
+        return (RedfishSystem.get_uri(redfishConfig, 'EndpointGroups'))
 
     @classmethod
     def process_json(self, redfishConfig, url):
@@ -120,7 +120,7 @@ class CommandHandler(CommandHandlerBase):
         self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
         
         # Retrieve a listing of all endpoints for this system
-        if (self.link.valid):
+        if (self.link.valid and self.link.jsonData):
             total = 0 
             created = 0
             urls = []
@@ -131,6 +131,7 @@ class CommandHandler(CommandHandlerBase):
                     total = value
                 elif (key == 'Members'):
                     for link in value:
+                        Trace.log(TraceLevel.VERBOSE, '   -- Add url ({})'.format(link['@odata.id']))
                         urls.append(link['@odata.id'])
                         created += 1
 

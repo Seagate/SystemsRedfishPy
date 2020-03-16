@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -26,10 +26,10 @@
 # @description-end
 #
 
-import config
 import json
 from commands.commandHandlerBase import CommandHandlerBase
 from core.jsonBuilder import JsonBuilder, JsonType
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -74,15 +74,18 @@ class CommandHandler(CommandHandlerBase):
     command = ''
   
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.command = command
-        return (config.storagePools)
+        return (RedfishSystem.get_uri(redfishConfig, 'StoragePools'))
 
     @classmethod
     def process_json(self, redfishConfig, url):
 
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '++ Create Disk Group: ({})...'.format(self.command))
+
+        drivesUrl = RedfishSystem.get_uri(redfishConfig, 'Drives')
+        storagePoolsUrl = RedfishSystem.get_uri(redfishConfig, 'StoragePools')
 
         # From the command, build up the required JSON data
         # Example: 'create diskgroup name=dgA01 disks=0.7,0.8 pool=A level=raid1'
@@ -104,11 +107,11 @@ class CommandHandler(CommandHandlerBase):
             if (jsonType is JsonType.ARRAY):
                 for i in range(len(disks)):
                     JsonBuilder.newElement('dict2', JsonType.DICT, True)
-                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.drives + disks[i])
+                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', drivesUrl + disks[i])
                     JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
             else:
                 JsonBuilder.newElement('dict2', JsonType.DICT, True)
-                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.drives + disks)
+                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', drivesUrl + disks)
                 JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
 
             JsonBuilder.addElement('dict', JsonType.DICT, 'ProvidingDrives', JsonBuilder.getElement('array'))
@@ -122,11 +125,11 @@ class CommandHandler(CommandHandlerBase):
             if (jsonType is JsonType.ARRAY):
                 for i in range(len(pool)):
                     JsonBuilder.newElement('dict2', JsonType.DICT, True)
-                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.storagePools + pool[i])
+                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', storagePoolsUrl + pool[i])
                     JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
             else:
                 JsonBuilder.newElement('dict2', JsonType.DICT, True)
-                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.storagePools + pool)
+                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', storagePoolsUrl + pool)
                 JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
 
             JsonBuilder.addElement('dict', JsonType.DICT, 'Members', JsonBuilder.getElement('array'))
@@ -136,7 +139,7 @@ class CommandHandler(CommandHandlerBase):
         jsonType, level = JsonBuilder.getValue('level', self.command)
         if (jsonType is not JsonType.NONE):
             JsonBuilder.newElement('dict', JsonType.DICT, True)
-            JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.classesOfService + level.upper())
+            JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', RedfishSystem.get_uri(redfishConfig, 'ClassesOfService') + level.upper())
             JsonBuilder.addElement('main', JsonType.DICT, 'ClassesOfService', JsonBuilder.getElement('dict'))
 
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))

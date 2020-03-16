@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -26,11 +26,10 @@
 # @description-end
 #
 
-import config
 import json
-
 from commands.commandHandlerBase import CommandHandlerBase
 from core.jsonBuilder import JsonBuilder, JsonType
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -67,15 +66,17 @@ class CommandHandler(CommandHandlerBase):
     command = ''
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.command = command
-        return (config.volumes)
+        return (RedfishSystem.get_uri(redfishConfig, 'Volumes'))
 
     @classmethod
     def process_json(self, redfishConfig, url):
 
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '++ Create Volume: ({})...'.format(self.command))
+
+        storagePoolsUrl = RedfishSystem.get_uri(redfishConfig, 'StoragePools')
 
         # From the command, build up the required JSON data
         # Example: create volume name=[name] size=[size] lun=[lun] pool=[A|B] diskgroup=[group]
@@ -101,18 +102,18 @@ class CommandHandler(CommandHandlerBase):
             if (jsonType is JsonType.ARRAY):
                 for i in range(len(pool)):
                     JsonBuilder.newElement('dict2', JsonType.DICT, True)
-                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.storagePools + pool[i])
+                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', storagePoolsUrl + pool[i])
                     JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
             else:
                 JsonBuilder.newElement('dict2', JsonType.DICT, True)
-                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.storagePools + pool)
+                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', storagePoolsUrl + pool)
                 JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
             JsonBuilder.addElement('main', JsonType.DICT, 'CapacitySources', JsonBuilder.getElement('array'))
 
         # Links / ClassOfService
         JsonBuilder.newElement('dict', JsonType.DICT, True)
         JsonBuilder.newElement('dict2', JsonType.DICT, True)
-        JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.classesOfServiceDefault)
+        JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', RedfishSystem.get_uri(redfishConfig, 'ClassesOfServiceDefault'))
         JsonBuilder.addElement('dict', JsonType.DICT, 'ClassOfService', JsonBuilder.getElement('dict2'))
         JsonBuilder.addElement('main', JsonType.DICT, 'Links', JsonBuilder.getElement('dict'))
 

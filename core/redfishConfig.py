@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -50,12 +50,14 @@ class RedfishConfig:
         self.dictionary['annotate'] = 'yes'
         self.dictionary['urltimeout'] = 10
         self.dictionary['linktestdelay'] = 0
+        self.dictionary['dumphttpdata'] = 0
         self.dictionary['dumpjsondata'] = 0
         self.dictionary['dumppostdata'] = 0
         self.dictionary['trace'] = int(TraceLevel.INFO)
         self.dictionary['brand'] = 'systems'
         self.dictionary['showelapsed'] = False
         self.dictionary['certificatecheck'] = False
+        self.dictionary['entertoexit'] = False
         
         Trace.log(TraceLevel.DEBUG, '++ Initilize Redfish API configuration from ({})...'.format(filename))
 
@@ -70,6 +72,8 @@ class RedfishConfig:
                 Trace.log(TraceLevel.DEBUG, '   -- {0: <8} : {1}'.format(key, self.dictionary[key]))
 
         self.update_trace('trace', currentvalue, self.dictionary['trace'])
+        self.dictionary['version'] = __version__
+        self.save()
 
     @classmethod
     def get_value(self, key):
@@ -87,9 +91,12 @@ class RedfishConfig:
     def get_bool(self, key):
         results = False
         try:
-            value = int(self.dictionary[key])
-            if (value == 1):
+            if self.dictionary[key] == 'True':
                 results = True
+            else:
+                value = int(self.dictionary[key])
+                if (value == 1):
+                    results = True
         except:
             results = False
         return results
@@ -114,6 +121,16 @@ class RedfishConfig:
             Trace.setlevel(int(value))
             Trace.log(TraceLevel.DEBUG, '   ++ CFG: \'{}\' updated from ({}) to ({})'.format(parameter, currentvalue, value))
 
+    @classmethod
+    def save(self):
+        configurationfile = self.dictionary['configurationfile']
+        Trace.log(TraceLevel.VERBOSE, '   -- Save Redfish API configuration to ({})'.format(configurationfile))
+        try:
+            with open(configurationfile, "w") as write_file:
+                json.dump(self.dictionary, write_file, indent=4)
+        except:
+            Trace.log(TraceLevel.ERROR, '   -- Unable to save configuration to ({}) - check spelling'.format(configurationfile))
+            pass
 
     @classmethod
     def update(self, parameter, value):
@@ -121,7 +138,7 @@ class RedfishConfig:
         updated = False
         configurationfile = self.dictionary['configurationfile']
 
-        Trace.log(TraceLevel.INFO, '   -- Update Redfish API configuration parameter ({}), value ({}), config file ({})'.format(parameter, value, configurationfile))
+        Trace.log(TraceLevel.VERBOSE, '   -- Update Redfish API configuration parameter ({}), value ({}), config file ({})'.format(parameter, value, configurationfile))
 
         with open(configurationfile, "r") as read_file:
             settings = json.load(read_file)
@@ -137,7 +154,7 @@ class RedfishConfig:
                 Trace.setlevel(value)
             updated = True
         except:
-            Trace.log(TraceLevel.INFO, '   -- Unable to update parameter ({}) - check spelling'.format(parameter))
+            Trace.log(TraceLevel.ERROR, '   -- Unable to update parameter ({}) - check spelling'.format(parameter))
             pass
 
         return (updated)

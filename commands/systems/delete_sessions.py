@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -33,8 +33,8 @@
 # @description-end
 #
 
-import config
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 
 ################################################################################
@@ -46,7 +46,7 @@ class CommandHandler(CommandHandlerBase):
     ids = []
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         Trace.log(TraceLevel.DEBUG, '++ delete sessions: command={}'.format(command))
         self.ids = super().get_id_list(self, command, 2)
         return ('')
@@ -54,7 +54,7 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def process_json(self, redfishConfig, url):
         Trace.log(TraceLevel.DEBUG, '++ delete sessions: ids={}'.format(self.ids))
-        super().delete_id_list(self, redfishConfig, config.sessions, self.ids)
+        super().delete_id_list(self, redfishConfig, RedfishSystem.get_uri(redfishConfig, 'Sessions'), self.ids)
 
     @classmethod
     def display_results(self, redfishConfig):

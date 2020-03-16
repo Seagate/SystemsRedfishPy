@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -33,8 +33,8 @@
 # @description-end
 # 
 
-import config
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -129,9 +129,9 @@ class CommandHandler(CommandHandlerBase):
     link = None
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.pools = []
-        return (config.storagePools)
+        return (RedfishSystem.get_uri(redfishConfig, 'StoragePools'))
 
     @classmethod
     def process_json(self, redfishConfig, url):
@@ -142,7 +142,7 @@ class CommandHandler(CommandHandlerBase):
         # Retrieve a listing of all pools for this system
         # Note: Version 1.2 returns storage groups and pools, use Description to determine Pool vs DiskGroup
 
-        if (self.link.valid):
+        if (self.link.valid and self.link.jsonData):
 
             total = 0 
             created = 0
@@ -175,7 +175,7 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-        #self.print_banner(self)
+
         if (self.link.valid == False):
             print('')
             print(' [] URL        : {}'.format(self.link.url))

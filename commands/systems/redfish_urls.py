@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -47,10 +47,10 @@
 #
 #
 
-import config
 import time
 from collections import OrderedDict
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -130,14 +130,15 @@ class CommandHandler(CommandHandlerBase):
 
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         # Usage: redfish urls [startingurl]
         self.allLinks = {}
         words = command.split(' ')
         if (len(words) > 2):
             self.startingurl = words[2]
         else:
-            self.startingurl = config.redfishV1
+            RedfishSystem.initialize_service_root_uris(redfishConfig)
+            self.startingurl = RedfishSystem.get_uri(redfishConfig, 'Root')
             
         Trace.log(TraceLevel.INFO, '   ++ CommandHandler: redfish urls // starting url ({})'.format(self.startingurl))
 

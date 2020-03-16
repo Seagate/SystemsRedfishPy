@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -13,8 +13,8 @@
 # ******************************************************************************************
 #
 
-import config
 from core.jsonBuilder import JsonBuilder, JsonType
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 
 
@@ -57,10 +57,13 @@ from core.trace import TraceLevel, Trace
 # creating - True when creating a storage group, and False when mapping a volume
 #
 ################################################################################
-def CreateStorageGroupRequestProperties(command, creating):
+def CreateStorageGroupRequestProperties(redfishConfig, command, creating):
 
         Trace.log(TraceLevel.DEBUG, '')
         Trace.log(TraceLevel.DEBUG, '++ Create Storage Group Request: ({})...'.format(command))
+
+        endpointsUrl = RedfishSystem.get_uri(redfishConfig, 'Endpoints')
+        endpointGroupsUrl = RedfishSystem.get_uri(redfishConfig, 'EndpointGroups')
 
         # From the command, build up the required JSON data
         # Examples:
@@ -105,11 +108,11 @@ def CreateStorageGroupRequestProperties(command, creating):
             if (jsonType is JsonType.ARRAY):
                 for i in range(len(ports)):
                     JsonBuilder.newElement('dict', JsonType.DICT, True)
-                    JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpointGroups + ports[i])
+                    JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', endpointGroupsUrl + ports[i])
                     JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
             else:
                 JsonBuilder.newElement('dict', JsonType.DICT, True)
-                JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpointGroups + ports)
+                JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', endpointGroupsUrl + ports)
                 JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
             JsonBuilder.addElement('main', JsonType.DICT, 'ServerEndpointGroups', JsonBuilder.getElement('array'))
 
@@ -120,11 +123,11 @@ def CreateStorageGroupRequestProperties(command, creating):
             if (jsonType is JsonType.ARRAY):
                 for i in range(len(initiators)):
                     JsonBuilder.newElement('dict', JsonType.DICT, True)
-                    JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpoints + initiators[i])
+                    JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', endpointsUrl + initiators[i])
                     JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
             else:
                 JsonBuilder.newElement('dict', JsonType.DICT, True)
-                JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', config.endpoints + initiators)
+                JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', endpointsUrl + initiators)
                 JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
             JsonBuilder.addElement('main', JsonType.DICT, 'ClientEndpointGroups', JsonBuilder.getElement('array'))
 
@@ -146,7 +149,7 @@ def CreateStorageGroupRequestProperties(command, creating):
             JsonBuilder.addElement('dict', jsonType, 'LogicalUnitNumber', lun)
 
         JsonBuilder.newElement('dict2', JsonType.DICT, True)
-        JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', config.volumes + volume)
+        JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', RedfishSystem.get_uri(redfishConfig, 'Volumes') + volume)
         JsonBuilder.addElement('dict', JsonType.DICT, 'Volume', JsonBuilder.getElement('dict2'))
         JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
         JsonBuilder.addElement('main', JsonType.DICT, 'MappedVolumes', JsonBuilder.getElement('array'))

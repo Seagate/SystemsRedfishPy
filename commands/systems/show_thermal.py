@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -24,57 +24,59 @@
 #
 # (redfish) show thermal
 # 
-#                                     SensorName  Reading    Health  Enclosure
-#   --------------------------------------------------------------------------
-#                         CPU Temperature-Ctlr A     46 C        OK          0
-#              Capacitor Pack Temperature-Ctlr A     14 C   Warning          0
-#                    Expander Temperature-Ctlr A     38 C        OK          0
-#             Disk Controller Temperature-Ctlr A     69 C        OK          0
-#             Host Controller Temperature-Ctlr A     60 C        OK          0
-#     SBB IOM Inlet Temperature Loc: upper-IOM A     30 C        OK          0
-#                         CPU Temperature-Ctlr B     47 C        OK          0
-#              Capacitor Pack Temperature-Ctlr B     16 C   Warning          0
-#                    Expander Temperature-Ctlr B     55 C        OK          0
-#             Disk Controller Temperature-Ctlr B     82 C        OK          0
-#             Host Controller Temperature-Ctlr B     61 C        OK          0
-#     SBB IOM Inlet Temperature Loc: lower-IOM B     34 C        OK          0
-#                Temperature Inlet Loc: left-PSU     26 C        OK          0
-#              Temperature Hotspot Loc: left-PSU     29 C        OK          0
-#               Temperature Inlet Loc: right-PSU     27 C        OK          0
-#             Temperature Hotspot Loc: right-PSU     29 C        OK          0
-#                  Ops Panel Ambient Temperature     33 C        OK          0
-#                           Midplane Temperature     25 C        OK          0
-#                                       Disk 0.0     26 C        OK          0
-#                                       Disk 0.1     26 C        OK          0
-#                                       Disk 0.2     25 C        OK          0
-#                                       Disk 0.3     26 C        OK          0
-#                                       Disk 0.4     26 C        OK          0
-#                                       Disk 0.5     25 C        OK          0
-#                                       Disk 0.6     25 C        OK          0
-#                                       Disk 0.9     25 C        OK          0
-#                                      Disk 0.10     25 C        OK          0
-#                                      Disk 0.11     26 C        OK          0
-#                                      Disk 0.12     25 C        OK          0
-#                                      Disk 0.13     26 C        OK          0
-#                                      Disk 0.14     29 C        OK          0
-#                                      Disk 0.15     28 C        OK          0
-#                                      Disk 0.16     25 C        OK          0
-#                                      Disk 0.17     25 C        OK          0
-#                                      Disk 0.18     26 C        OK          0
-#                                      Disk 0.19     26 C        OK          0
-#                                      Disk 0.20     26 C        OK          0
-#                                      Disk 0.21     27 C        OK          0
-#                                      Disk 0.22     27 C        OK          0
-#                                      Disk 0.23     30 C        OK          0
-#                                       Disk 0.7     26 C        OK          0
-#                                       Disk 0.8     24 C        OK          0
+#          Chassis    SensorName       Reading    Health
+#   ----------------------------------------------------
+#      enclosure_0      ctrl_A.1          46.0        OK
+#      enclosure_0      ctrl_A.2          45.0        OK
+#      enclosure_0      ctrl_A.3          30.0        OK
+#      enclosure_0      ctrl_A.4          38.0        OK
+#      enclosure_0      ctrl_A.5          70.0        OK
+#      enclosure_0      ctrl_A.6          63.0        OK
+#      enclosure_0     iom_0.A.0          30.0        OK
+#      enclosure_0      ctrl_B.1          46.0        OK
+#      enclosure_0      ctrl_B.2          42.0        OK
+#      enclosure_0      ctrl_B.3          34.0        OK
+#      enclosure_0      ctrl_B.4          55.0        OK
+#      enclosure_0      ctrl_B.5          82.0        OK
+#      enclosure_0      ctrl_B.6          62.0        OK
+#      enclosure_0     iom_0.B.0          35.0        OK
+#      enclosure_0     psu_0.0.0          28.0        OK
+#      enclosure_0     psu_0.0.1          30.0        OK
+#      enclosure_0     psu_0.1.0          27.0        OK
+#      enclosure_0     psu_0.1.1          30.0        OK
+#      enclosure_0      encl_0.0          33.0        OK
+#      enclosure_0      encl_0.1          25.0        OK
+#      enclosure_0      disk_0.0          29.0        OK
+#      enclosure_0      disk_0.1          29.0        OK
+#      enclosure_0      disk_0.2          28.0        OK
+#      enclosure_0      disk_0.3          29.0        OK
+#      enclosure_0      disk_0.4          28.0        OK
+#      enclosure_0      disk_0.5          29.0        OK
+#      enclosure_0      disk_0.6          29.0        OK
+#      enclosure_0      disk_0.7          28.0        OK
+#      enclosure_0      disk_0.8          28.0        OK
+#      enclosure_0      disk_0.9          28.0        OK
+#      enclosure_0     disk_0.20          27.0        OK
+#      enclosure_0     disk_0.21          28.0        OK
+#      enclosure_0     disk_0.22          29.0        OK
+#      enclosure_0     disk_0.23          30.0        OK
+#      enclosure_0     disk_0.10          28.0        OK
+#      enclosure_0     disk_0.11          29.0        OK
+#      enclosure_0     disk_0.12          29.0        OK
+#      enclosure_0     disk_0.13          28.0        OK
+#      enclosure_0     disk_0.14          32.0        OK
+#      enclosure_0     disk_0.15          31.0        OK
+#      enclosure_0     disk_0.16          28.0        OK
+#      enclosure_0     disk_0.17          28.0        OK
+#      enclosure_0     disk_0.18          28.0        OK
+#      enclosure_0     disk_0.19          28.0        OK
+
 # 
 # @description-end
 #
 
-import config
-
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -111,60 +113,67 @@ class CommandHandler(CommandHandlerBase):
     readings = []
 
     @classmethod
-    def prepare_url(self, command):
+    def prepare_url(self, redfishConfig, command):
         self.readings = []
-        return (config.thermal)
-        
+        return (RedfishSystem.get_uri(redfishConfig, 'Thermals'))
+
     @classmethod
     def process_json(self, redfishConfig, url):
 
-        # GET DriveCollection
-        Trace.log(TraceLevel.VERBOSE, '++ GET Thermal collection from ({})'.format(url))
-        self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
-        
-        # Retrieve a listing of all temperatures for this system
-        if (self.link.valid):
-            
-            # Create a list of all the URLs
-            for (key, value) in self.link.jsonData.items():
-                Trace.log(TraceLevel.TRACE, '   ++ Thermal collection: key={} value={}'.format(key, value))
-                if (key == 'Temperatures'):
-                    for link in value:
-                        Trace.log(TraceLevel.TRACE, '   ++ process item {}'.format(link['@odata.id']))
+        # GET Thermal Collection
+        for thermalUrl in url:
+            Trace.log(TraceLevel.VERBOSE, '++ GET Thermal collection from ({})'.format(thermalUrl))
+            self.link = UrlAccess.process_request(redfishConfig, UrlStatus(thermalUrl))
 
-                        odataid = link['@odata.id']
-                        Enclosure = odataid.replace('/redfish/v1/Chassis/enclosure_', '')[0:1]
-                        MemberId = link['MemberId']
-                        Name = link['Name']
-                        ReadingCelsius = str(link['ReadingCelsius'])
-                        statusDict = link['Status']
-                        StatusState = statusDict['State']
-                        StatusHealth = statusDict['Health']
+            # Retrieve a listing of all temperatures for this system
+            if (self.link.valid):
+                
+                # Create a list of all the URLs
+                for (key, value) in self.link.jsonData.items():
+                    Trace.log(TraceLevel.TRACE, '   ++ Thermal collection: key={} value={}'.format(key, value))
+                    if (key == 'Temperatures'):
+                        for link in value:
+                            Trace.log(TraceLevel.TRACE, '   ++ process item {}'.format(link['@odata.id']))
 
-                        # Adjust certain strings
-                        SensorName = Name.replace('sensor_temp_', '')
+                            words = link['@odata.id'].split('/')
+                            if (len(words) >= 4):
+                                Enclosure = words[4]
+                            else:
+                                Enclosure = 'unknown'
 
-                        item = ThermalInformation(MemberId, Name, ReadingCelsius, SensorName, StatusState, StatusHealth, Enclosure)
-                        self.readings.append(item)
+                            MemberId = link['MemberId']
+                            Name = link['Name']
+                            ReadingCelsius = str(link['ReadingCelsius'])
+                            statusDict = link['Status']
+                            StatusState = statusDict['State']
+                            StatusHealth = statusDict['Health']
+    
+                            # Adjust certain strings
+                            SensorName = Name.replace('sensor_temp_', '')
+    
+                            item = ThermalInformation(MemberId, Name, ReadingCelsius, SensorName, StatusState, StatusHealth, Enclosure)
+                            self.readings.append(item)
 
     @classmethod
     def display_results(self, redfishConfig):
         # self.print_banner(self)
-        if (self.link.valid == False):
-            print('')
-            print(' [] URL        : {}'.format(self.link.url))
-            print(' [] Status     : {}'.format(self.link.urlStatus))
-            print(' [] Reason     : {}'.format(self.link.urlReason))
-
-        else:
-            print('')
-            print('      SensorName  Reading    Health  Enclosure')
-            print('  --------------------------------------------')
-
-            for i in range(len(self.readings)):
-
-                print('  {0: >14}  {1: >7}  {2: >8}  {3: >9}'.format(
-                    self.readings[i].SensorName,
-                    self.readings[i].ReadingCelsius,
-                    self.readings[i].StatusHealth,
-                    self.readings[i].Enclosure))
+        if (self.link != None):
+            if (self.link == None or self.link.valid == False):
+                print('')
+                print(' [] URL        : {}'.format(self.link.url))
+                print(' [] Status     : {}'.format(self.link.urlStatus))
+                print(' [] Reason     : {}'.format(self.link.urlReason))
+    
+            else:
+                print('')
+                print('         Chassis    SensorName       Reading    Health')
+                print('  ----------------------------------------------------')
+                #           enclosure_0         Fan 0      7440 RPM        OK
+    
+                for i in range(len(self.readings)):
+    
+                    print('  {0: >14}  {1: >12}  {2: >12}  {3: >8}'.format(
+                        self.readings[i].Enclosure,
+                        self.readings[i].SensorName,
+                        self.readings[i].ReadingCelsius,
+                        self.readings[i].StatusHealth))

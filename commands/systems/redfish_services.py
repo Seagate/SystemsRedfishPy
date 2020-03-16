@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -62,9 +62,9 @@
 # @description-end
 #
 
-import config
 import json
 from commands.commandHandlerBase import CommandHandlerBase
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -76,8 +76,9 @@ class CommandHandler(CommandHandlerBase):
     name = 'redfish services'
     link = None
 
-    def prepare_url(self, command):
-        return (config.redfishV1)
+    def prepare_url(self, redfishConfig, command):
+        RedfishSystem.initialize_service_root_uris(redfishConfig)
+        return (RedfishSystem.get_uri(redfishConfig, 'Root'))
         
     @classmethod
     def process_json(self, redfishConfig, url):

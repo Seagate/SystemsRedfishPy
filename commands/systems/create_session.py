@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
-# This software is subject to the terms of thThe MIT License. If a copy of the license was
+# This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
@@ -37,6 +37,7 @@ import json
 from commands.commandHandlerBase import CommandHandlerBase
 from core.jsonBuilder import JsonBuilder, JsonType
 from core.label import Label
+from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
 
@@ -47,8 +48,9 @@ class CommandHandler(CommandHandlerBase):
     """Command - create session """
     name = 'create session'
 
-    def prepare_url(self, command):
-        return (config.sessions)
+    def prepare_url(self, redfishConfig, command):
+        RedfishSystem.initialize_service_root_uris(redfishConfig)
+        return (RedfishSystem.get_uri(redfishConfig, 'Sessions'))
 
     @classmethod
     def process_json(self, redfishConfig, url):
@@ -83,6 +85,7 @@ class CommandHandler(CommandHandlerBase):
             redfishConfig.sessionKey = link.sessionKey
             if (redfishConfig.sessionKey != ''):
                 redfishConfig.sessionValid = True
+
         else:
             print('')
             print('[] URL        : {}'.format(link.url))
