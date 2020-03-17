@@ -167,8 +167,6 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-        if (len(self.groups) == 0):
-            return 
 
         if (self.link.valid == False):
             print('')
