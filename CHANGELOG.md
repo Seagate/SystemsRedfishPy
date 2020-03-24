@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.1.7] - 2020-03-24
+- New 'set volume' command which performs PATCH operations on a Volume
+- Minor bug fixes
+- Option to dump http data via !dumphttpdata
+
+## [1.1.6] - 2020-03-17
+- Full sync with github and local gitlab
+
 ## [1.1.5] - 2020-03-13
 - Added a new configuration variable for the interactive session. The new value is 'entertoexit'. When True,
   the user can press Enter to exit the shell. When False, the user must type exit or quit.

@@ -98,7 +98,7 @@ class CommandHandlerBase():
                 Trace.log(TraceLevel.INFO, '[] DELETE ({0})'.format(url))
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'DELETE', True)
                 Trace.log(TraceLevel.INFO, '   -- status={}, reason={}'.format(link.urlStatus, link.urlReason))
-                if (redfishConfig.get_bool('dumphttpdata')):
+                if (redfishConfig.get_bool('dumphttpdata') and link.jsonData is not None):
                     Trace.log(TraceLevel.INFO, '   -- httpData {}'.format(link.jsonData))
                 
                 if (link.urlStatus == 200):

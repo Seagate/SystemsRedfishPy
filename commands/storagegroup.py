@@ -97,7 +97,6 @@ def CreateStorageGroupRequestProperties(redfishConfig, command, creating):
                 Trace.log(TraceLevel.ERROR, 'The volume parameter is required, parse results (volume={})...'.format(volume))
                 return None
 
-#1 map_volume
         JsonBuilder.startNew()
         JsonBuilder.newElement('main', JsonType.DICT)
 
@@ -159,3 +158,4 @@ def CreateStorageGroupRequestProperties(redfishConfig, command, creating):
         # JsonBuilder.displayJson('main')
 
         return JsonBuilder.getElement('main')
+

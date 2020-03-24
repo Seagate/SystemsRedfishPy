@@ -155,6 +155,8 @@ class UrlAccess():
                 errorMessage = err.read()
                 Trace.log(TraceLevel.VERBOSE, '  errorMessage = {}'.format(errorMessage))
                 Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
+                if (redfishConfig.get_bool('dumphttpdata')):
+                    Trace.log(TraceLevel.INFO, '   -- httpData {}'.format(errorMessage))
 
             pass
 
