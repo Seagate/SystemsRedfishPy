@@ -180,8 +180,8 @@ class CommandHandler(CommandHandlerBase):
 
         else:
             print('')
-            print('         Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes  ConsumedBytes  Health  ClasOfService')
-            print(' -------------------------------------------------------------------------------------------------------------------------')
+            print('         Name                       SerialNumber  BlockSize  Capacity  AllocatedBytes  ConsumedBytes    Health  ClasOfService')
+            print(' ----------------------------------------------------------------------------------------------------------------------------')
     
             if (self.groups != None):
                 for i in range(len(self.groups)):

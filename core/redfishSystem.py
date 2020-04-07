@@ -25,8 +25,7 @@ from core.urlAccess import UrlAccess, UrlStatus
 
 class RedfishSystem:
 
-    successfulBaseInit = False
-    successfulUrisInit = False
+    successfulRootInit = False
     systemDict = {} 
 
     # An array of dictionary items storing disk information.
@@ -39,156 +38,210 @@ class RedfishSystem:
     initiators = []
 
     #
+    # Display discovered URI for the user
+    #
+    @classmethod
+    def discovered_uri(cls, key, value):
+        Trace.log(TraceLevel.INFO, '   -- Discovered: {0:18} >> {1}'.format(key, value))
+
+    #
     # Store a new URI
     #
     @classmethod
     def store_uri(cls, key, link):
         if (link.valid):
             if (key in link.jsonData):
-                cls.systemDict[key] = link.jsonData[key]["@odata.id"]
-                if (cls.systemDict[key][-1] != '/'):
-                    cls.systemDict[key] = cls.systemDict[key] + '/'
+                newValue = link.jsonData[key]["@odata.id"]
+                if (newValue[-1] != '/'):
+                    newValue = newValue + '/'
+                cls.systemDict[key] = newValue
+                cls.discovered_uri(key, newValue)
 
     #
-    # Initialize a dictionary of all System Root URIs
+    # Store a new URI
+    #
+    @classmethod
+    def store_uri_value(cls, key, uri):
+        cls.systemDict[key] = uri
+        cls.discovered_uri(key, uri)
+
+    #
+    # Initialize a dictionary of all System Root URIs. These URIs do not require a session.
     #
     @classmethod
     def initialize_service_root_uris(cls, redfishConfig):
 
-        Trace.log(TraceLevel.DEBUG, '++ initialize_service_root_uris (BaseInit={})'.format(cls.successfulBaseInit))
+        Trace.log(TraceLevel.DEBUG, '++ initialize_service_root_uris (BaseInit={})'.format(cls.successfulRootInit))
         
-        if (cls.successfulBaseInit == True):
+        if (cls.successfulRootInit == True):
             return
 
         cls.systemDict = {}
         url = config.redfish
-        cls.successfulBaseInit = False
+        cls.successfulRootInit = True
 
         try:
             # GET Redfish Version
-            Trace.log(TraceLevel.DEBUG, '++ GET Redfish Version from ({})'.format(url))
+            Trace.log(TraceLevel.TRACE, '++ GET Redfish Version from ({})'.format(url))
             link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', False, None)
-            if (link.valid):
-                cls.systemDict["Root"] = link.jsonData["v1"]
+            if (link.valid and "v1" in link.jsonData):
+                newValue = link.jsonData["v1"]
+                cls.systemDict["Root"] = newValue
+                cls.discovered_uri("Root", newValue)
             else:
-                Trace.log(TraceLevel.INFO, '-- Invalid URL link for ({})'.format(url))
+                Trace.log(TraceLevel.ERROR, '-- System Init: Invalid URL link for ({})'.format(url))
+                cls.successfulRootInit = False
     
             # GET Redfish Root Services
-            link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["Root"]), 'GET', False, None)
-            cls.store_uri("Systems", link)
-            cls.store_uri("Chassis", link)
-            cls.store_uri("StorageServices", link)
-            cls.store_uri("Managers", link)
-            cls.store_uri("Tasks", link)
-            cls.store_uri("SessionService", link)
+            if (cls.successfulRootInit):
+                link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["Root"]), 'GET', False, None)
+                cls.store_uri("Systems", link)
+                cls.store_uri("Chassis", link)
+                cls.store_uri("StorageServices", link)
+                cls.store_uri("Managers", link)
+                cls.store_uri("Tasks", link)
+                cls.store_uri("SessionService", link)
+        
+                cls.store_uri_value("Sessions", cls.systemDict["SessionService"] + 'Sessions/')
+                cls.store_uri_value("metadata", cls.systemDict["Root"] + '$metadata/' )
+                cls.store_uri_value("odata", cls.systemDict["Root"] + 'odata/')
     
-            cls.systemDict["Sessions"] = cls.systemDict["SessionService"] + 'Sessions/'
-            cls.systemDict["metadata"] = cls.systemDict["Root"] + '$metadata/' 
-            cls.systemDict["odata"] = cls.systemDict["Root"] + 'odata/'
-    
-            cls.successfulBaseInit = True
-
         except Exception as e:
-            Trace.log(TraceLevel.INFO, '-- Unable to initialize Service Root URIs, exception: {}'.format(e))
-            cls.successfulBaseInit = False
+            Trace.log(TraceLevel.ERROR, '-- Unable to initialize Service Root URIs, exception: {}'.format(e))
+            cls.successfulRootInit = False
 
         Trace.log(TraceLevel.DEBUG, '@@1 systemDict: {}'.format(cls.systemDict))
 
-        Trace.log(TraceLevel.INFO, '++ initialize_service_root_uris: {}'.format(cls.successfulBaseInit))
-
-        return cls.successfulBaseInit
+        return cls.successfulRootInit
 
     #
-    # Initialize a dictionary of all system URIs
+    # Update the system URI dictionary for the specificed key
     #
     @classmethod
-    def initialize_uris(cls, redfishConfig):
+    def fill_storage_services_id(cls, redfishConfig, key):
 
-        if (cls.successfulBaseInit == False):
-            cls.initialize_service_root_uris(redfishConfig)
-
-        cls.successfulUrisInit = False
-
-        try:
-            # GET all Chassis Racks
-            link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["Chassis"]), 'GET', True, None)
-            if (link.valid):
-                if ('Members' in link.jsonData):
-                    racks = []
+        if (key not in cls.systemDict):
+            if ('StorageServicesId' not in cls.systemDict ):
+                # GET StorageServices Identifier
+                link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["StorageServices"]), 'GET', True, None)
+                if (link.valid and link.jsonData is not None and 'Members' in link.jsonData):
                     for member in link.jsonData["Members"]:
                         newuri = member["@odata.id"]
                         if (newuri[-1] != '/'):
                             newuri = newuri + '/'
-                        racks.append(newuri)
-                    cls.systemDict["Racks"] = racks
+                        cls.store_uri_value("StorageServicesId", newuri)
 
+    #
+    # Update the system URI dictionary for the specificed key
+    #
+    @classmethod
+    def get_uri_specific(cls, redfishConfig, key):
+
+        uri = ''
+
+        Trace.log(TraceLevel.DEBUG, '++ get_uri_specific({}) ...'.format(key))
+
+        if (key == "Racks" or key == "Thermals" or key == "Powers"):
+            # GET all Chassis Racks
+            link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["Chassis"]), 'GET', True, None)
+            if (link.valid and link.jsonData is not None and 'Members' in link.jsonData):
+                racks = []
+                for member in link.jsonData["Members"]:
+                    newuri = member["@odata.id"]
+                    if (newuri[-1] != '/'):
+                        newuri = newuri + '/'
+                    racks.append(newuri)
+                cls.store_uri_value("Racks", racks)
+                uri = racks
+
+        if (key == "Thermals"):
             # GET all Thermal URIs
             items = []
             for member in cls.systemDict["Racks"]:
                 Trace.log(TraceLevel.DEBUG, '>> Racks: {}'.format(member))
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(member), 'GET', True, None)
-                if (link.valid):
-                    if ("Thermal" in link.jsonData):
-                        newuri = link.jsonData["Thermal"]["@odata.id"]
-                        if (newuri[-1] != '/'):
-                            newuri = newuri + '/'
-                        items.append(newuri)
-            cls.systemDict["Thermals"] = items
+                if (link.valid and link.jsonData is not None and 'Thermal' in link.jsonData):
+                    newuri = link.jsonData["Thermal"]["@odata.id"]
+                    if (newuri[-1] != '/'):
+                        newuri = newuri + '/'
+                    items.append(newuri)
+            cls.store_uri_value("Thermals", items)
+            uri = items
 
+        if (key == "Powers"):
             # GET all Power URIs
             items = []
             for member in cls.systemDict["Racks"]:
                 Trace.log(TraceLevel.DEBUG, '>> Racks: {}'.format(member))
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(member), 'GET', True, None)
-                if (link.valid):
-                    if ("Power" in link.jsonData):
-                        newuri = link.jsonData["Power"]["@odata.id"]
-                        if (newuri[-1] != '/'):
-                            newuri = newuri + '/'
-                        items.append(newuri)
-            cls.systemDict["Powers"] = items
+                if (link.valid and link.jsonData is not None and 'Power' in link.jsonData):
+                    newuri = link.jsonData["Power"]["@odata.id"]
+                    if (newuri[-1] != '/'):
+                        newuri = newuri + '/'
+                    items.append(newuri)
+            cls.store_uri_value("Powers", items)
+            uri = items
 
+        if (key == "StorageServicesId"):
             # GET StorageServices Identifier
             link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["StorageServices"]), 'GET', True, None)
-            if (link.valid):
-                if ('Members' in link.jsonData):
-                    for member in link.jsonData["Members"]:
-                        newuri = member["@odata.id"]
-                        if (newuri[-1] != '/'):
-                            newuri = newuri + '/'
-                        cls.systemDict["StorageServicesId"] = newuri
+            if (link.valid and link.jsonData is not None and 'Members' in link.jsonData):
+                for member in link.jsonData["Members"]:
+                    newuri = member["@odata.id"]
+                    if (newuri[-1] != '/'):
+                        newuri = newuri + '/'
+                    cls.store_uri_value("StorageServicesId", newuri)
+                    uri = newuri
 
-            # GET StorageServices Links
+        if (key == "ClassesOfService"):
+            cls.fill_storage_services_id(redfishConfig, key)
             link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["StorageServicesId"]), 'GET', True, None)
             cls.store_uri("ClassesOfService", link)
+            uri = cls.systemDict["ClassesOfService"]
+
+        if (key == "Drives"):
+            cls.fill_storage_services_id(redfishConfig, key)
+            link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["StorageServicesId"]), 'GET', True, None)
             cls.store_uri("Drives", link)
+            uri = cls.systemDict["Drives"]
+
+        if (key == "Endpoints"):
+            cls.fill_storage_services_id(redfishConfig, key)
+            link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["StorageServicesId"]), 'GET', True, None)
             cls.store_uri("Endpoints", link)
+            uri = cls.systemDict["Endpoints"]
+
+        if (key == "EndpointGroups"):
+            cls.fill_storage_services_id(redfishConfig, key)
+            link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["StorageServicesId"]), 'GET', True, None)
             cls.store_uri("EndpointGroups", link)
+            uri = cls.systemDict["EndpointGroups"]
+
+        if (key == "StorageGroups"):
+            cls.fill_storage_services_id(redfishConfig, key)
+            link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["StorageServicesId"]), 'GET', True, None)
             cls.store_uri("StorageGroups", link)
+            uri = cls.systemDict["StorageGroups"]
+
+        if (key == "StoragePools"):
+            cls.fill_storage_services_id(redfishConfig, key)
+            link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["StorageServicesId"]), 'GET', True, None)
             cls.store_uri("StoragePools", link)
+            uri = cls.systemDict["StoragePools"]
+
+        if (key == "Volumes"):
+            cls.fill_storage_services_id(redfishConfig, key)
+            link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.systemDict["StorageServicesId"]), 'GET', True, None)
             cls.store_uri("Volumes", link)
+            uri = cls.systemDict["Volumes"]
 
-            cls.systemDict["ClassesOfServiceDefault"] = '/redfish/v1/StorageServices(1)/ClassesOfService(Default)'
+        if (key == "ClassesOfServiceDefault"):
+            cls.store_uri_value("ClassesOfServiceDefault", '/redfish/v1/StorageServices(1)/ClassesOfService(Default)')
+            uri = cls.systemDict["ClassesOfServiceDefault"]
 
-            if (link.valid):
-                if ('Members' in link.jsonData):
-                    for member in link.jsonData["Members"]:
-                        newuri = member["@odata.id"]
-                        if (newuri[-1] != '/'):
-                            newuri = newuri + '/'
-                        cls.systemDict["StorageServicesId"] = newuri
+        Trace.log(TraceLevel.TRACE, '@@2 systemDict: {}'.format(cls.systemDict))
 
-            cls.successfulUrisInit = True
-
-        except Exception as e:
-            Trace.log(TraceLevel.INFO, '-- Unable to initialize system URIs, exception: {}'.format(e))
-            cls.successfulUrisInit = False
-
-        Trace.log(TraceLevel.DEBUG, '@@2 systemDict: {}'.format(cls.systemDict))
-
-        Trace.log(TraceLevel.VERBOSE, '++ initialize_uris: {}'.format(cls.successfulUrisInit))
-
-        return cls.successfulUrisInit
+        return uri
 
     #
     # Get a URI based on a key. These are stored during initialization. For example:
@@ -197,25 +250,22 @@ class RedfishSystem:
     #
     @classmethod
     def get_uri(cls, redfishConfig, key):
+
         uri = ''
-        if (cls.successfulBaseInit == False):
+
+        Trace.log(TraceLevel.DEBUG, '++ get_uri({}) ...'.format(key))
+
+        if (cls.successfulRootInit == False):
             cls.initialize_service_root_uris(redfishConfig)
 
         if (key in cls.systemDict):
             uri = cls.systemDict[key]
-            Trace.log(TraceLevel.VERBOSE, '-- System URI for ({}) is ({})'.format(key, uri))
+            Trace.log(TraceLevel.VERBOSE, '-- URI for ({}) is ({})'.format(key, uri))
         else:
             if (redfishConfig.sessionValid):
-                if (cls.successfulUrisInit == False):
-                    cls.initialize_uris(redfishConfig)
-
-                if (key in cls.systemDict):
-                    uri = cls.systemDict[key]
-                    Trace.log(TraceLevel.VERBOSE, '-- System URI for ({}) is ({})'.format(key, uri))
-                else:
-                    Trace.log(TraceLevel.INFO, '-- System URI for Key ({}) was not found in system dictionary'.format(key))
+                uri = cls.get_uri_specific(redfishConfig, key)
             else:
-                Trace.log(TraceLevel.INFO, '-- A valid session was not found!')
+                Trace.log(TraceLevel.ERROR, '-- A valid session is required!')
 
         Trace.log(TraceLevel.DEBUG, '++ get_uri({}) returning ({})'.format(key, uri))
 
@@ -420,44 +470,33 @@ class RedfishSystem:
     @classmethod
     def initialize_system(cls, redfishConfig):
 
-        initialized = False
-        if (cls.successfulBaseInit and cls.successfulUrisInit and cls.successfulSystemInit):
-            initialized = True
+        initialized = cls.successfulSystemInit
 
-        if (redfishConfig.sessionValid):
-            if (cls.successfulUrisInit == False):
-                tempstatus = cls.initialize_uris(redfishConfig)
-                Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_uris={}'.format(tempstatus))
-                if (tempstatus == True):
-                    initialized = True
-                else:
-                    initialized = False
+        if (initialized is False and redfishConfig.sessionValid):
 
-            if (cls.successfulSystemInit == False):
-                tempstatus = cls.initialize_drives(redfishConfig)
-                Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_drives={}'.format(tempstatus))
-                if (tempstatus == True):
-                    initialized = True
-                else:
-                    initialized = False
+            tempstatus = cls.initialize_drives(redfishConfig)
+            Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_drives={}'.format(tempstatus))
+            if (tempstatus == True):
+                initialized = True
+            else:
+                initialized = False
 
-                tempstatus = cls.initialize_ports(redfishConfig)
-                Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_ports={}'.format(tempstatus))
-                if (tempstatus == True):
-                    initialized = True
-                else:
-                    initialized = False
+            tempstatus = cls.initialize_ports(redfishConfig)
+            Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_ports={}'.format(tempstatus))
+            if (tempstatus == True):
+                initialized = True
+            else:
+                initialized = False
 
-                tempstatus = cls.initialize_initiators(redfishConfig)
-                Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_initiators={}'.format(tempstatus))
-                if (tempstatus == True):
-                    initialized = True
-                else:
-                    initialized = False
+            tempstatus = cls.initialize_initiators(redfishConfig)
+            Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_initiators={}'.format(tempstatus))
+            if (tempstatus == True):
+                initialized = True
+            else:
+                initialized = False
 
-                cls.successfulSystemInit = initialized
+            cls.successfulSystemInit = initialized
 
-    
         Trace.log(TraceLevel.INFO, '++ initialize_system: {}'.format(initialized))
 
         return (initialized)

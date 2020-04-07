@@ -165,8 +165,8 @@ class CommandHandler(CommandHandlerBase):
             self.disks.sort(key=lambda x: x.IdNumber, reverse=False)
             
             print('')
-            print('    Id            SerialNumber  Manufacturer  Revision   PartNumber  NegotiatedSpeedGbs    CapacityBytes  BlockSizeBytes  Health')
-            print('  ------------------------------------------------------------------------------------------------------------------------------')
+            print('    Id            SerialNumber  Manufacturer  Revision    PartNumber  NegotiatedSpeedGbs    CapacityBytes  BlockSizeBytes  Health')
+            print('  -------------------------------------------------------------------------------------------------------------------------------')
             #         0.23    WFJ01GG40000E810BE2L       SEAGATE      C003  ST600MM0099                12.0     600127266816             512      OK
             for i in range(len(self.disks)):
                 print('{0: >6}  {1: >22}  {2: >12}  {3: >8}  {4: >10}  {5: >18}  {6: >15}  {7: >14}  {8: >6}'.format(

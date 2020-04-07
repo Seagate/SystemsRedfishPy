@@ -20,8 +20,15 @@
 #
 # 'create volume name=[name] size=[size] lun=[lun] pool=[A|B] diskgroup=[group]
 #
+# Parameters:
+#     The 'name' parameter is optional.
+#     The 'size' parameter is required.
+#     For linear storage, the 'pool' parameter is optional and 'diskgroup' is required.
+#     For virtual storage, the 'diskgroup' parameter is optional and 'pool' is required.
+#
 # Example:
-# create volume name=TestVol01 size=100000000000 pool=A
+#     create volume name=TestVol01 size=100000000000 pool=A
+#     create volume name=TestVol01 size=100000000000 diskgroup=dgA01
 #
 # @description-end
 #
@@ -95,8 +102,23 @@ class CommandHandler(CommandHandlerBase):
         if (jsonType is not JsonType.NONE):
             JsonBuilder.addElement('main', JsonType.INTEGER, 'CapacityBytes', size)
 
-        # CapacitySources
+        # CapacitySources (virtual)
         jsonType, pool = JsonBuilder.getValue('pool', self.command)
+        if (jsonType is not JsonType.NONE):
+            JsonBuilder.newElement('array', JsonType.ARRAY, True)
+            if (jsonType is JsonType.ARRAY):
+                for i in range(len(pool)):
+                    JsonBuilder.newElement('dict2', JsonType.DICT, True)
+                    JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', storagePoolsUrl + pool[i])
+                    JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
+            else:
+                JsonBuilder.newElement('dict2', JsonType.DICT, True)
+                JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', storagePoolsUrl + pool)
+                JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
+            JsonBuilder.addElement('main', JsonType.DICT, 'CapacitySources', JsonBuilder.getElement('array'))
+
+        # CapacitySources (linera)
+        jsonType, pool = JsonBuilder.getValue('diskgroup', self.command)
         if (jsonType is not JsonType.NONE):
             JsonBuilder.newElement('array', JsonType.ARRAY, True)
             if (jsonType is JsonType.ARRAY):

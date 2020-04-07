@@ -60,44 +60,75 @@ class VolumeInformation:
 
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
-        if (link.valid):        
-            Trace.log(TraceLevel.DEBUG, '   ++ Volume: ({}, {}, {}, {}, {})'.format(
-                link.jsonData['Id'], link.jsonData['Name'], link.jsonData['CapacityBytes'], link.jsonData['RemainingCapacityPercent'], link.jsonData['Encrypted']))
+        if (link.valid and link.jsonData is not None):
+            if ('Id' in link.jsonData and 'Name' in link.jsonData):
+                Trace.log(TraceLevel.DEBUG, '   ++ Volume: ({}, {})'.format(link.jsonData['Id'], link.jsonData['Name']))
 
-            self.SerialNumber = link.jsonData['Id']
-            self.Name = link.jsonData['Name']
-            self.CapacityBytes = link.jsonData['CapacityBytes']
-            self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
-            if (link.jsonData['Encrypted']):
-                self.Encrypted = 'true'
-            else:
-                self.Encrypted = 'false'
+            if ('Id' in link.jsonData):
+                self.SerialNumber = link.jsonData['Id']
+
+            if ('Name' in link.jsonData):
+                self.Name = link.jsonData['Name']
+
+            if ('CapacityBytes' in link.jsonData):
+                self.CapacityBytes = link.jsonData['CapacityBytes']
+
+            if ('RemainingCapacityPercent' in link.jsonData):
+                self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
+
+            if ('Encrypted' in link.jsonData):
+                if (link.jsonData['Encrypted']):
+                    self.Encrypted = 'true'
+                else:
+                    self.Encrypted = 'false'
 
             # Status
-            healthDict = link.jsonData['Status']
-            self.State = healthDict['State']
-            self.Health = healthDict['Health']
+            if ('Status' in link.jsonData):
+                healthDict = link.jsonData['Status']
+                if ('State' in healthDict):
+                    self.State = healthDict['State']
+                if ('Health' in healthDict):
+                    self.Health = healthDict['Health']
 
             # Capacity
-            capacity = link.jsonData['Capacity']
-            data = capacity['Data']
-            self.AllocatedBytes = data['AllocatedBytes']
-            self.ConsumedBytes = data['ConsumedBytes']
+            if ('Capacity' in link.jsonData):
+                capacity = link.jsonData['Capacity']
+                if ('Data' in capacity):
+                    data = capacity['Data']
+                    if ('AllocatedBytes' in data):
+                        self.AllocatedBytes = data['AllocatedBytes']
+                    if ('ConsumedBytes' in data):
+                        self.ConsumedBytes = data['ConsumedBytes']
 
             # AccessCapabilities
-            try:
-                self.AccessCapabilities = ','.join(link.jsonData['AccessCapabilities'])
-            except:
-                self.AccessCapabilities = 'Unknown'
-            
-            data = capacity['Data']
-            self.AllocatedBytes = data['AllocatedBytes']
-            self.ConsumedBytes = data['ConsumedBytes']
+            if ('AccessCapabilities' in link.jsonData):
+                try:
+                    self.AccessCapabilities = ','.join(link.jsonData['AccessCapabilities'])
+                except:
+                    self.AccessCapabilities = 'Unknown'
 
             # This version assumes an array of one pool
-            item = link.jsonData['CapacitySources'][0]
-            ppools = item['ProvidingPools']
-            self.Pool = ppools['Members'][0]['@odata.id']
+            if ('CapacitySources' in link.jsonData):
+                item = link.jsonData['CapacitySources'][0]
+                Trace.log(TraceLevel.TRACE, '   ++ Volume: item={}'.format(item))
+                
+                if ('ProvidingPools' in item):
+                    ppobj = item['ProvidingPools']
+                    if isinstance(ppobj, list):                    
+                        ppools = ppobj[0]
+                    else:
+                        ppools = ppobj
+                    Trace.log(TraceLevel.TRACE, '   ++ Volume: ppools={}'.format(ppools))
+                    if ('Members' in ppools):
+                        self.Pool = ppools['Members'][0]['@odata.id']
+                    if ('@odata.id' in ppools):
+                        self.Pool = ppools['@odata.id']
+
+                    words = self.Pool.split('/')
+                    if (len(words) > 0):
+                        self.Pool = words[len(words)-1]
+
+                    Trace.log(TraceLevel.TRACE, '   ++ Volume: @odata.id={}'.format(self.Pool))
 
 
 ################################################################################

@@ -4,12 +4,12 @@
 
 # Delete volumes
 
-delete volumes AVolume01,AVolume02
-delete volumes BVolume01,BVolume02
+delete volumes AVolume01,AVolume02,AVolume03
+delete volumes BVolume01,BVolume02,BVolume03
 
-# Delete pools
+# Delete Disk Groups
 
-delete pools A,B
+delete diskgroups dgA01,dgA02,dgA03,dgB01,dgB02,dgB03
 
 show diskgroups
 show pools

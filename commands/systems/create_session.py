@@ -49,7 +49,6 @@ class CommandHandler(CommandHandlerBase):
     name = 'create session'
 
     def prepare_url(self, redfishConfig, command):
-        RedfishSystem.initialize_service_root_uris(redfishConfig)
         return (RedfishSystem.get_uri(redfishConfig, 'Sessions'))
 
     @classmethod
@@ -58,7 +57,7 @@ class CommandHandler(CommandHandlerBase):
         redfishConfig.sessionValid = False
 
         Trace.log(TraceLevel.INFO, '')
-        Trace.log(TraceLevel.INFO, '++ Establish Redfish session: ({})...'.format(url))
+        Trace.log(TraceLevel.VERBOSE, '++ Establish Redfish session: ({})...'.format(url))
 
         JsonBuilder.startNew()
         JsonBuilder.newElement('main', JsonType.DICT)

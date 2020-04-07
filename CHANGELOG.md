@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.2.0] - 2020-04-06
+- Support for linear and virtual storage. Tested against the Seagate PODs storage system. 
+- Updates to system commands and scripts for linear storage support.
+- Optimizations to system URI discovery.
+
 ## [1.1.7] - 2020-03-24
 - New 'set volume' command which performs PATCH operations on a Volume
 - Minor bug fixes
