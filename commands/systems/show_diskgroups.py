@@ -61,9 +61,10 @@ class StorageGroupInformation:
         Trace.log(TraceLevel.DEBUG, '   ++ Storage Group init from URL {}'.format(url))
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
-        if (link.valid):
-            Trace.log(TraceLevel.DEBUG, '   ++ Storage Group: ({}, {}, {}, {}, {})'.format(
-                link.jsonData['Id'], link.jsonData['Name'], link.jsonData['Description'], link.jsonData['MaxBlockSizeBytes'], link.jsonData['RemainingCapacityPercent']))
+        if (link.valid and link.jsonData is not None):
+            if ('Id' in link.jsonData and 'Name' in link.jsonData and 'Description' in link.jsonData and 'MaxBlockSizeBytes' in link.jsonData and 'RemainingCapacityPercent' in link.jsonData):
+                Trace.log(TraceLevel.DEBUG, '   ++ Storage Group: ({}, {}, {}, {}, {})'.format(
+                    link.jsonData['Id'], link.jsonData['Name'], link.jsonData['Description'], link.jsonData['MaxBlockSizeBytes'], link.jsonData['RemainingCapacityPercent']))
 
             try:
                 self.Description = link.jsonData['Description']
@@ -75,36 +76,53 @@ class StorageGroupInformation:
                 pass
 
             if (isDiskGroup):
-                self.SerialNumber = link.jsonData['Id']
-                self.Name = link.jsonData['Name']
-                self.MaxBlockSizeBytes = link.jsonData['MaxBlockSizeBytes']
+
+                if ('Id' in link.jsonData):
+                    self.SerialNumber = link.jsonData['Id']
+
+                if ('Name' in link.jsonData):
+                    self.Name = link.jsonData['Name']
+
+                if ('MaxBlockSizeBytes' in link.jsonData):
+                    self.MaxBlockSizeBytes = link.jsonData['MaxBlockSizeBytes']
     
-                try:
-                    self.AllocatedVolumes = []
-                    avs = link.jsonData['AllocatedVolumes']
-                    for i in range(len(avs)):
-                        # Example: '/redfish/v1/StorageServices/S1/StoragePools/00c0ff5112460000f55a925d00000000/Volumes/00c0ff5112460000f75a925d02000000'
-                        words = avs[i].split('/')
-                        if (len(words) >= 7):
-                            Trace.log(TraceLevel.TRACE, '   ++ Adding allocated volume ({}) from ({})'.format(words[7], avs[i]))
-                            self.AllocatedVolumes.append(words[7])
-                except:
-                    self.AllocatedVolumes = []
-                    pass
+                if ('AllocatedVolumes' in link.jsonData):
+                    try:
+                        self.AllocatedVolumes = []
+                        avs = link.jsonData['AllocatedVolumes']
+                        for i in range(len(avs)):
+                            # Example: '/redfish/v1/StorageServices/S1/StoragePools/00c0ff5112460000f55a925d00000000/Volumes/00c0ff5112460000f75a925d02000000'
+                            words = avs[i].split('/')
+                            if (len(words) >= 7):
+                                Trace.log(TraceLevel.TRACE, '   ++ Adding allocated volume ({}) from ({})'.format(words[7], avs[i]))
+                                self.AllocatedVolumes.append(words[7])
+                    except:
+                        self.AllocatedVolumes = []
+                        pass
     
-                self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
+                if ('RemainingCapacityPercent' in link.jsonData):
+                    self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
     
-                capacity = link.jsonData['Capacity']
-                data = capacity['Data']
-                self.AllocatedBytes = data['AllocatedBytes']
-                self.ConsumedBytes = data['ConsumedBytes']
+                if ('Capacity' in link.jsonData):
+                    capacity = link.jsonData['Capacity']
+                    if ('Data' in capacity):
+                        data = capacity['Data']
+                        if ('AllocatedBytes' in data):
+                            self.AllocatedBytes = data['AllocatedBytes']
+                        if ('ConsumedBytes' in data):
+                            self.ConsumedBytes = data['ConsumedBytes']
                 
-                status = link.jsonData['Status']
-                self.State = status['State']
-                self.Health = status['Health']
+                if ('Status' in link.jsonData):
+                    status = link.jsonData['Status']
+                    if ('State' in status):
+                        self.State = status['State']
+                    if ('Health' in status):
+                        self.Health = status['Health']
                 
-                dcos = link.jsonData['DefaultClassOfService']
-                self.ClassofService = dcos['@odata.id'].replace(cos, '')
+                if ('DefaultClassOfService' in link.jsonData):
+                    dcos = link.jsonData['DefaultClassOfService']
+                    if ('@odata.id' in dcos):
+                        self.ClassofService = dcos['@odata.id'].replace(cos, '')
                 
         return (isDiskGroup)
 

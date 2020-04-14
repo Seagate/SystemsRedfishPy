@@ -108,10 +108,12 @@ class UrlAccess():
             if (link.urlData):
                 try:
                     headers = link.response.getheaders()
-                    Trace.log(TraceLevel.TRACE, '@@ headers={}'.format(json.dumps(headers, indent=4)))
+                    # Trace.log(TraceLevel.TRACE, '@@ headers={}'.format(json.dumps(headers, indent=4)))
                     contentType = headers[1][1]
                     if ('json' in contentType):
                         link.jsonData = json.loads(link.urlData.decode('utf-8'))
+                    else:
+                        Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: unhandled conetent type = {}'.format(contentType))
 
                 except Exception as inst:
                     Trace.log(TraceLevel.INFO, '   -- Exception: Trying to convert to JSON data, url={}'.format(fullUrl))
@@ -122,6 +124,8 @@ class UrlAccess():
                     traceback.print_exc(file=sys.stdout)
                     Trace.log(TraceLevel.INFO, '-'*100)
                     pass
+            else:
+                Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // No urlData')
 
             link.update_status(link.response.status, link.response.reason)
 

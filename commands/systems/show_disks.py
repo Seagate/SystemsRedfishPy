@@ -67,6 +67,7 @@ class DiskInformation:
     """Disk Information"""
 
     Id = ''
+    Name = ''
     IdNumber = ''
     SerialNumber = ''
     Manufacturer = ''
@@ -82,21 +83,43 @@ class DiskInformation:
 
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
-        if (link.valid):        
-            Trace.log(TraceLevel.DEBUG, '   ++ Disk: ({}, {}, {}, {}, {})'.format(
-                link.jsonData['Id'], link.jsonData['CapacityBytes'], link.jsonData['SerialNumber'], link.jsonData['Manufacturer'], link.jsonData['Protocol']))
-    
-            self.Id = link.jsonData['Id']
-            self.SerialNumber = link.jsonData['SerialNumber']
-            self.Manufacturer =link.jsonData['Manufacturer']
-            self.Revision = link.jsonData['Revision']
-            self.PartNumber = link.jsonData['PartNumber']
-            self.NegotiatedSpeedGbs = link.jsonData['NegotiatedSpeedGbs']
-            self.CapacityBytes = link.jsonData['CapacityBytes']
-            self.BlockSizeBytes = link.jsonData['BlockSizeBytes']
-            healthDict = link.jsonData['Status']
-            self.Health = healthDict['Health']
-            
+        if (link.valid and link.jsonData is not None):
+            if ('Id' in link.jsonData and 'CapacityBytes' in link.jsonData and 'SerialNumber' in link.jsonData and 'Manufacturer' in link.jsonData and 'Protocol' in link.jsonData):
+                Trace.log(TraceLevel.DEBUG, '   ++ Disk: ({}, {}, {}, {}, {})'.format(
+                    link.jsonData['Id'], link.jsonData['CapacityBytes'], link.jsonData['SerialNumber'], link.jsonData['Manufacturer'], link.jsonData['Protocol']))
+
+            if ('Id' in link.jsonData):
+                self.Id = link.jsonData['Id']
+
+            if ('Name' in link.jsonData):
+                self.Name = link.jsonData['Name']
+
+            if ('SerialNumber' in link.jsonData):
+                self.SerialNumber = link.jsonData['SerialNumber']
+
+            if ('Manufacturer' in link.jsonData):
+                self.Manufacturer = link.jsonData['Manufacturer']
+
+            if ('Revision' in link.jsonData):
+                self.Revision = link.jsonData['Revision']
+
+            if ('PartNumber' in link.jsonData):
+                self.PartNumber = link.jsonData['PartNumber']
+
+            if ('NegotiatedSpeedGbs' in link.jsonData):
+                self.NegotiatedSpeedGbs = link.jsonData['NegotiatedSpeedGbs']
+
+            if ('CapacityBytes' in link.jsonData):
+                self.CapacityBytes = link.jsonData['CapacityBytes']
+
+            if ('BlockSizeBytes' in link.jsonData):
+                self.BlockSizeBytes = link.jsonData['BlockSizeBytes']
+
+            if ('Status' in link.jsonData):
+                healthDict = link.jsonData['Status']
+                if ('Health' in healthDict):
+                    self.Health = healthDict['Health']
+
             words = self.Id.split('.')
             if (len(words) >= 2):
                 self.IdNumber = (100 * int(words[0])) + int(words[1])
@@ -170,7 +193,7 @@ class CommandHandler(CommandHandlerBase):
             #         0.23    WFJ01GG40000E810BE2L       SEAGATE      C003  ST600MM0099                12.0     600127266816             512      OK
             for i in range(len(self.disks)):
                 print('{0: >6}  {1: >22}  {2: >12}  {3: >8}  {4: >10}  {5: >18}  {6: >15}  {7: >14}  {8: >6}'.format(
-                    self.disks[i].Id,
+                    self.disks[i].Name,
                     self.disks[i].SerialNumber,
                     self.disks[i].Manufacturer,
                     self.disks[i].Revision,

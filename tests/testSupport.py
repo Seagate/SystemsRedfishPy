@@ -187,7 +187,7 @@ class TestSupport:
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', True, None)
         cls.test_link_status(testObject, link, url)
         membersCount = JsonExtract.get_value(link.jsonData, None, 'Members@odata.count', 1)
-        testObject.assertEqual(membersCount, 1, 'StorageGroups Members@odata.count, expected {}, received {}'.format(1, membersCount))
+        testObject.assertGreaterEqual(membersCount, 1, 'StorageGroups Members@odata.count, expected {}, received {}'.format(1, membersCount))
 
         odataIds = JsonExtract.get_values(link.jsonData, "@odata.id")
 
