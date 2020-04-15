@@ -280,7 +280,7 @@ class RedfishSystem:
         inited = False
         cls.drives = []
         url = cls.get_uri(redfishConfig, 'Drives')
-        Trace.log(TraceLevel.INFO, '++ initialize_drives: url={}'.format(url))
+        Trace.log(TraceLevel.DEBUG, '++ initialize_drives: url={}'.format(url))
 
         try:
             # GET DriveCollection
@@ -291,7 +291,7 @@ class RedfishSystem:
             totalDrives = int(membersCount)
             odataIds = JsonExtract.get_values(link.jsonData, "@odata.id")
             
-            Trace.log(TraceLevel.INFO, '++ initialize_drives: membersCount={}, totalDrives={}'.format(membersCount, totalDrives))
+            Trace.log(TraceLevel.DEBUG, '++ initialize_drives: membersCount={}, totalDrives={}'.format(membersCount, totalDrives))
 
             # Don't include the main @odata.id for the Drive Collection, all others are Drives/#.#
             if (url[-1] == '/'):
@@ -328,7 +328,7 @@ class RedfishSystem:
             Trace.log(TraceLevel.VERBOSE, '++ initialize_drives: inited={}'.format(inited))
 
         except Exception as e:
-            Trace.log(TraceLevel.INFO, '-- Unable to initialize drives, exception: {}'.format(e))
+            Trace.log(TraceLevel.ERROR, '-- Unable to initialize drives, exception: {}'.format(e))
             inited = False
 
         Trace.log(TraceLevel.DEBUG, '++ initialize_disks: {} drives added'.format(len(cls.drives)))
@@ -347,7 +347,7 @@ class RedfishSystem:
         cls.ports = []
 
         url = RedfishSystem.get_uri(redfishConfig, 'EndpointGroups')
-        Trace.log(TraceLevel.INFO, '++ initialize_ports: url={}'.format(url))
+        Trace.log(TraceLevel.DEBUG, '++ initialize_ports: url={}'.format(url))
 
         try:
             # GET DriveCollection
@@ -357,9 +357,9 @@ class RedfishSystem:
             membersCount = JsonExtract.get_value(link.jsonData, None, 'Members@odata.count', 1)
             totalItems = int(membersCount)
             odataIds = JsonExtract.get_values(link.jsonData, "@odata.id")
-            Trace.log(TraceLevel.INFO, '++ odataIds: {}'.format(odataIds))
+            Trace.log(TraceLevel.DEBUG, '++ odataIds: {}'.format(odataIds))
 
-            Trace.log(TraceLevel.INFO, '++ initialize_ports: membersCount={}, totalDrives={}'.format(membersCount, totalItems))
+            Trace.log(TraceLevel.DEBUG, '++ initialize_ports: membersCount={}, totalDrives={}'.format(membersCount, totalItems))
 
             # Don't include the main @odata.id for the Drive Collection, all others are Drives/#.#
             if (url[-1] == '/'):
@@ -392,7 +392,7 @@ class RedfishSystem:
             inited = True
 
         except Exception as e:
-            Trace.log(TraceLevel.INFO, '-- Unable to initialize ports, exception: {}'.format(e))
+            Trace.log(TraceLevel.ERROR, '-- Unable to initialize ports, exception: {}'.format(e))
             inited = False
 
         Trace.log(TraceLevel.VERBOSE, '++ initialize_ports: inited={}, count={}'.format(inited, len(cls.ports)))
@@ -410,7 +410,7 @@ class RedfishSystem:
         cls.initiators = []
 
         url = RedfishSystem.get_uri(redfishConfig, 'EndpointGroups')
-        Trace.log(TraceLevel.INFO, '++ initialize_initiators: url={}'.format(url))
+        Trace.log(TraceLevel.DEBUG, '++ initialize_initiators: url={}'.format(url))
 
         try:
             # GET DriveCollection
@@ -420,9 +420,9 @@ class RedfishSystem:
             membersCount = JsonExtract.get_value(link.jsonData, None, 'Members@odata.count', 1)
             totalItems = int(membersCount)
             odataIds = JsonExtract.get_values(link.jsonData, "@odata.id")
-            Trace.log(TraceLevel.INFO, '++ odataIds: {}'.format(odataIds))
+            Trace.log(TraceLevel.DEBUG, '++ odataIds: {}'.format(odataIds))
 
-            Trace.log(TraceLevel.INFO, '++ initialize_initiators: membersCount={}, totalDrives={}'.format(membersCount, totalItems))
+            Trace.log(TraceLevel.DEBUG, '++ initialize_initiators: membersCount={}, totalDrives={}'.format(membersCount, totalItems))
 
             # Don't include the main @odata.id for the Drive Collection, all others are Drives/#.#
             if (url[-1] == '/'):
@@ -455,7 +455,7 @@ class RedfishSystem:
             inited = True
 
         except Exception as e:
-            Trace.log(TraceLevel.INFO, '-- Unable to initialize initiators, exception: {}'.format(e))
+            Trace.log(TraceLevel.ERROR, '-- Unable to initialize initiators, exception: {}'.format(e))
             inited = False
 
         Trace.log(TraceLevel.VERBOSE, '++ initialize_initiators: inited={}, count={}'.format(inited, len(cls.initiators)))
@@ -475,21 +475,21 @@ class RedfishSystem:
         if (initialized is False and redfishConfig.sessionValid):
 
             tempstatus = cls.initialize_drives(redfishConfig)
-            Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_drives={}'.format(tempstatus))
+            Trace.log(TraceLevel.DEBUG, '++ initialize_system: initialize_drives={}'.format(tempstatus))
             if (tempstatus == True):
                 initialized = True
             else:
                 initialized = False
 
             tempstatus = cls.initialize_ports(redfishConfig)
-            Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_ports={}'.format(tempstatus))
+            Trace.log(TraceLevel.DEBUG, '++ initialize_system: initialize_ports={}'.format(tempstatus))
             if (tempstatus == True):
                 initialized = True
             else:
                 initialized = False
 
             tempstatus = cls.initialize_initiators(redfishConfig)
-            Trace.log(TraceLevel.INFO, '++ initialize_system: initialize_initiators={}'.format(tempstatus))
+            Trace.log(TraceLevel.DEBUG, '++ initialize_system: initialize_initiators={}'.format(tempstatus))
             if (tempstatus == True):
                 initialized = True
             else:
@@ -497,7 +497,7 @@ class RedfishSystem:
 
             cls.successfulSystemInit = initialized
 
-        Trace.log(TraceLevel.INFO, '++ initialize_system: {}'.format(initialized))
+        Trace.log(TraceLevel.VERBOSE, '++ initialize_system: {}'.format(initialized))
 
         return (initialized)
 

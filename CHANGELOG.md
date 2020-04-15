@@ -1,9 +1,12 @@
 # Change Log
 
+## [1.2.2] - 2020-04-15
+- Reduced output during unit testing
+
 ## [1.2.1] - 2020-04-09
 - Updates to 'show disks' command
 - Updates to 'show diskgroups' command
--- Correction to TestStorageGroup
+- Correction to TestStorageGroup
 
 ## [1.2.0] - 2020-04-06
 - Support for linear and virtual storage. Tested against the Seagate PODs storage system. 
