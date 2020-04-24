@@ -23,10 +23,10 @@
 # Example:
 #
 # (redfish) show storagegroups
-# 
-#      Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes  ConsumedBytes  Health  ClasOfService
-#  ---------------------------------------------------------------------------------------------------------------------
-#     dgA01  00c0ff5112460000f55a925d00000000        512         0      1283457024     1283457024      OK          RAID1
+#
+#                                       Name                                                       SerialNumber    State  Health  Exposed  LUN                          Initiators                    Ports
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  AVolume01_00c0ff51124900007db6945e01010000  00c0ff511249000066fa9f5e01000000_00c0ff51124900007db6945e01010000  Enabled      OK        1    1    00c0ff51124900007db6945e01010000              A0,B0,A1,B1
 #
 # @description-end
 #
@@ -176,19 +176,18 @@ class CommandHandler(CommandHandlerBase):
 
         else:
             print('')
-            print('                                 Name                                       SerialNumber    State  Health  VolumesAreExposed  LUN                            Volume                          Initiators                    Ports')
-            print(' -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
-            #                 AVolume02_500605b00ab61310  00c0ff51124600006839de5d01000000_500605b00ab61310  Enabled      OK              false   12  00c0ff51124600006839de5d01000000   500605b00ab61310,500605b00ab61311  A0,B0,A1,B1,A2,B2,A3,B3
+            print('                                       Name                                                       SerialNumber    State  Health  Exposed  LUN                          Initiators                    Ports')
+            print(' ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+            #       AVolume01_00c0ff51124900007db6945e01010000  00c0ff511249000066fa9f5e01000000_00c0ff51124900007db6945e01010000  Enabled      OK        1    1    00c0ff51124900007db6945e01010000              A0,B0,A1,B1
             if (self.groups != None):
                 for i in range(len(self.groups)):
-                    print(' {0: >36}  {1: >49}  {2: >7}  {3: >6}  {4: >17}  {5: >3}  {6: >31}  {7: >34}  {8: >23}'.format(
+                    print(' {0: >42}  {1: >49}  {2: >7}  {3: >6}  {4: >7}  {5: >3}  {6: >34}  {7: >23}'.format(
                         self.groups[i].Name,
                         self.groups[i].SerialNumber,
                         self.groups[i].State,
                         self.groups[i].Health,
                         self.groups[i].VolumesAreExposed,
                         self.groups[i].LogicalUnitNumber,
-                        self.groups[i].Volume,
                         ",".join(self.groups[i].ClientEndpointGroups),
                         ",".join(self.groups[i].ServerEndpointGroups),
                         ))

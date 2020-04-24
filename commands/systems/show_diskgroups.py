@@ -23,10 +23,15 @@
 # Example:
 #
 # (redfish) show diskgroups
-# 
-#      Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes  ConsumedBytes  Health  ClasOfService
-#  ---------------------------------------------------------------------------------------------------------------------
-#     dgA01  00c0ff5112460000f55a925d00000000        512         0      1283457024     1283457024      OK          RAID1
+#
+#          Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes   ConsumedBytes      Health   ClasOfService
+#  -------------------------------------------------------------------------------------------------------------------------------
+#         dgA01  00c0ff5112490000d9d69d5e00000000        512        99   1780997947392           16384          OK           RAID5
+#         dgA02  00c0ff5112490000dbd69d5e00000000        512       100   1181602545664               0          OK           RAID6
+#         dgA03  00c0ff5112490000e0d69d5e00000000        512       100    582211338240               0          OK           RAID1
+#         dgB01  00c0ff511254000024d79d5e00000000        512        99   1780997947392           16384          OK           RAID5
+#         dgB02  00c0ff511254000028d79d5e00000000        512       100   1181602545664               0          OK           RAID6
+#         dgB03  00c0ff51125400002ed79d5e00000000        512       100    582211338240               0          OK           RAID1 
 #
 # @description-end
 #
@@ -198,12 +203,13 @@ class CommandHandler(CommandHandlerBase):
 
         else:
             print('')
-            print('         Name                       SerialNumber  BlockSize  Capacity  AllocatedBytes  ConsumedBytes    Health  ClasOfService')
-            print(' ----------------------------------------------------------------------------------------------------------------------------')
+            #                  0                                 1          2         3               4               5           6               7
+            print('         Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes   ConsumedBytes      Health   ClasOfService')
+            print(' -------------------------------------------------------------------------------------------------------------------------------')
     
             if (self.groups != None):
                 for i in range(len(self.groups)):
-                    print(' {0: >12}  {1: >32}  {2: >9}  {3: >8}  {4: >14}  {5: >13}  {6: >6}  {7: >13}'.format(
+                    print(' {0: >12}  {1: >32}  {2: >9}  {3: >8}  {4: >14}  {5: >14}  {6: >10}  {7: >14}'.format(
                         self.groups[i].Name,
                         self.groups[i].SerialNumber,
                         self.groups[i].MaxBlockSizeBytes,

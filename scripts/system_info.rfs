@@ -2,6 +2,8 @@
 # Redfish API Script to Display System Information
 #
 
+create session
+
 show sessions
 
 show fans

@@ -23,12 +23,10 @@
 #
 # Example:
 #
-# Name Serial Number                    Class    Blocksize Total Size Avail  Snap Size OverCommit  Disk Groups Volumes  Low Thresh  Mid Thresh  High Thresh  Sec Fmt   Health
-# -----------------------------------------------------------------------------
-# A    00c0ff5112460000f75a925d01000000 Virtual  512       2341.6GB   2341.5GB  0B        Enabled     2           1        50.00 %     75.00 %  90.82 %      512n      OK
-# B    00c0ff51124800008863925d01000000 Virtual  512       576.8GB    576.8GB   0B        Enabled     1           0        50.00 %     75.00 %  76.00 %      512n      OK
-# -----------------------------------------------------------------------------
-# Success: Command completed successfully. (2019-10-01 14:18:01)
+#  Name                      SerialNumber  BlockSize  Volumes  Capacity  ReadRequests     ReadBytes  ReadTime  WriteRequests    WriteBytes  WriteTime  AllocatedBytes  ConsumedBytes  Health
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#     A  00c0ff5112490000d9d69d5e01000000        512        1        99         34035  142753136640      9848           8456   34568012288          0   3544811831296          16384      OK
+#     B  00c0ff511254000026d79d5e01000000        512        1        99         34026  142715387904     14801           8402   34550940160          0   3544811831296          16384      OK
 #
 # @description-end
 # 
@@ -188,13 +186,13 @@ class CommandHandler(CommandHandlerBase):
             # -----------------------------------------------------------------------------
             # A    00c0ff5112460000f75a925d01000000 Virtual  512       2341.6GB   2341.5GB  0B        Enabled     2           1        50.00 %     75.00 %  90.82 %      512n      OK
     
-            #          0                                 1          2        3         4             5          6         7              8           9         10              11             12      13
-            print(' Name                      SerialNumber  BlockSize  Volumes  Capacity  ReadRequests  ReadBytes  ReadTime  WriteRequests  WriteBytes  WriteTime  AllocatedBytes  ConsumedBytes  Health')
+            #          0                                 1          2        3         4             5             6         7              8             9         10              11             12      13
+            print(' Name                      SerialNumber  BlockSize  Volumes  Capacity  ReadRequests     ReadBytes  ReadTime  WriteRequests    WriteBytes  WriteTime  AllocatedBytes  ConsumedBytes  Health')
             print(' ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
     
             if (self.pools != None):
                 for i in range(len(self.pools)):
-                    print(' {0: >4}  {1: >32}  {2: >9}  {3: >7}  {4: >8}  {5: >12}  {6: >9}  {7: >8}  {8: >13}  {9: >10}  {10: >9}  {11: >14}  {12: >13}  {13: >6}'.format(
+                    print(' {0: >4}  {1: >32}  {2: >9}  {3: >7}  {4: >8}  {5: >12}  {6: >12}  {7: >8}  {8: >13}  {9: >12}  {10: >9}  {11: >14}  {12: >13}  {13: >6}'.format(
                         self.pools[i].Name,
                         self.pools[i].Id,
                         self.pools[i].MaxBlockSizeBytes,

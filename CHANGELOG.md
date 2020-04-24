@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.3] - 2020-04-24
+- Updated a number of show commands to match updated output 
+- Created a package zip file and a package tar ball for easy downloading
+
 ## [1.2.2] - 2020-04-15
 - Reduced output during unit testing
 

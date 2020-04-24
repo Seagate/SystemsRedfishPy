@@ -121,10 +121,11 @@ class VolumeInformation:
                     Trace.log(TraceLevel.TRACE, '   ++ Volume: ppools={}'.format(ppools))
                     if ('Members' in ppools):
                         self.Pool = ppools['Members'][0]['@odata.id']
-                    if ('@odata.id' in ppools):
-                        self.Pool = ppools['@odata.id']
 
                     words = self.Pool.split('/')
+                    Trace.log(TraceLevel.TRACE, '   ++ Volume: self.Pool={}'.format(self.Pool))
+                    Trace.log(TraceLevel.TRACE, '   ++ Volume: words={}, index={}, token={}'.format(len(words), len(words)-1, words[len(words)-1]))
+                    
                     if (len(words) > 0):
                         self.Pool = words[len(words)-1]
 

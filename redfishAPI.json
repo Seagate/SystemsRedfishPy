@@ -1,6 +1,6 @@
 {
     "configurationfile": "redfishAPI.json",
-    "version": "1.1.5",
+    "version": "1.2.3",
     "http": "https",
     "mcip": "",
     "username": "",
@@ -8,6 +8,7 @@
     "annotate": "yes",
     "urltimeout": "30",
     "linktestdelay": 0,
+    "dumphttpdata": 0,
     "dumpjsondata": "0",
     "dumppostdata": "0",
     "trace": "4",
