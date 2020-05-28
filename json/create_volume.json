@@ -1,0 +1,14 @@
+{
+    "Name": "AVolume01",
+    "CapacityBytes": 100000000000,
+    "CapacitySources": [
+        {
+            "@odata.id": "/redfish/v1/StorageServices/S1/StoragePools/A"
+        }
+    ],
+    "Links": {
+        "ClassOfService": {
+            "@odata.id": "/redfish/v1/StorageServices(1)/ClassesOfService(Default)"
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "ServerEndpointGroups": [
+        {
+            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/A0"
+        },
+        {
+            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/A1"
+        },
+        {
+            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/B0"
+        },
+        {
+            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/B1"
+        }
+    ],
+    "ClientEndpointGroups": [
+        {
+            "@odata.id": "/redfish/v1/StorageServices/S1/Endpoints/500605b00db9a070"
+        }
+    ],
+    "AccessCapabilities": [
+        "Read",
+        "Write"
+    ],
+    "MappedVolumes": [
+        {
+            "LogicalUnitNumber": "1",
+            "Volume": {
+                "@odata.id": "/redfish/v1/StorageServices/S1/Volumes/AVolume01"
+            }
+        }
+    ]
+}

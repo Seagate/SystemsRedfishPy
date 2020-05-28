@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.2.4] - 2020-05-28
+- Added a number of new HTTP operations in order to simply testing.
+-     http get <uri> 
+-     http delete <uri>
+-     http post <uri> [<json> | <filename>]
+-     http patch <uri> [<json> | <filename>]
+- Added core.ArgExtract to helop with command line argument extraction
+- Added new command 'save session' to update config data with session information
+
 ## [1.2.3] - 2020-04-24
 - Updated a number of show commands to match updated output 
 - Created a package zip file and a package tar ball for easy downloading

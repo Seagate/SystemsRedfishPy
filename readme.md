@@ -180,6 +180,21 @@ For example:
 (redfish) create volume name=TestVol01 size=100000000000 pool=A - to create a new volume
 ```
 
+### HTTP Commands
+
+The HTTP commands allow you to do native HTTP GET, DELETE, POST, and PATCH commands.
+
+As a note, most Redfish commands require that you establish a session with the target Redfish Service. If you use
+the 'http post' command to create a session, you should also call 'save session <id> <key>' so that all following
+http commands can use the session credentials.
+ 
+| Command                             | Description |
+| ----------------------------------- | ----------- |
+| http get <url>                      | Perform an HTTP GET operation on a URI |
+| http post <url> <json or filename>  | Perform an HTTP POST operation on a URI, sending the specified JSON data |
+| http patch <url> <json or filename> | Perform an HTTP PATCH operation on a URI, sending the specified JSON data |
+| http delete <url>                   | Perform an HTTP DELETE operation on a URI |
+
 ### Design
 
 If you want to make changes to this reference client, there is a [design document](DESIGN.md) that provides an overview
