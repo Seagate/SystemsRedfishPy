@@ -22,9 +22,9 @@ tool provides simple one-step commands handling multiple Redfish URI requests in
 this package are:
  
 * Command line or script file execution
-* Set up is a breeze and configuration settings are modified with a **bang** (`!setting <value>`)
+* Set up is a breeze and configuration settings are modified with a **bang** (`!setting [value]`)
 * Add new configuration variables via a single line with easy access routines
-* Handles multiple command sets for various product brands - `!brand <product>` to switch between command sets 
+* Handles multiple command sets for various product brands - `!brand [product]` to switch between command sets 
 * Drop in new commands to increase desired functionality - with no modifications to the infrastructure 
 * Help text built in to each command file
 * Built in unittest for quick regression testing of a Redfish service
@@ -125,23 +125,23 @@ When running commands, you have several options to help debug issues, and to con
 
 | Command                         | Description |
 | ------------------------------- | ----------- |
-| !annotate [True|False]          | Provides a banner for every line of script file processed. Default is True. |
+| !annotate [True,False]          | Provides a banner for every line of script file processed. Default is True. |
 | !brand [product]                | Specifies the folder to retrieve commands from. Default is systems, but example is also provided. |
-| !certificatecheck [True|False]  | When False, the URL will be opened using context=ssl._create_unverified_context. Default is False. |
+| !certificatecheck [True,False]  | When False, the URL will be opened using context=ssl._create_unverified_context. Default is False. |
 | !configurationfile [filename]   | Declare the filename where this data is stored. Should match actual filename. |
 | !dump                           | Print out all configuration options. This is useful to learn what settings are available. |
-| !dumphttpdata [True|False]      | Display all HTTP data read from the Redfish Service. Useful for additional info. Default is False. |
-| !dumpjsondata [True|False]      | Display all JSON data read from the Redfish Service. Default is False. |
-| !dumppostdata [True|False]      | Display all data that is sent via an HTTP POST operation. Default is False. |
-| !entertoexit [True|False]       | When True, pressing Enter in interactive mode will exit the tool. Default is False. |
+| !dumphttpdata [True,False]      | Display all HTTP data read from the Redfish Service. Useful for additional info. Default is False. |
+| !dumpjsondata [True,False]      | Display all JSON data read from the Redfish Service. Default is False. |
+| !dumppostdata [True,False]      | Display all data that is sent via an HTTP POST operation. Default is False. |
+| !entertoexit [True,False]       | When True, pressing Enter in interactive mode will exit the tool. Default is False. |
 | !http [https|https]             | Switch between use http:// and https://. Default is https. |
 | !linktestdelay [seconds]        | How long to delay betweeen URLs when running the 'redfish urls' command. Default is 0. |
 | !mcip 10.235.221.120            | Change all HTTP communications to use this new ip address. |
 | !password [password]            | Change the password to '[password]' that is used to log in to the Redfish Service. |
-| !showelapsed [True|False]       | Display how long each command took. Default is False. |
+| !showelapsed [True,False]       | Display how long each command took. Default is False. |
 | !trace [4-7]                    | Turn on additional tracing. 4=DEFAULT, 5=VERBOSE, 6=DEBUG, 7=TRACE. |
 | !urltimeout [seconds]           | How long to wait for a URL request before timing out. Default is 30. |
-| !usefinalslash [True|False]     | When True, all Redfish URIs will have a slash as the final character in the URL. Default is True. |
+| !usefinalslash [True,False]     | When True, all Redfish URIs will have a slash as the final character in the URL. Default is True. |
 | !username [name]                | Change the username to '[name]' that is used to log in to the Redfish Service. |
 | !version                        | Read only value of the last version used to write to this file. |
 
@@ -168,14 +168,14 @@ For example:
 
 | Command                     | Description |
 | --------------------------- | ----------- |
-| redfish json <url>          | Display the JSON data returned from a GET to <url>. Errors are also reported. |
+| redfish json [url]          | Display the JSON data returned from a GET to [url]. Errors are also reported. |
 | redfish urls [optional url] | Traverse every URL reported by the service, validate them, and produce a report. If no optional url is specified, then traversing starts with '/redfish/v1'. |
 
 
 ### Systems Commands
 
 The system commands use the Redfish Service API to create volumes, display disks, and other configuration and
-maintenance items.
+maintenance items. Use 'help [command]' to display additional examples. 
 
 For example:
 
@@ -192,15 +192,15 @@ For example:
 The HTTP commands allow you to do native HTTP GET, DELETE, POST, and PATCH commands.
 
 As a note, most Redfish commands require that you establish a session with the target Redfish Service. If you use
-the 'http post' command to create a session, you should also call 'save session <id> <key>' so that all following
+the 'http post' command to create a session, you should also call 'save session [id] [key]' so that all following
 http commands can use the session credentials.
  
 | Command                             | Description |
 | ----------------------------------- | ----------- |
-| http get <url>                      | Perform an HTTP GET operation on a URI |
-| http post <url> <json or filename>  | Perform an HTTP POST operation on a URI, sending the specified JSON data |
-| http patch <url> <json or filename> | Perform an HTTP PATCH operation on a URI, sending the specified JSON data |
-| http delete <url>                   | Perform an HTTP DELETE operation on a URI |
+| http get [url]                      | Perform an HTTP GET operation on a URI |
+| http post [url] [json or filename]  | Perform an HTTP POST operation on a URI, sending the specified JSON data |
+| http patch [url] [json or filename] | Perform an HTTP PATCH operation on a URI, sending the specified JSON data |
+| http delete [url]                   | Perform an HTTP DELETE operation on a URI |
 
 ### Design
 
