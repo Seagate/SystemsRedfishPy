@@ -70,12 +70,12 @@ python3 redfishAPI.py
 
 ## Requirements
 
-Your client computer must have Python3 installed. You will also need network access to the desired controller, and know the 
-IP Address of the target controller running the Redfish Service. User credentials are required in order to create a Redfish
-sessions and provision storage.
+Your client computer must have Python3.6 (or later) installed. You will also need network access to the desired controller,
+and know the IP Address of the target controller running the Redfish Service. User credentials are required in order to
+create a Redfish sessions and provision storage.
 
-Using **SystemsRedfishPy** does not rely on any other packages. But HTML and XML packages are used if you desire to run unit test cases. 
-See the [test document](UNITTEST.md) for more information.
+Using **SystemsRedfishPy** does not rely on any other packages. But HTML and XML packages are used if you desire to run unit test
+cases and produce HTML or XML reports. See the [test document](UNITTEST.md) for more information.
 
 
 ## Quick Tutorial
@@ -84,13 +84,22 @@ This client can run in either an interactive mode, or by parsing a script file. 
 interactive mode. All commands entered at the prompt can also be pasted into a text file and run as a script.
 
 Open a terminal window and change directories to the SystemsRedfishPy folder. Run the command 'python redfishAPI.py'
-and you will be presented with a '(redfish)' prompt. 
+and you will be presented with a '(redfish)' prompt.
+
+As a best practice, it is suggested that you copy redfishAPI.json to myconfig.json. Then edit the following properties in myconfig.json.
+* "configurationfile": "myconfig.json",
+* "dumphttpdata": "True",
+* "mcip": "[your-service-ip]",
+* "password": "[service-password]",
+* "username": "[service-username]",
+
+Then, use python redfishAPI.py -c myconfig.json to run interactive commands using your system configuration settings.
 
 ```bash
->python redfishAPI.py
+> python3.6 redfishAPI.py -c myconfig.json
 
 --------------------------------------------------------------------------------
-[1.0] Redfish API
+[1.2.5] Redfish API
 --------------------------------------------------------------------------------
 [] Run Redfish API commands interactively...
 
@@ -134,8 +143,8 @@ When running commands, you have several options to help debug issues, and to con
 | !dumpjsondata [True,False]      | Display all JSON data read from the Redfish Service. Default is False. |
 | !dumppostdata [True,False]      | Display all data that is sent via an HTTP POST operation. Default is False. |
 | !entertoexit [True,False]       | When True, pressing Enter in interactive mode will exit the tool. Default is False. |
-| !http [https|https]             | Switch between use http:// and https://. Default is https. |
-| !linktestdelay [seconds]        | How long to delay betweeen URLs when running the 'redfish urls' command. Default is 0. |
+| !http [https,https]             | Switch between use http:// and https://. Default is https. |
+| !linktestdelay [seconds]        | How long to delay between URLs when running the 'redfish urls' command. Default is 0. |
 | !mcip 10.235.221.120            | Change all HTTP communications to use this new ip address. |
 | !password [password]            | Change the password to '[password]' that is used to log in to the Redfish Service. |
 | !showelapsed [True,False]       | Display how long each command took. Default is False. |
@@ -153,12 +162,26 @@ This command will use the configuration settings, listed above, such as mcip, us
 establish a session.
 
 ```bash
+--------------------------------------------------------------------------------
+[1.2.5] Redfish API
+--------------------------------------------------------------------------------
+[] Run Redfish API commands interactively...
+
 (redfish) create session
+   -- Discovered: Root               >> /redfish/v1
+   -- Discovered: Systems            >> /redfish/v1/ComputerSystem/
+   -- Discovered: Chassis            >> /redfish/v1/Chassis/
+   -- Discovered: StorageServices    >> /redfish/v1/StorageServices/
+   -- Discovered: Managers           >> /redfish/v1/Managers/
+   -- Discovered: Tasks              >> /redfish/v1/TaskService/
+   -- Discovered: SessionService     >> /redfish/v1/SessionService/
+   -- Discovered: Sessions           >> /redfish/v1/SessionService/Sessions/
+   -- Discovered: metadata           >> /redfish/v1$metadata/
+   -- Discovered: odata              >> /redfish/v1odata/
 
-++ Establish Redfish session: (/redfish/v1/SessionService/Sessions)...
-[] Redfish session established (key=8356051e862ca5de23bc2850a3903ad6)
+[] Redfish session established (4:29eb5e61a38061fc6b1bce6afb036a5d)
 
-[] Elapsed time: 0m 1s to execute command
+[] Elapsed time: 0m 2s to execute command
 ```
 
 The main redfish commands are used for debugging or learning more about the data returned by the Redfish Service.
@@ -201,6 +224,18 @@ http commands can use the session credentials.
 | http post [url] [json or filename]  | Perform an HTTP POST operation on a URI, sending the specified JSON data |
 | http patch [url] [json or filename] | Perform an HTTP PATCH operation on a URI, sending the specified JSON data |
 | http delete [url]                   | Perform an HTTP DELETE operation on a URI |
+
+Examples:
+
+```bash
+(redfish) http get /redfish
+(redfish) http get /redfish/v1
+(redfish) http post /redfish/v1/SessionService/Sessions { "UserName": "[username]", "Password": "[password]" }
+(redfish) save session [id] [key]
+(redfish) http get /redfish/v1/Chassis
+(redfish) http get /redfish/v1/Managers
+(redfish) http post /redfish/v1/SessionService/Sessions credentials.json
+```
 
 ### Design
 
