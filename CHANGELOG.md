@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.2.5] - 2020-05-29
+- Added new config variable 'usefinalslash' which adds a '/' to the end of all URIs, or doesn't
+
 ## [1.2.4] - 2020-05-28
 - Added a number of new HTTP operations in order to simply testing.
 -     http get <uri> 

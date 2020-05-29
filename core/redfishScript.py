@@ -58,7 +58,7 @@ class RedfishScript:
                 else:
                     lineCount += 1
 
-                    if (redfishConfig.get_value('annotate') == 'yes'):
+                    if (redfishConfig.get_bool('annotate')):
                         print('')
                         print('=' * 80)
                         print('= LINE[{0}] {1}'.format(lineCount, line))

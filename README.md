@@ -121,23 +121,30 @@ To configure which controller to talk to:
 | !username [name]     | Change the username to '[name]' that is used to log in to the Redfish Service. |
 | !password [password] | Change the password to '[password]' that is used to log in to the Redfish Service. |
 
-When running commands, you have several options to help debug issues, and to configure the system:
+When running commands, you have several options to help debug issues, and to configure the system. Here is a complete list:
 
 | Command                         | Description |
 | ------------------------------- | ----------- |
-| !http [https|https]             | Switch between use http:// and https:// |
-| !certificatecheck [True|False]  | Perform a SSH certificate check or don't. |
-| !annotate [0|1]                 | Display a banner of the script file line. |
-| !urltimeout [seconds]           | How long to wait for a URL request before timing out. |
-| !urltimeout [seconds]           | How long to wait for a URL request before timing out. |
-| !brand [product]                | SPecifies the folder to retrieve commands from. Default is systems, but example is also provided. |
-| !showelapsed [0|1]              | Display how long each command took. |
-| !dumpjsondata [0|1]             | Display all JSON data read from the Redfish Service. Zero will turn it off. |
-| !dumppostdata [0|1]             | Display all data that is sent via an HTTP POST operation. Zero will turn it off. |
-| !trace 5                        | Turn on additional tracing at a VERBOSE level. |
-| !trace 6                        | Turn on additional tracing at a DEBUG level. |
-| !trace 7                        | Turn on additional tracing at a TRACE level. |
-| !trace 4                        | Reset tracing to the default INFO level. |
+| !annotate [True|False]          | Provides a banner for every line of script file processed. Default is True. |
+| !brand [product]                | Specifies the folder to retrieve commands from. Default is systems, but example is also provided. |
+| !certificatecheck [True|False]  | When False, the URL will be opened using context=ssl._create_unverified_context. Default is False. |
+| !configurationfile [filename]   | Declare the filename where this data is stored. Should match actual filename. |
+| !dump                           | Print out all configuration options. This is useful to learn what settings are available. |
+| !dumphttpdata [True|False]      | Display all HTTP data read from the Redfish Service. Useful for additional info. Default is False. |
+| !dumpjsondata [True|False]      | Display all JSON data read from the Redfish Service. Default is False. |
+| !dumppostdata [True|False]      | Display all data that is sent via an HTTP POST operation. Default is False. |
+| !entertoexit [True|False]       | When True, pressing Enter in interactive mode will exit the tool. Default is False. |
+| !http [https|https]             | Switch between use http:// and https://. Default is https. |
+| !linktestdelay [seconds]        | How long to delay betweeen URLs when running the 'redfish urls' command. Default is 0. |
+| !mcip 10.235.221.120            | Change all HTTP communications to use this new ip address. |
+| !password [password]            | Change the password to '[password]' that is used to log in to the Redfish Service. |
+| !showelapsed [True|False]       | Display how long each command took. Default is False. |
+| !trace [4-7]                    | Turn on additional tracing. 4=DEFAULT, 5=VERBOSE, 6=DEBUG, 7=TRACE. |
+| !urltimeout [seconds]           | How long to wait for a URL request before timing out. Default is 30. |
+| !usefinalslash [True|False]     | When True, all Redfish URIs will have a slash as the final character in the URL. Default is True. |
+| !username [name]                | Change the username to '[name]' that is used to log in to the Redfish Service. |
+| !version                        | Read only value of the last version used to write to this file. |
+
 
 ### Redfish Commands
 

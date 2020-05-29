@@ -73,7 +73,8 @@ class UrlAccess():
             request = urllib.request.Request(fullUrl, method = method)
 
             if (addAuth and redfishConfig.sessionKey is not None):
-                request.add_header('x-auth-token', redfishConfig.sessionKey)
+                Trace.log(TraceLevel.VERBOSE, '   ++ UrlAccess: X-Auth-Token=({})'.format(redfishConfig.sessionKey))
+                request.add_header('X-Auth-Token', redfishConfig.sessionKey)
 
             startTime = time.time()
             Trace.log(TraceLevel.TRACE, '   >> startTime={}'.format(startTime))
@@ -157,12 +158,12 @@ class UrlAccess():
             if (callable(read_op)):
                 Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error START  ' + '='*60)
                 errorMessage = err.read()
-                Trace.log(TraceLevel.VERBOSE, '  errorMessage = {}'.format(errorMessage))
-                Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
                 if (redfishConfig.get_bool('dumphttpdata')):
                     Trace.log(TraceLevel.INFO, '   -- httpData {}'.format(errorMessage))
-
-            pass
+                else:
+                    Trace.log(TraceLevel.VERBOSE, '  errorMessage = {}'.format(errorMessage))
+                Trace.log(TraceLevel.VERBOSE, '   ' + '='*60 + '  HTTP Error END  ' + '='*60)
+                pass
 
         except urllib.error.HTTPError as err:
             link.update_status(err.code, err.reason)

@@ -41,23 +41,24 @@ class RedfishConfig:
         #
         # Add new configuration settings here, they will be automatically written to the JSON file.
         #
-        self.dictionary['configurationfile'] = filename
-        self.dictionary['version'] = __version__
-        self.dictionary['http'] = ''
-        self.dictionary['mcip'] = ''
-        self.dictionary['username'] = ''
-        self.dictionary['password'] = ''
-        self.dictionary['annotate'] = 'yes'
-        self.dictionary['urltimeout'] = 10
-        self.dictionary['linktestdelay'] = 0
-        self.dictionary['dumphttpdata'] = 0
-        self.dictionary['dumpjsondata'] = 0
-        self.dictionary['dumppostdata'] = 0
-        self.dictionary['trace'] = int(TraceLevel.INFO)
+        self.dictionary['annotate'] = True
         self.dictionary['brand'] = 'systems'
-        self.dictionary['showelapsed'] = False
         self.dictionary['certificatecheck'] = False
+        self.dictionary['configurationfile'] = filename
+        self.dictionary['dumphttpdata'] = False
+        self.dictionary['dumpjsondata'] = False
+        self.dictionary['dumppostdata'] = False
         self.dictionary['entertoexit'] = False
+        self.dictionary['http'] = 'https'
+        self.dictionary['linktestdelay'] = 0
+        self.dictionary['mcip'] = ''
+        self.dictionary['password'] = ''
+        self.dictionary['showelapsed'] = False
+        self.dictionary['trace'] = int(TraceLevel.INFO)
+        self.dictionary['urltimeout'] = 30
+        self.dictionary['usefinalslash'] = True
+        self.dictionary['username'] = ''
+        self.dictionary['version'] = __version__
         
         Trace.log(TraceLevel.DEBUG, '++ Initilize Redfish API configuration from ({})...'.format(filename))
 

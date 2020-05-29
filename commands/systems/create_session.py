@@ -80,8 +80,7 @@ class CommandHandler(CommandHandlerBase):
             else:
                 Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
             
-            link.sessionKey = link.response.getheader('x-auth-token', '')
-            redfishConfig.sessionKey = link.sessionKey
+            redfishConfig.sessionKey = link.response.getheader('X-Auth-Token', '')
             if (redfishConfig.sessionKey != ''):
                 redfishConfig.sessionValid = True
 
