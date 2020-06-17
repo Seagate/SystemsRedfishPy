@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.6] - 2020-06-17
+- Improvements to better hanlde Redfish requests when a sesison has not been established.
+- Added 'show enclosures' command 
+
 ## [1.2.5] - 2020-05-29
 - Added new config variable 'usefinalslash' which adds a '/' to the end of all URIs, or doesn't
 

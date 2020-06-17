@@ -140,15 +140,16 @@ class CommandHandler(CommandHandlerBase):
             RedfishSystem.initialize_service_root_uris(redfishConfig)
             self.startingurl = RedfishSystem.get_uri(redfishConfig, 'Root')
             
-        Trace.log(TraceLevel.INFO, '   ++ CommandHandler: redfish urls // starting url ({})'.format(self.startingurl))
+        Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // starting url ({})'.format(self.startingurl))
 
         return (self.startingurl)
 
     @classmethod
     def process_json(self, redfishConfig, url):
-
         Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // process_json url ({})'.format(url))
+        sleepTime = redfishConfig.get_value('linktestdelay')
 
+        Trace.log(TraceLevel.VERBOSE, '... process_url ({})'.format(url))
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', True)
         self.allLinks[url] = link
         self.dump_links(self)
@@ -156,15 +157,13 @@ class CommandHandler(CommandHandlerBase):
 
         # While there are still URLs to check, continue to GET links and process until all links have been checked
         while self.links_to_check(self):
-
-            sleepTime = redfishConfig.get_value('linktestdelay')
             if (sleepTime):
                 time.sleep(sleepTime)
             Trace.log(TraceLevel.INFO, '   .. urls total ({}) urls to process ({})'.format(len(self.allLinks), self.total_links_to_check(self)))
             
             nextLink = self.get_next_link(self)
             if (nextLink != None):
-                Trace.log(TraceLevel.DEBUG, '... process_url ({})'.format(nextLink.url))
+                Trace.log(TraceLevel.VERBOSE, '... process_url ({})'.format(nextLink.url))
                 self.process_next_url(redfishConfig, nextLink)
 
     @classmethod
@@ -192,7 +191,7 @@ class CommandHandler(CommandHandlerBase):
         
         print('')
         print(' Valid    Status        Reason  URL')
-        print('-' * (32 + 80 + 20))
+        print('-' * (132))
 
         for key in sorted (self.allLinks.keys()):
             link = self.allLinks[key]
@@ -201,3 +200,10 @@ class CommandHandler(CommandHandlerBase):
                 marker = '** Not checked!'
             print('{0: >6}  {1: >8}  {2: >16}  {3: <80}  {4}'.format(str(link.valid), str(link.urlStatus), str(link.urlReason), link.url, marker))
 
+        print('')
+        print('-' * (132))
+        print(' [] Starting URL: {}'.format(self.startingurl))
+        print(' [] Total URLs  : {0: >4}'.format(totalUrls))
+        print(' [] Total OK    : {0: >4}'.format(totalOk))
+        print(' [] Total Errors: {0: >4}'.format(totalErrors))
+        print('-' * (132))

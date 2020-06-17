@@ -104,15 +104,20 @@ class UrlAccess():
             Trace.log(TraceLevel.TRACE, '   >> elapsed={}'.format(elapsed))
 
             link.elapsedMicroseconds = elapsed
-            link.urlData = link.response.read()
+            link.urlData = link.response.read().decode('utf-8')
+            
+            Trace.log(TraceLevel.TRACE, '[[ urlData DATA ]]')
+            Trace.log(TraceLevel.TRACE, '{}'.format(link.urlData))
+            Trace.log(TraceLevel.TRACE, '[[ urlData DATA END ]]')
 
             if (link.urlData):
                 try:
                     headers = link.response.getheaders()
                     # Trace.log(TraceLevel.TRACE, '@@ headers={}'.format(json.dumps(headers, indent=4)))
                     contentType = headers[1][1]
-                    if ('json' or 'nosniff' in contentType):
-                        link.jsonData = json.loads(link.urlData.decode('utf-8'))
+                    Trace.log(TraceLevel.TRACE, '   -- contentType: {}'.format(contentType))
+                    if ('json' in contentType or 'nosniff' in contentType):
+                        link.jsonData = json.loads(link.urlData)
                     else:
                         Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: unhandled content type = {}'.format(contentType))
 
