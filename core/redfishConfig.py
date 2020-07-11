@@ -50,6 +50,7 @@ class RedfishConfig:
         self.dictionary['dumppostdata'] = False
         self.dictionary['entertoexit'] = False
         self.dictionary['http'] = 'https'
+        self.dictionary['httpbasicauth'] = False
         self.dictionary['linktestdelay'] = 0
         self.dictionary['mcip'] = ''
         self.dictionary['password'] = ''
@@ -125,12 +126,12 @@ class RedfishConfig:
     @classmethod
     def save(self):
         configurationfile = self.dictionary['configurationfile']
-        Trace.log(TraceLevel.VERBOSE, '   -- Save Redfish API configuration to ({})'.format(configurationfile))
+        Trace.log(TraceLevel.VERBOSE, '-- Save Redfish API configuration to ({})'.format(configurationfile))
         try:
             with open(configurationfile, "w") as write_file:
                 json.dump(self.dictionary, write_file, indent=4)
         except:
-            Trace.log(TraceLevel.ERROR, '   -- Unable to save configuration to ({}) - check spelling'.format(configurationfile))
+            Trace.log(TraceLevel.ERROR, '-- Unable to save configuration to ({}) - check spelling'.format(configurationfile))
             pass
 
     @classmethod

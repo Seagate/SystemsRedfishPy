@@ -84,7 +84,7 @@ class RedfishSystem:
     @classmethod
     def initialize_service_root_uris(cls, redfishConfig):
 
-        Trace.log(TraceLevel.DEBUG, '++ initialize_service_root_uris (BaseInit={})'.format(cls.successfulRootInit))
+        Trace.log(TraceLevel.DEBUG, '++ initialize_service_root_uris (RootInit={})'.format(cls.successfulRootInit))
         
         if (cls.successfulRootInit == True):
             return
@@ -103,16 +103,18 @@ class RedfishSystem:
             else:
                 Trace.log(TraceLevel.ERROR, '-- System Init: Invalid URL link for ({})'.format(url))
                 cls.successfulRootInit = False
-    
+
             # GET Redfish Root Services
             if (cls.successfulRootInit):
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.get_uri_simple("Root")), 'GET', False, None)
-                cls.store_uri("Systems", link)
-                cls.store_uri("Chassis", link)
-                cls.store_uri("StorageServices", link)
-                cls.store_uri("Managers", link)
-                cls.store_uri("Tasks", link)
-                cls.store_uri("SessionService", link)
+                possibleEntities = [
+                    'AccountService', 'AggregationService', 'CertificateService', 'Chassis', 'CompositionService',
+                    'EventService', 'Fabrics', 'Facilities', 'JobService', 'JsonSchemas', 'Managers', 'PowerEquipment',
+                    'Registries', 'ResourceBlocks', 'SessionService', 'StorageServices', 'StorageSystems', 'Systems',
+                    'Tasks', 'TelemetryService', 'UpdateService'
+                    ]
+                for entity in possibleEntities:
+                    cls.store_uri(entity, link)
         
                 cls.store_uri_value("Sessions", cls.get_uri_simple("SessionService") + 'Sessions/')
                 cls.store_uri_value("metadata", cls.get_uri_simple("Root") + '$metadata/' )

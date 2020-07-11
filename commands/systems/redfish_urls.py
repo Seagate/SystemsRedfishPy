@@ -101,32 +101,35 @@ class CommandHandler(CommandHandlerBase):
 
     def add_links(self, data, parent):
 
-        Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: add_links ({}) parent ({})'.format(data, parent))
+        Trace.log(TraceLevel.TRACE, '   ++ add_links data ({}) parent ({})'.format(data, parent))
 
         if isinstance(data, dict):
             for k, v in data.items():
                 if isinstance(v, dict):
-                    Trace.log(TraceLevel.TRACE, '   ++ add_links dict ({})'.format(v))
-                    self.add_links(self, v, k)
+                    Trace.log(TraceLevel.TRACE, '   ++ add_links dict v ({}), k ({})'.format(v, k))
+                    self.add_links(self, v, parent)
                 elif isinstance(v, list):
                     for i in v:
-                        Trace.log(TraceLevel.TRACE, '   ++ add_links list ({})'.format(i))
-                        self.add_links(self, i, k)
+                        Trace.log(TraceLevel.TRACE, '   ++ add_links list i ({}) k ({})'.format(i, k))
+                        self.add_links(self, i, parent)
                 else:
                     Trace.log(TraceLevel.TRACE, '   @@ {0: >20} : {1: >24} -- {2}'.format(parent, k, v))
                     if (k == '@odata.id'):
                         if (v not in self.allLinks):
-                            Trace.log(TraceLevel.DEBUG, '   @@ ++ New Link: ({})'.format(v))
+                            Trace.log(TraceLevel.DEBUG, '   @@ ++ New Link: ({}) parent ({})'.format(v, parent))
                             link = UrlStatus(v)
+                            link.parent = parent
                             self.allLinks[v] = link
                             self.dump_links(self)
 
 
     @classmethod
     def process_next_url(self, redfishConfig, link):
-        Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // process_next_url ({})'.format(link.url))
+        Trace.log(TraceLevel.TRACE, '   ++ redfish urls // process_next_url ({})'.format(link.url))
         UrlAccess.process_request(redfishConfig, link, 'GET', True)
-        self.add_links(self, link.jsonData, '')
+        if (link.valid == False):
+            Trace.log(TraceLevel.VERBOSE, '   @@ INVALID url ({}) parent ({})'.format(link.url, link.parent))
+        self.add_links(self, link.jsonData, link.url)
 
 
     @classmethod
@@ -140,20 +143,20 @@ class CommandHandler(CommandHandlerBase):
             RedfishSystem.initialize_service_root_uris(redfishConfig)
             self.startingurl = RedfishSystem.get_uri(redfishConfig, 'Root')
             
-        Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // starting url ({})'.format(self.startingurl))
+        Trace.log(TraceLevel.TRACE, '   ++ redfish urls // starting url ({})'.format(self.startingurl))
 
         return (self.startingurl)
 
     @classmethod
     def process_json(self, redfishConfig, url):
-        Trace.log(TraceLevel.TRACE, '   ++ CommandHandler: redfish urls // process_json url ({})'.format(url))
-        sleepTime = redfishConfig.get_value('linktestdelay')
+        Trace.log(TraceLevel.TRACE, '   ++ redfish urls // process_json url ({})'.format(url))
+        sleepTime = redfishConfig.get_int('linktestdelay')
 
-        Trace.log(TraceLevel.VERBOSE, '... process_url ({})'.format(url))
+        Trace.log(TraceLevel.VERBOSE, '.. process_url START ({})'.format(url))
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', True)
         self.allLinks[url] = link
         self.dump_links(self)
-        self.add_links(self, link.jsonData, '')
+        self.add_links(self, link.jsonData, url)
 
         # While there are still URLs to check, continue to GET links and process until all links have been checked
         while self.links_to_check(self):
@@ -163,7 +166,7 @@ class CommandHandler(CommandHandlerBase):
             
             nextLink = self.get_next_link(self)
             if (nextLink != None):
-                Trace.log(TraceLevel.VERBOSE, '... process_url ({})'.format(nextLink.url))
+                Trace.log(TraceLevel.VERBOSE, '.. process_url ({})'.format(nextLink.url))
                 self.process_next_url(redfishConfig, nextLink)
 
     @classmethod

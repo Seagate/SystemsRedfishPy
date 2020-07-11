@@ -15,6 +15,7 @@
 
 from core.label import Label
 from core.trace import TraceLevel, Trace
+import base64
 import config
 import json
 import socket
@@ -38,6 +39,7 @@ class UrlStatus():
     checked = False
     valid = False
     elapsedMicroseconds = 0
+    parent = ''
 
     def __init__(self, url):
         self.url = url
@@ -72,8 +74,15 @@ class UrlAccess():
 
             request = urllib.request.Request(fullUrl, method = method)
 
-            if (addAuth and redfishConfig.sessionKey is not None):
-                Trace.log(TraceLevel.VERBOSE, '   ++ UrlAccess: X-Auth-Token=({})'.format(redfishConfig.sessionKey))
+            if redfishConfig.get_bool('httpbasicauth'):
+                Trace.log(TraceLevel.DEBUG, '   -- Using HTTP Basic Auth')
+                uername_password = redfishConfig.get_value('username') + ':' + redfishConfig.get_value('password')
+                encoded = base64.b64encode(str.encode(uername_password))
+                Trace.log(TraceLevel.DEBUG, '   -- uername_password is ({}) encoded is ({})'.format(uername_password, encoded))
+                request.add_header('Authorization', 'Basic ' + str(encoded))
+
+            elif (addAuth and redfishConfig.sessionKey is not None):
+                Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: X-Auth-Token=({})'.format(redfishConfig.sessionKey))
                 request.add_header('X-Auth-Token', redfishConfig.sessionKey)
 
             startTime = time.time()

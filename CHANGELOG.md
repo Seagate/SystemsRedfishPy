@@ -1,7 +1,12 @@
 # Change Log
 
+## [1.2.7] - 2020-07-09
+- Added new config option 'httpbasicauth' True|False. When True, use HTTP Basic Auth instead of Sessions.
+- Updated Redfish URI discovery to include all possible Redfish 2020.2 ServiceRoot entities.
+- Updated 'redfish urls' command to print the parent URI when an error occurs. 
+
 ## [1.2.6] - 2020-06-17
-- Improvements to better hanlde Redfish requests when a sesison has not been established.
+- Improvements to better handle Redfish requests when a session has not been established.
 - Added 'show enclosures' command 
 
 ## [1.2.5] - 2020-05-29
@@ -13,7 +18,7 @@
 -     http delete <uri>
 -     http post <uri> [<json> | <filename>]
 -     http patch <uri> [<json> | <filename>]
-- Added core.ArgExtract to helop with command line argument extraction
+- Added core.ArgExtract to help with command line argument extraction
 - Added new command 'save session' to update config data with session information
 
 ## [1.2.3] - 2020-04-24
@@ -55,7 +60,7 @@
 ## [1.1.4] - 2020-01-10
 - Added new command 'delete sessions $sessionid' so that a script can automatically delete the current
   session and not leave it active after the python redfishAPI exits.
-- Added a new simple Label object to encode and decode interal variables, such as $sessionid.
+- Added a new simple Label object to encode and decode internal variables, such as $sessionid.
 - Added new redfishAPI command line option to pass in a user config file. The user can now call
   python redfishAPI --config myconfig.json or -c myconfig.json and not have to modify the checked in
   version. This also applies to python redfishUnittest --config myconfig.json or -c myconfig.json.
@@ -73,7 +78,7 @@
 ## [1.1.1] - 2019-12-16
 - Initial Public Release
 - Commands Provided:
-    * **create storagegroup** - Create a storage group to map a volume making it visibile to a host or hosts.
+    * **create storagegroup** - Create a storage group to map a volume making it visible to a host or hosts.
     * **create session** - Establish a session with the Redfish Service (using mcip, username, and password)
     * **create volume** - Create a volume
     * **delete diskgroups** - Delete one or more comma-separated disk groups by name or serial number
