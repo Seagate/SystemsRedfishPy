@@ -1,7 +1,8 @@
 # Change Log
 
-## [2.0.0] - 2020-07-16
+## [2.0.1] - 2020-07-16
 - Changes based on Redfish Service Phase II updates 
+- Updates to 'redfish odata' and 'redfish metadata'
 
 ## [1.2.7] - 2020-07-09
 - Added new config option 'httpbasicauth' True|False. When True, use HTTP Basic Auth instead of Sessions.
