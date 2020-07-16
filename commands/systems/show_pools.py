@@ -188,7 +188,7 @@ class CommandHandler(CommandHandlerBase):
     
             #          0                                 1          2        3         4             5             6         7              8             9         10              11             12      13
             print(' Name                      SerialNumber  BlockSize  Volumes  Capacity  ReadRequests     ReadBytes  ReadTime  WriteRequests    WriteBytes  WriteTime  AllocatedBytes  ConsumedBytes  Health')
-            print(' ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+            print(' -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
     
             if (self.pools != None):
                 for i in range(len(self.pools)):

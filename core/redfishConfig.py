@@ -66,16 +66,20 @@ class RedfishConfig:
         currentvalue = 0
         
         with open(filename, "r") as read_file:
-            settings = json.load(read_file)
+            try:
+                Trace.log(TraceLevel.VERBOSE, 'Open JSON configuration file {}'.format(read_file))
+                settings = json.load(read_file)
 
-            for key in self.dictionary:
-                if key in settings:
-                    self.dictionary[key] = settings[key]
-                Trace.log(TraceLevel.DEBUG, '   -- {0: <8} : {1}'.format(key, self.dictionary[key]))
+                for key in self.dictionary:
+                    if key in settings:
+                        self.dictionary[key] = settings[key]
+                    Trace.log(TraceLevel.DEBUG, '   -- {0: <8} : {1}'.format(key, self.dictionary[key]))
 
-        self.update_trace('trace', currentvalue, self.dictionary['trace'])
-        self.dictionary['version'] = __version__
-        self.save()
+                self.update_trace('trace', currentvalue, self.dictionary['trace'])
+                self.dictionary['version'] = __version__
+                self.save()
+            except:
+                Trace.log(TraceLevel.ERROR, 'Cannot parse JSON configuration file {}'.format(read_file))
 
     @classmethod
     def get_value(self, key):
@@ -87,6 +91,26 @@ class RedfishConfig:
             value = int(self.dictionary[key])
         except:
             value = -1
+        return value
+
+    @classmethod
+    def get_float(self, key):
+        try:
+            value = float(self.dictionary[key])
+        except:
+            value = -1.0
+        return value
+
+    @classmethod
+    def get_version(self, key):
+        try:
+            vstring = self.dictionary[key]
+            words = vstring.split('.')
+            if (len(words) >= 2):
+                vstring = words[0] + '.' + words[1]
+            value = float(vstring)
+        except:
+            value = -1.0
         return value
 
     @classmethod

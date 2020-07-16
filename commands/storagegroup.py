@@ -63,7 +63,6 @@ def CreateStorageGroupRequestProperties(redfishConfig, command, creating):
         Trace.log(TraceLevel.DEBUG, '++ Create Storage Group Request: ({})...'.format(command))
 
         endpointsUrl = RedfishSystem.get_uri(redfishConfig, 'Endpoints')
-        endpointGroupsUrl = RedfishSystem.get_uri(redfishConfig, 'EndpointGroups')
 
         # From the command, build up the required JSON data
         # Examples:
@@ -107,11 +106,11 @@ def CreateStorageGroupRequestProperties(redfishConfig, command, creating):
             if (jsonType is JsonType.ARRAY):
                 for i in range(len(ports)):
                     JsonBuilder.newElement('dict', JsonType.DICT, True)
-                    JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', endpointGroupsUrl + ports[i])
+                    JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', endpointsUrl + ports[i])
                     JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
             else:
                 JsonBuilder.newElement('dict', JsonType.DICT, True)
-                JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', endpointGroupsUrl + ports)
+                JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', endpointsUrl + ports)
                 JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict'))
             JsonBuilder.addElement('main', JsonType.DICT, 'ServerEndpointGroups', JsonBuilder.getElement('array'))
 

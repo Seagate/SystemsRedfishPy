@@ -82,15 +82,29 @@ class StorageGroupInformation:
                 self.ClientEndpointGroups = []
                 ceg = link.jsonData['ClientEndpointGroups']
                 for i in range(len(ceg)):
-                    # Example: "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/500605b00ab61310"
-                    url = ceg[i]['@odata.id'].replace(endpointGroupsUrl, '')
+                    words = ceg[i]['@odata.id'].split('/')
+                    if (redfishConfig.get_version('version') < 2):
+                        # Example: "@odata.id": "/redfish/v1/StorageServices/S1/Endpoints/500605b00ab61310"
+                        if (len(words) >= 5):
+                            url = words[5]
+                    else:
+                        # Example: "@odata.id": "/redfish/v1/Systems/{SystemsId}/Storage/{StorageId}/Endpoints/500605b00ab61310"
+                        if (len(words) >= 7):
+                            url = words[7]
                     self.ClientEndpointGroups.append(url)
 
                 self.ServerEndpointGroups = []
                 seg = link.jsonData['ServerEndpointGroups']
                 for i in range(len(seg)):
-                    # Example: "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/500605b00ab61310"
-                    url = seg[i]['@odata.id'].replace(endpointGroupsUrl, '')
+                    words = seg[i]['@odata.id'].split('/')
+                    if (redfishConfig.get_version('version') < 2):
+                        # Example: "@odata.id": "/redfish/v1/StorageServices/S1/Endpoint/A0"
+                        if (len(words) >= 6):
+                            url = words[6]
+                    else:
+                        # Example: "@odata.id": "/redfish/v1/Systems/{SystemsId}/Storage/{StorageId}/Endpoints/A0"
+                        if (len(words) >= 8):
+                            url = words[8]
                     self.ServerEndpointGroups.append(url)
 
                 mv = link.jsonData['MappedVolumes']
