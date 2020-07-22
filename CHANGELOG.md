@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.0.2] - 2020-07-22
+- Updated 'create session' to display the session key
+- Enhanced 'show storagegroups' to check JSON data inclusion before retrieving values.
+
 ## [2.0.1] - 2020-07-16
 - Changes based on Redfish Service Phase II updates 
 - Updates to 'redfish odata' and 'redfish metadata'

@@ -66,61 +66,81 @@ class StorageGroupInformation:
         Trace.log(TraceLevel.DEBUG, '   ++ Storage Group init from URL {}'.format(url))
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
-        endpointGroupsUrl = RedfishSystem.get_uri(redfishConfig, 'EndpointGroups')
+        if (link.valid and link.jsonData is not None):
 
-        if (link.valid):
-            Trace.log(TraceLevel.VERBOSE, '   ++ Storage Group: ({}, {})'.format(link.jsonData['Id'], link.jsonData['Name']))
+            if ('Id' in link.jsonData and 'Name' in link.jsonData):
+                Trace.log(TraceLevel.DEBUG, '   ++ Storage Group: ({}, {})'.format(link.jsonData['Id'], link.jsonData['Name']))
 
-            try:
+            if ('Description' in link.jsonData):
                 self.Description = link.jsonData['Description']
-                self.SerialNumber = link.jsonData['Id']
-                self.MembersAreConsistent = link.jsonData['MembersAreConsistent']
-                self.VolumesAreExposed = link.jsonData['VolumesAreExposed']
+
+            if ('Name' in link.jsonData):
                 self.Name = link.jsonData['Name']
+
+            if ('Id' in link.jsonData):
+                self.SerialNumber = link.jsonData['Id']
+
+            if ('VolumesAreExposed' in link.jsonData):
+                self.VolumesAreExposed = link.jsonData['VolumesAreExposed']
+
+            if ('AccessState' in link.jsonData):
                 self.AccessState = link.jsonData['AccessState']
 
-                self.ClientEndpointGroups = []
+            self.ClientEndpointGroups = []
+            if ('ClientEndpointGroups' in link.jsonData):
                 ceg = link.jsonData['ClientEndpointGroups']
+
                 for i in range(len(ceg)):
-                    words = ceg[i]['@odata.id'].split('/')
-                    if (redfishConfig.get_version('version') < 2):
-                        # Example: "@odata.id": "/redfish/v1/StorageServices/S1/Endpoints/500605b00ab61310"
-                        if (len(words) >= 5):
-                            url = words[5]
-                    else:
-                        # Example: "@odata.id": "/redfish/v1/Systems/{SystemsId}/Storage/{StorageId}/Endpoints/500605b00ab61310"
-                        if (len(words) >= 7):
-                            url = words[7]
-                    self.ClientEndpointGroups.append(url)
+                    if ('@odata.id' in ceg[i]):
+                        words = ceg[i]['@odata.id'].split('/')
+                        endpoint_id = '?'
+                        if (redfishConfig.get_version('version') < 2):
+                            # Example: "@odata.id": "/redfish/v1/StorageServices/S1/Endpoints/500605b00ab61310"
+                            if (len(words) >= 6):
+                                endpoint_id = words[6]
+                        else:
+                            # Example: "@odata.id": "/redfish/v1/Systems/{SystemsId}/Storage/{StorageId}/Endpoints/500605b00ab61310"
+                            if (len(words) >= 8):
+                                endpoint_id = words[8]
 
-                self.ServerEndpointGroups = []
+                        self.ClientEndpointGroups.append(endpoint_id)
+
+            self.ServerEndpointGroups = []
+            if ('ServerEndpointGroups' in link.jsonData):
                 seg = link.jsonData['ServerEndpointGroups']
-                for i in range(len(seg)):
-                    words = seg[i]['@odata.id'].split('/')
-                    if (redfishConfig.get_version('version') < 2):
-                        # Example: "@odata.id": "/redfish/v1/StorageServices/S1/Endpoint/A0"
-                        if (len(words) >= 6):
-                            url = words[6]
-                    else:
-                        # Example: "@odata.id": "/redfish/v1/Systems/{SystemsId}/Storage/{StorageId}/Endpoints/A0"
-                        if (len(words) >= 8):
-                            url = words[8]
-                    self.ServerEndpointGroups.append(url)
 
+                for i in range(len(seg)):
+                    if ('@odata.id' in seg[i]):
+                        words = seg[i]['@odata.id'].split('/')
+                        endpoint_id = '?'
+                        if (redfishConfig.get_version('version') < 2):
+                            # Example: "@odata.id": "/redfish/v1/StorageServices/S1/Endpoint/A0"
+                            if (len(words) >= 6):
+                                endpoint_id = words[6]
+                        else:
+                            # Example: "@odata.id": "/redfish/v1/Systems/{SystemsId}/Storage/{StorageId}/Endpoints/A0"
+                            if (len(words) >= 8):
+                                endpoint_id = words[8]
+                        self.ServerEndpointGroups.append(endpoint_id)
+
+            if ('MappedVolumes' in link.jsonData):
                 mv = link.jsonData['MappedVolumes']
                 for i in range(len(mv)):
                     # Example: "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/500605b00ab61310"
-                    self.LogicalUnitNumber = mv[i]['LogicalUnitNumber']
-                    self.Volume = mv[i]['Volume']['@odata.id'].replace(RedfishSystem.get_uri(redfishConfig, 'Volumes'), '')
+                    if ('LogicalUnitNumber' in mv[i]):
+                        self.LogicalUnitNumber = mv[i]['LogicalUnitNumber']
+                    if ('Volume' in mv[i]):
+                        volume = mv[i]['Volume']
+                        if ('@odata.id' in volume):
+                            words = volume['@odata.id'].split('/')
+                            self.Volume = words[len(words)-1]
 
+            if ('Status' in link.jsonData):
                 status = link.jsonData['Status']
-                self.State = status['State']
-                self.Health = status['Health']
-                self.HealthRollup = status['HealthRollup']
-
-            except:
-                self.Description = 'Unknown'
-#                pass
+                if ('State' in status):
+                    self.State = status['State']
+                if ('Health' in status):
+                    self.Health = status['Health']
         else:
             Trace.log(TraceLevel.VERBOSE, '   ++ Storage Group: link was not valid status={} reason={}'.format(link.urlStatus, link.urlReason))
 
@@ -158,7 +178,7 @@ class CommandHandler(CommandHandlerBase):
             for (key, value) in self.link.jsonData.items():
                 if (key == 'Members@odata.count'):
                     total = value
-                    Trace.log(TraceLevel.VERBOSE, '.. GET total ({})'.format(total))
+                    Trace.log(TraceLevel.TRACE, '.. GET total ({})'.format(total))
                 elif (key == 'Members'):
                     Trace.log(TraceLevel.TRACE, '.. Members value ({})'.format(value))
                     if (value != None):
