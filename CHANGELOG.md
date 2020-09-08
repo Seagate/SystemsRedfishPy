@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.2.9] - 2020-09-08
+- Corrected 'purge system' to handle both linear and virtual storage systems
+
 ## [1.2.8] - 2020-09-08
 - Corrected JSON errors in redfishAPI.json
 - Removed the need for Python version 3.6 or greater. 3.x is sufficient.
