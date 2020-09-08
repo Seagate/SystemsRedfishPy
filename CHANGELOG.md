@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.8] - 2020-09-08
+- Corrected JSON errors in redfishAPI.json
+- Removed the need for Python version 3.6 or greater. 3.x is sufficient.
+
 ## [1.2.7] - 2020-07-09
 - Added new config option 'httpbasicauth' True|False. When True, use HTTP Basic Auth instead of Sessions.
 - Updated Redfish URI discovery to include all possible Redfish 2020.2 ServiceRoot entities.

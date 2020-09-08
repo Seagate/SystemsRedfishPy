@@ -8,14 +8,14 @@
     "dumppostdata": "False",
     "entertoexit": "True",
     "http": "https",
-    "httpbasicauth": False,
+    "httpbasicauth": "False",
     "linktestdelay": 0,
     "mcip": "",
     "password": "",
     "showelapsed": "0",
     "trace": "4",
     "urltimeout": "30",
-    "usefinalslash": True,
+    "usefinalslash": "True",
     "username": "",
-    "version": "1.2.7"
+    "version": "1.2.8"
 }
