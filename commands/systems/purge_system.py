@@ -58,8 +58,12 @@ class CommandHandler(CommandHandlerBase):
         ids = super().get_members_list(self, redfishConfig, 'Volumes')
         super().delete_id_list(self, redfishConfig, RedfishSystem.get_uri(redfishConfig, 'Volumes'), ids)
 
-        # Purge all StoragePools
+        # Purge all StoragePools - Pools
         ids = super().get_members_list(self, redfishConfig, 'StoragePools', 'A B')
+        super().delete_id_list(self, redfishConfig, RedfishSystem.get_uri(redfishConfig, 'StoragePools'), ids)
+
+        # Purge all StoragePools - DiskGroups
+        ids = super().get_members_list(self, redfishConfig, 'StoragePools')
         super().delete_id_list(self, redfishConfig, RedfishSystem.get_uri(redfishConfig, 'StoragePools'), ids)
 
     @classmethod

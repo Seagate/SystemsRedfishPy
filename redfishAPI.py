@@ -76,6 +76,6 @@ if __name__ == '__main__':
     # Before existing, delete any current active session
     sessionId = Label.decode(config.sessionIdVariable)
     if sessionId is not None:
-        RedfishCommand.execute(redfishConfig, f'delete sessions {sessionId}')
+        RedfishCommand.execute(redfishConfig, 'delete sessions ' + sessionId)
 
     sys.exit(returncode)

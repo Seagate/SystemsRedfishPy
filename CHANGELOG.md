@@ -1,5 +1,11 @@
 # Change Log
 
+## [2.0.3] - 2020-09-08
+- Corrected 'purge system' to handle both linear and virtual storage systems
+- Corrected JSON errors in redfishAPI.json
+- Removed the need for Python version 3.6 or greater. 3.x is sufficient.
+- Add 'show fabrics'
+
 ## [2.0.2] - 2020-07-22
 - Updated 'create session' to display the session key
 - Enhanced 'show storagegroups' to check JSON data inclusion before retrieving values.
