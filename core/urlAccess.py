@@ -121,14 +121,19 @@ class UrlAccess():
 
             if (link.urlData):
                 try:
+                    contentTypeHandled = False                    
                     headers = link.response.getheaders()
-                    # Trace.log(TraceLevel.TRACE, '@@ headers={}'.format(json.dumps(headers, indent=4)))
-                    contentType = headers[1][1]
-                    Trace.log(TraceLevel.TRACE, '   -- contentType: {}'.format(contentType))
-                    if ('json' in contentType or 'nosniff' in contentType):
-                        link.jsonData = json.loads(link.urlData)
-                    else:
-                        Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: unhandled content type = {}'.format(contentType))
+                    itemCount = 0
+                    for item in headers:
+                        Trace.log(TraceLevel.TRACE, '   -- headers[{}]={}'.format(itemCount, item))
+                        if len(item) >= 2:
+                            if 'json' in item[1]:
+                                link.jsonData = json.loads(link.urlData)
+                                contentTypeHandled = True
+                        itemCount += 1 
+
+                    if not contentTypeHandled:
+                        Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: unhandled content type = {}'.format(headers))
 
                 except Exception as inst:
                     Trace.log(TraceLevel.INFO, '   -- Exception: Trying to convert to JSON data, url={}'.format(fullUrl))

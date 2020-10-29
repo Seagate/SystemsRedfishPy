@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.0.4] - 2020-10-29
+- Expanded UrlAcess.process_request() to traverse all items in the header to better handle the 'json' content type
+
 ## [2.0.3] - 2020-09-08
 - Corrected 'purge system' to handle both linear and virtual storage systems
 - Corrected JSON errors in redfishAPI.json
