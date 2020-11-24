@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.0.5] - 2020-11-24
+- Added requirements.txt which stipulates some new requirements for new features
+- Added `http push` which allows a user to send a file to the service using http and application/octet-stream, see requirements.txt
+- Added `reset system` which allows the user execute a restart controller command
+- Added `show discovered` and `reset discoverd` which allows the user to see all redfish service discovered URLs
+- Removed the `configurationfile` setting from the configuration file
+- Replaced the `version` configuration setting with a new `serviceversion` setting - this variable is used to work with the first version of the Redfish Service (serviceversion=1) or the latest Redfish Service (serviceversion=2) that supports Fabrics, Composition Service and other new features
+- Added command history that works under Windows and Linux, see requirements.txt
+
 ## [2.0.4] - 2020-10-29
 - Expanded UrlAcess.process_request() to traverse all items in the header to better handle the 'json' content type
 

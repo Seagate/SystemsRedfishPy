@@ -94,7 +94,7 @@ class StorageGroupInformation:
                     if ('@odata.id' in ceg[i]):
                         words = ceg[i]['@odata.id'].split('/')
                         endpoint_id = '?'
-                        if (redfishConfig.get_version('version') < 2):
+                        if (redfishConfig.get_version() < 2):
                             # Example: "@odata.id": "/redfish/v1/StorageServices/S1/Endpoints/500605b00ab61310"
                             if (len(words) >= 6):
                                 endpoint_id = words[6]
@@ -113,7 +113,7 @@ class StorageGroupInformation:
                     if ('@odata.id' in seg[i]):
                         words = seg[i]['@odata.id'].split('/')
                         endpoint_id = '?'
-                        if (redfishConfig.get_version('version') < 2):
+                        if (redfishConfig.get_version() < 2):
                             # Example: "@odata.id": "/redfish/v1/StorageServices/S1/Endpoint/A0"
                             if (len(words) >= 6):
                                 endpoint_id = words[6]

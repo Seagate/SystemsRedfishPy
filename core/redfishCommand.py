@@ -62,6 +62,7 @@ class RedfishCommand:
         # 
         brand = redfishConfig.get_value('brand')
         words = command.split(' ')
+        Trace.log(TraceLevel.TRACE, '++ words ({}): {}'.format(len(words), words))
         if (len(words) == 1):
             handlerName = 'commands.' + brand + '.' + words[0]
         elif (len(words) >= 2):
@@ -90,12 +91,14 @@ class RedfishCommand:
                     Trace.log(TraceLevel.INFO, '')
                     Trace.log(TraceLevel.INFO, '[] Elapsed time: {}m {}s to execute command'.format(minutes, seconds))
 
-        except ImportError:
-            Trace.log(TraceLevel.ERROR, 'No module found for command ({}) using [{}]'.format(command, handlerName))
+        except ImportError as e:
+            Trace.log(TraceLevel.ERROR, 'EXCEPTION: {}'.format(e))
+            Trace.log(TraceLevel.ERROR, 'ImportError, No module found for command ({}) using [{}]'.format(command, handlerName))
             pass
 
-        except Exception as inst:
-            Trace.log(TraceLevel.ERROR, 'Unexpected error while executing command ({}): {} -- {}'.format(command, sys.exc_info()[0], inst))
+        except Exception as e:
+            Trace.log(TraceLevel.ERROR, 'EXCEPTION: {}'.format(e))
+            Trace.log(TraceLevel.ERROR, 'Unexpected error while executing command ({}): {} -- {}'.format(command, sys.exc_info()[0], e))
             Trace.log(TraceLevel.INFO, '-'*100)
             traceback.print_exc(file=sys.stdout)
             Trace.log(TraceLevel.INFO, '-'*100)

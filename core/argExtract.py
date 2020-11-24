@@ -37,6 +37,8 @@ class ArgExtract:
         else:
             success = False
 
+        Trace.log(TraceLevel.TRACE, '   ++ get_value: argument ({}) success ({})'.format(argument, success))
+
         return success, argument
 
     @classmethod
@@ -46,7 +48,7 @@ class ArgExtract:
         success = False
         jsonData = None
 
-        Trace.log(TraceLevel.TRACE, '   ++ get_json: command ({})'.format(command))
+        Trace.log(TraceLevel.TRACE, '   ++ get_json: position ({}), command ({})'.format(position, command))
 
         #
         # Inline JSON data must be contaiined with brackets: { and }
@@ -57,14 +59,14 @@ class ArgExtract:
             # Treat the parameter as a filename
             words = command.split(' ')
             Trace.log(TraceLevel.TRACE, '   ++ get_json: len ({}), words ({})'.format(len(words), words))
-            if (len(words) >= position):
+            if (position < len(words)):
                 filename = words[position]
                 Trace.log(TraceLevel.TRACE, '   >> get_json: open ({})'.format(filename))
                 with open(filename) as json_file:
                     jsonData = json.load(json_file)
                     success = True
             else:
-                Trace.log(TraceLevel.ERROR, '   get_json: position ({}) is not within range of tokens ({})'.format(position, len(words)))
+                Trace.log(TraceLevel.DEBUG, '   get_json: position ({}) is not within range of tokens ({})'.format(position, len(words)))
 
         else:
             # Treat the parameter as inline JSON data

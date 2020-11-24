@@ -84,7 +84,6 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, redfishConfig, command):
         self.sessions = []
-#        RedfishSystem.initialize_service_root_uris(redfishConfig)
         return (RedfishSystem.get_uri(redfishConfig, 'Sessions'))
         
     @classmethod

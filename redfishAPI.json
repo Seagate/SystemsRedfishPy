@@ -2,7 +2,6 @@
     "annotate": "True",
     "brand": "systems",
     "certificatecheck": "False",
-    "configurationfile": "redfishAPI.json",
     "dumphttpdata": "False",
     "dumpjsondata": "False",
     "dumppostdata": "False",
@@ -12,10 +11,10 @@
     "linktestdelay": "0",
     "mcip": "",
     "password": "",
+    "serviceversion": 2,
     "showelapsed": "0",
     "trace": "4",
     "urltimeout": "30",
     "usefinalslash": "True",
-    "username": "",
-    "version": "2.0.3"
+    "username": ""
 }

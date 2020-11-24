@@ -136,7 +136,7 @@ class CommandHandler(CommandHandlerBase):
             JsonBuilder.addElement('main', JsonType.DICT, 'AllocatedPools', JsonBuilder.getElement('dict'))
 
         # RAID Type
-        if (redfishConfig.get_version('version') < 2):
+        if (redfishConfig.get_version() < 2):
             # ClassesOfService
             jsonType, level = JsonBuilder.getValue('level', self.command)
             if (jsonType is not JsonType.NONE):
