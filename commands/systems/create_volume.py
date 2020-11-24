@@ -133,7 +133,7 @@ class CommandHandler(CommandHandlerBase):
             JsonBuilder.addElement('main', JsonType.DICT, 'CapacitySources', JsonBuilder.getElement('array'))
 
         # Links / ClassOfService
-        if (redfishConfig.get_version('version') < 2):
+        if (redfishConfig.get_version() < 2):
             JsonBuilder.newElement('dict', JsonType.DICT, True)
             JsonBuilder.newElement('dict2', JsonType.DICT, True)
             JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', RedfishSystem.get_uri(redfishConfig, 'ClassesOfServiceDefault'))

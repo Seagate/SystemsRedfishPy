@@ -58,6 +58,26 @@ class RedfishSystem:
                 cls.discovered_uri(key, newValue)
 
     #
+    # Display all discovered URIs
+    #
+    @classmethod
+    def display_discovered(cls):
+        Trace.log(TraceLevel.INFO, '')
+        Trace.log(TraceLevel.INFO, '[] Discovered URLs:')
+        for key in cls.systemDict:
+            cls.discovered_uri(key, cls.systemDict[key])
+
+    #
+    # Display all discovered URIs
+    #
+    @classmethod
+    def reset_discovered(cls, redfishConfig):
+        Trace.log(TraceLevel.INFO, '-- Reseting discovered URLs...')
+        cls.systemDict = {}
+        cls.successfulRootInit = False
+        cls.initialize_service_root_uris(redfishConfig)
+
+    #
     # Store a new URI
     #
     @classmethod
@@ -180,20 +200,6 @@ class RedfishSystem:
                     controller_id += 1
 
                     # Use EthernetInterfaces to compare to 'mcip' to determine active controller
-#                    uri = newuri + 'EthernetInterfaces/'
-#                    link = UrlAccess.process_request(redfishConfig, UrlStatus(newuri + 'EthernetInterfaces/'), 'GET', True, None)
-#                    if (link.valid and link.jsonData is not None and 'Members' in link.jsonData):
-#                        for member in link.jsonData['Members']:
-#                            neweth = member['@odata.id']
-#                            if (neweth[-1] != '/'):
-#                                neweth = neweth + '/'
-#                            link = UrlAccess.process_request(redfishConfig, UrlStatus(neweth), 'GET', True, None)
-#                            if (link.valid and link.jsonData is not None and 'IPv4Addresses' in link.jsonData):
-#                                ipv4 = link.jsonData['IPv4Addresses']
-#                                if ('Address' in ipv4 and ipv4['Address'] == redfishConfig.get_value('mcip')):
-#                                    cls.store_uri_value('ActiveControllerId', controller_name)
-#                                    cls.store_uri_value('ActiveController', cls.get_uri_simple('Storage') + controller_name)
-
                     neweth = '/redfish/v1/Managers/' + controller_name + '/EthernetInterfaces/A'
                     link = UrlAccess.process_request(redfishConfig, UrlStatus(neweth), 'GET', True, None)
                     if (link.valid and link.jsonData is not None and 'IPv4Addresses' in link.jsonData):
@@ -265,8 +271,8 @@ class RedfishSystem:
                     uri = newuri
 
         if (key == "ClassesOfService"):
-            Trace.log(TraceLevel.TRACE, '   @@ ClassesOfService version ({})'.format(redfishConfig.get_version('version')))
-            if (redfishConfig.get_version('version') < 2):
+            Trace.log(TraceLevel.TRACE, '   @@ ClassesOfService serviceversion ({})'.format(redfishConfig.get_version()))
+            if (redfishConfig.get_version() < 2):
                 cls.fill_storage_services_id(redfishConfig, key)
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.get_uri_simple("StorageServicesId")), 'GET', True, None)
                 cls.store_uri("ClassesOfService", link)
@@ -275,8 +281,8 @@ class RedfishSystem:
                 uri = ''
 
         if (key == "Drives"):
-            Trace.log(TraceLevel.TRACE, '   @@ Drives version ({})'.format(redfishConfig.get_version('version')))
-            if (redfishConfig.get_version('version') < 2):
+            Trace.log(TraceLevel.TRACE, '   @@ Drives serviceversion ({})'.format(redfishConfig.get_version()))
+            if (redfishConfig.get_version() < 2):
                 cls.fill_storage_services_id(redfishConfig, key)
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.get_uri_simple("StorageServicesId")), 'GET', True, None)                
                 uri = cls.get_uri_simple("Drives")
@@ -286,8 +292,8 @@ class RedfishSystem:
             uri = cls.get_uri_simple("Drives")
 
         if (key == "Endpoints"):
-            Trace.log(TraceLevel.TRACE, '   @@ Endpoints version ({})'.format(redfishConfig.get_version('version')))
-            if (redfishConfig.get_version('version') < 2):
+            Trace.log(TraceLevel.TRACE, '   @@ Endpoints serviceversion ({})'.format(redfishConfig.get_version()))
+            if (redfishConfig.get_version() < 2):
                 cls.fill_storage_services_id(redfishConfig, key)
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.get_uri_simple("StorageServicesId")), 'GET', True, None)
                 cls.store_uri("Endpoints", link)
@@ -297,8 +303,8 @@ class RedfishSystem:
             uri = cls.get_uri_simple("Endpoints")
 
         if (key == "EndpointGroups"):
-            Trace.log(TraceLevel.TRACE, '   @@ EndpointGroups version ({})'.format(redfishConfig.get_version('version')))
-            if (redfishConfig.get_version('version') < 2):
+            Trace.log(TraceLevel.TRACE, '   @@ EndpointGroups serviceversion ({})'.format(redfishConfig.get_version()))
+            if (redfishConfig.get_version() < 2):
                 cls.fill_storage_services_id(redfishConfig, key)
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.get_uri_simple("StorageServicesId")), 'GET', True, None)
                 cls.store_uri("EndpointGroups", link)
@@ -308,8 +314,8 @@ class RedfishSystem:
             uri = cls.get_uri_simple("EndpointGroups")
 
         if (key == "StorageGroups"):
-            Trace.log(TraceLevel.TRACE, '   @@ StorageGroups version ({})'.format(redfishConfig.get_version('version')))
-            if (redfishConfig.get_version('version') < 2):
+            Trace.log(TraceLevel.TRACE, '   @@ StorageGroups serviceversion ({})'.format(redfishConfig.get_version()))
+            if (redfishConfig.get_version() < 2):
                 cls.fill_storage_services_id(redfishConfig, key)
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.get_uri_simple("StorageServicesId")), 'GET', True, None)
                 cls.store_uri("StorageGroups", link)
@@ -319,8 +325,8 @@ class RedfishSystem:
             uri = cls.get_uri_simple("StorageGroups")
 
         if (key == "StoragePools"):
-            Trace.log(TraceLevel.TRACE, '   @@ StoragePools version ({})'.format(redfishConfig.get_version('version')))
-            if (redfishConfig.get_version('version') < 2):
+            Trace.log(TraceLevel.TRACE, '   @@ StoragePools serviceversion ({})'.format(redfishConfig.get_version()))
+            if (redfishConfig.get_version() < 2):
                 cls.fill_storage_services_id(redfishConfig, key)
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.get_uri_simple("StorageServicesId")), 'GET', True, None)
                 cls.store_uri("StoragePools", link)
@@ -330,8 +336,8 @@ class RedfishSystem:
             uri = cls.get_uri_simple("StoragePools")
 
         if (key == "Volumes"):
-            Trace.log(TraceLevel.TRACE, '   @@ Volumes version ({})'.format(redfishConfig.get_version('version')))
-            if (redfishConfig.get_version('version') < 2):
+            Trace.log(TraceLevel.TRACE, '   @@ Volumes serviceversion ({})'.format(redfishConfig.get_version()))
+            if (redfishConfig.get_version() < 2):
                 cls.fill_storage_services_id(redfishConfig, key)
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.get_uri_simple("StorageServicesId")), 'GET', True, None)
                 cls.store_uri("Volumes", link)
@@ -339,6 +345,12 @@ class RedfishSystem:
                 cls.fill_ids(redfishConfig, key)
                 cls.store_uri_value("Volumes", cls.get_uri_simple("ActiveController") + "Volumes/" )
             uri = cls.get_uri_simple("Volumes")
+
+        if (key == "SystemId"):
+            Trace.log(TraceLevel.TRACE, '   @@ SystemId serviceversion ({})'.format(redfishConfig.get_version()))
+            cls.fill_ids(redfishConfig, key)
+            cls.store_uri_value("SystemId", cls.get_uri_simple("SystemId"))
+            uri = cls.get_uri_simple("SystemId")
 
         if (key == "ClassesOfServiceDefault"):
             cls.store_uri_value("ClassesOfServiceDefault", '/redfish/v1/StorageServices(1)/ClassesOfService(Default)')

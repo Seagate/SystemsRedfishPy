@@ -131,6 +131,14 @@ class Help():
         return False
 
     @classmethod
+    def get_help_commands(cls, redfishConfig):
+        commands = []
+        cls.extract_help(redfishConfig.get_value('brand'))
+        for key in cls.synopses:
+            commands.append(key)
+        return commands
+
+    @classmethod
     def display_help(cls):
 
         Trace.log(TraceLevel.DEBUG, 'show help...DISPLAY valid={}'.format(cls.valid))

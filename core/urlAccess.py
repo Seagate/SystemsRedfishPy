@@ -18,12 +18,14 @@ from core.trace import TraceLevel, Trace
 import base64
 import config
 import json
+import requests
 import socket
 import ssl
 import sys
 import time
 import traceback
 import urllib.request, urllib.error
+import warnings
 
 ################################################################################
 # UrlStatus
@@ -64,6 +66,56 @@ class UrlStatus():
 # UrlAccess
 ################################################################################
 class UrlAccess():
+
+    @classmethod
+    def process_push(self, redfishConfig, link, filename, payload = None):
+        Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_push - ({}) session ({}:{})'.format(link.url, Label.decode(config.sessionIdVariable), redfishConfig.sessionKey))
+
+        warnings.filterwarnings('ignore', message='Unverified HTTPS request')
+
+        startTime = time.time()
+
+        s = requests.Session()
+
+        files = [
+            ('downloadfile', (filename, open(filename, 'rb'), 'application/octet-stream'))
+        ]
+
+        if redfishConfig.get_bool('httpbasicauth'):
+            Trace.log(TraceLevel.DEBUG, '   -- Using HTTP Basic Auth')
+            uername_password = redfishConfig.get_value('username') + ':' + redfishConfig.get_value('password')
+            encoded = base64.b64encode(str.encode(uername_password))
+            Trace.log(TraceLevel.DEBUG, '   -- uername_password is ({}) encoded is ({})'.format(uername_password, encoded))
+            s.headers.update({'Authorization': 'Basic ' + str(encoded)})
+        else:
+            Trace.log(TraceLevel.INFO, '   -- Using X-Auth-Token: {}'.format(redfishConfig.sessionKey))
+            s.headers.update({'X-Auth-Token': redfishConfig.sessionKey})
+
+        try:
+            fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_value('mcip') + link.url
+            if payload is None:
+                response = s.request('POST', fullUrl, files=files)
+            else:
+                if (redfishConfig.get_bool('dumppostdata')):
+                    Trace.log(TraceLevel.INFO, '[[ POST DATA ({}) ]]'.format(link.url))
+                    print(json.dumps(payload, indent=4))
+                    Trace.log(TraceLevel.INFO, '[[ POST DATA END ]]')
+                # payload2 = json.dumps(payload, indent=4)
+                response = s.request('POST', fullUrl, data=payload, files=files, verify=False)
+
+            link.elapsedMicroseconds = (time.time() - startTime) * 1000000
+            link.urlData = response.text
+            link.update_status(response.status_code, response.reason)
+
+        except Exception as e:
+            Trace.log(TraceLevel.ERROR, 'EXCEPTION: {}'.format(e))
+
+        try:
+            link.jsonData = json.loads(link.urlData)
+        except:
+            pass
+
+        return link
 
     @classmethod
     def process_request(self, redfishConfig, link, method = 'GET', addAuth = True, data = None):
