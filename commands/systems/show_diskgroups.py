@@ -203,13 +203,13 @@ class CommandHandler(CommandHandlerBase):
 
         else:
             print('')
-            #                  0                                 1          2         3               4               5           6               7
-            print('         Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes   ConsumedBytes      Health   ClasOfService')
-            print(' -------------------------------------------------------------------------------------------------------------------------------')
-    
+            #                                    0                                 1          2         3               4               5           6               7
+            print('                           Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes   ConsumedBytes      Health   ClasOfService')
+            print(' -------------------------------------------------------------------------------------------------------------------------------------------------')
+
             if (self.groups != None):
                 for i in range(len(self.groups)):
-                    print(' {0: >12}  {1: >32}  {2: >9}  {3: >8}  {4: >14}  {5: >14}  {6: >10}  {7: >14}'.format(
+                    print(' {0: >30}  {1: >32}  {2: >9}  {3: >8}  {4: >14}  {5: >14}  {6: >10}  {7: >14}'.format(
                         self.groups[i].Name,
                         self.groups[i].SerialNumber,
                         self.groups[i].MaxBlockSizeBytes,

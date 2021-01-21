@@ -1,0 +1,49 @@
+{
+    "Name": "ComposedVolumeA03",
+    "Description": "Composed Volume A03",
+    "RAIDType": "RAID6",
+    "CapacityBytes": 2000000000,
+    "LogicalUnitNumber": 0,
+
+    "AccessCapabilities": [
+        "Read",
+        "Write"
+    ],
+
+    "Links": {
+        "ClientEndpointGroups": [
+            {
+                "@odata.id": "/redfish/v1/Fabrics/SAS/Endpoints/500605b009d800e0"
+            }
+        ],
+        "ResourceBlocks": [
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.48"
+            },
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.49"
+            },
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.50"
+            },
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.51"
+            }
+        ],
+        "ServerEndpointGroups": [
+            {
+                "@odata.id": "/redfish/v1/Fabrics/SAS/Endpoints/A0"
+            },
+            {
+                "@odata.id": "/redfish/v1/Fabrics/SAS/Endpoints/A1"
+            },
+            {
+                "@odata.id": "/redfish/v1/Fabrics/SAS/Endpoints/B0"
+            },
+            {
+                "@odata.id": "/redfish/v1/Fabrics/SAS/Endpoints/B1"
+            }
+        ]
+    }
+
+}

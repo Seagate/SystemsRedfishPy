@@ -102,8 +102,8 @@ class CommandHandler(CommandHandlerBase):
             Trace.log(TraceLevel.INFO, '[] HTTP Headers : {}'.format(self.link.response.getheaders()))
 
         if (self.link != None and self.link.jsonData != None):
-            Trace.log(TraceLevel.INFO, '')
-            Trace.log(TraceLevel.INFO, '[] HTTP Data    : {}'.format(self.link.jsonData))
+            Trace.log(TraceLevel.VERBOSE, '')
+            Trace.log(TraceLevel.VERBOSE, '[] HTTP Data    : {}'.format(self.link.jsonData))
 
         if (self.link != None and self.link.jsonData != None):
             Trace.log(TraceLevel.INFO, '')

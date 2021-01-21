@@ -73,7 +73,7 @@ class CommandHandler(CommandHandlerBase):
         Trace.log(TraceLevel.INFO, '[] Reason     : {}'.format(self.link.urlReason))
 
         if (self.link != None and self.link.jsonData != None):
-            Trace.log(TraceLevel.INFO, '[] HTTP Data  : {}'.format(self.link.jsonData))
+            Trace.log(TraceLevel.VERBOSE, '[] HTTP Data  : {}'.format(self.link.jsonData))
 
         if (self.link != None and self.link.jsonData != None):
             Trace.log(TraceLevel.INFO, '[] JSON Data  : {}'.format(json.dumps(self.link.jsonData, indent=4)))

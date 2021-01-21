@@ -117,7 +117,7 @@ class CommandHandler(CommandHandlerBase):
                 JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
             JsonBuilder.addElement('main', JsonType.DICT, 'CapacitySources', JsonBuilder.getElement('array'))
 
-        # CapacitySources (linera)
+        # CapacitySources (linear)
         jsonType, pool = JsonBuilder.getValue('diskgroup', self.command)
         if (jsonType is not JsonType.NONE):
             JsonBuilder.newElement('array', JsonType.ARRAY, True)

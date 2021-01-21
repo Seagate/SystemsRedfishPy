@@ -49,7 +49,7 @@ class CommandHandler(CommandHandlerBase):
     name = 'create session'
 
     def prepare_url(self, redfishConfig, command):
-        Trace.log(TraceLevel.VERBOSE, '   -- ServiceVersion: {}'.format(redfishConfig.get_version()))
+        Trace.log(TraceLevel.INFO, '   -- ServiceVersion: {}'.format(redfishConfig.get_version()))
         return (RedfishSystem.get_uri(redfishConfig, 'Sessions'))
 
     @classmethod

@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.0.6] - 2021-1-14
+- New example JSON files for volume composition under json/
+- New `compose volume` command to compose a volume using the Redfish Composition Service
+- New `run cli` command to execute any MC API CLI command using the Redfish interface
+
 ## [2.0.5] - 2020-11-24
 - Added requirements.txt which stipulates some new requirements for new features
 - Added `http push` which allows a user to send a file to the service using http and application/octet-stream, see requirements.txt

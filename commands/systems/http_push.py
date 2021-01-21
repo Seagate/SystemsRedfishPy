@@ -25,6 +25,13 @@
 # contains a left curly bracket ('{') this function will expect well-formed JSON data; otherwise,
 # this function will attempt to open and read the contents of a file. 
 #
+# Parameters:
+# [0] http
+# [1] push
+# [2] <imagefile>
+# [3] <url>
+# [4] <json>
+#
 # Examples:
 #     (redfish) http push mc_bundle.sfw /redfish/v1/UpdateService/Upload { "Targets": [ "/redfish/v1/Managers/1" ], "@Redfish.OperationApplyTime": "OnReset" }
 #     (redfish) http push mc_bundle.sfw /redfish/v1/UpdateService/Upload json\upload.json
@@ -56,15 +63,15 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, redfishConfig, command):
         self.command = command
-        _, self.startingurl = ArgExtract.get_value(command, 2)
-        Trace.log(TraceLevel.DEBUG, 'http push: url ({})'.format(self.startingurl))
+        _, self.startingurl = ArgExtract.get_value(command, 3)
+        Trace.log(TraceLevel.INFO, 'http push: url (1) ({})'.format(self.startingurl))
         return (self.startingurl)
 
     @classmethod
     def process_json(self, redfishConfig, url):
-        Trace.log(TraceLevel.DEBUG, '[] http push: url ({})'.format(url))
+        Trace.log(TraceLevel.INFO, '[] http push: url (2) ({})'.format(url))
         self.fileError = False
-        _, self.filename = ArgExtract.get_value(self.command, 3)
+        _, self.filename = ArgExtract.get_value(self.command, 2)
         if os.path.exists(self.filename):
             _, jsonData = ArgExtract.get_json(self.command, 4)
             link = UrlAccess.process_push(redfishConfig, UrlStatus(url), self.filename, jsonData)

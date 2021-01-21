@@ -5,10 +5,5 @@
         {
             "@odata.id": "/redfish/v1/StorageServices/S1/StoragePools/A"
         }
-    ],
-    "Links": {
-        "ClassOfService": {
-            "@odata.id": "/redfish/v1/StorageServices(1)/ClassesOfService(Default)"
-        }
-    }
+    ]
 }
