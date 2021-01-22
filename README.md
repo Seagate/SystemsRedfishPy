@@ -96,9 +96,9 @@ As a best practice, it is suggested that you copy redfishAPI.json to myconfig.js
 * "username": "[service-username]",
 
 Additional Properties Note:
-* Set `"serviceversion: "1"` - to work with the earlier version of the Redfish Service that supported ClassesOfService
-* Set `"serviceversion: "2"` - to work with the latest version of the Redfish Service that supports fabrics, composition, etc.
-* This can also be done at the (redfish) prompt using !serviceversion [1|2]
+* Set `!serviceversion 1` - to work with the earlier version of the Redfish Service that supported ClassesOfService
+* Set `!serviceversion 2` - to work with the latest version of the Redfish Service that supports fabrics, composition, etc.
+* This can be done at the (redfish) prompt using !serviceversion [1|2]
 
 Then, use python redfishAPI.py -c myconfig.json to run interactive commands using your system configuration settings.
 
@@ -106,7 +106,7 @@ Then, use python redfishAPI.py -c myconfig.json to run interactive commands usin
 > python3 redfishAPI.py -c myconfig.json
 
 --------------------------------------------------------------------------------
-[2.0.5] Redfish API
+[2.0.7] Redfish API
 --------------------------------------------------------------------------------
 [] Run Redfish API commands interactively...
 
@@ -169,11 +169,12 @@ establish a session.
 
 ```bash
 --------------------------------------------------------------------------------
-[1.2.5] Redfish API
+[2.0.7] Redfish API
 --------------------------------------------------------------------------------
 [] Run Redfish API commands interactively...
 
 (redfish) create session
+   -- ServiceVersion: 2
    -- Discovered: Root               >> /redfish/v1
    -- Discovered: Systems            >> /redfish/v1/ComputerSystem/
    -- Discovered: Chassis            >> /redfish/v1/Chassis/
@@ -224,12 +225,13 @@ As a note, most Redfish commands require that you establish a session with the t
 the 'http post' command to create a session, you should also call 'save session [id] [key]' so that all following
 http commands can use the session credentials.
  
-| Command                             | Description |
-| ----------------------------------- | ----------- |
-| http get [url]                      | Perform an HTTP GET operation on a URI |
-| http post [url] [json or filename]  | Perform an HTTP POST operation on a URI, sending the specified JSON data |
-| http patch [url] [json or filename] | Perform an HTTP PATCH operation on a URI, sending the specified JSON data |
-| http delete [url]                   | Perform an HTTP DELETE operation on a URI |
+| Command                                       | Description |
+| --------------------------------------------- | ----------- |
+| http get [url]                                | Perform an HTTP GET operation on a URI |
+| http post [url] [json or filename]            | Perform an HTTP POST operation on a URI, sending the specified JSON data |
+| http patch [url] [json or filename]           | Perform an HTTP PATCH operation on a URI, sending the specified JSON data |
+| http delete [url]                             | Perform an HTTP DELETE operation on a URI |
+| http push [url] [imagefile] [<]json or file]  | Perform an HTTP POST operation to transfer a file to a URI |
 
 Examples:
 
