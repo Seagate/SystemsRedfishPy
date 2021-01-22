@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.0.7] - 2021-1-22
+- Updated the `http push` command to work correctly for Redfish Service firmware uploads.
+
 ## [2.0.6] - 2021-1-14
 - New example JSON files for volume composition under json/
 - New `compose volume` command to compose a volume using the Redfish Composition Service

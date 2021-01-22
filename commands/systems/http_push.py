@@ -12,29 +12,25 @@
 #
 # ******************************************************************************************
 #
-# @command http push <url> <image> <json | file>
+# @command http push <url> <imagefile> <json | file>
 #
 # @synopsis Execute an HTTP multipart POST operation on a URL passing JSON data if provided
 #
 # @description-start
 #
-# This command will perform an HTTP POST operation on the specified URL using multipart/form-data.
-# The <image> file specified will be what is read and then sent to the target URL.
-# Either the JSON data provided as a parameter will be included with the HTTP operation, or
-# the JSON data provided in a file. The fourth parameter is '<url>'. If the fifth parameter
-# contains a left curly bracket ('{') this function will expect well-formed JSON data; otherwise,
-# this function will attempt to open and read the contents of a file. 
+# This command will perform an HTTP PUSH operation on the specified URL using multipart/form-data.
+# The <imagefile> specified will be read and sent to the target URL along with any specificed JSON data.
+# The JSON data can be provided directly on the command line, or the JSON data will be read from a file.
 #
 # Parameters:
-# [0] http
-# [1] push
-# [2] <imagefile>
-# [3] <url>
-# [4] <json>
+#     <url>         - The URL to send the HTTP PUSH to, http and ip address is added by this function
+#     <imagefile>   - The file that will be sent to the service using HTTP multipart/form-data
+#     <json | file> - Inline JSON data or a path to a JSON data file.
 #
 # Examples:
-#     (redfish) http push mc_bundle.sfw /redfish/v1/UpdateService/Upload { "Targets": [ "/redfish/v1/Managers/1" ], "@Redfish.OperationApplyTime": "OnReset" }
-#     (redfish) http push mc_bundle.sfw /redfish/v1/UpdateService/Upload json\upload.json
+#     (redfish) http push mc_bundle.sfw /redfish/v1/UpdateService/FWUpdate { "Targets": [], "@Redfish.OperationApplyTime": "Immediate" }
+#     (redfish) http push mc_bundle.sfw /redfish/v1/UpdateService/FWUpdate { "Targets": [], "@Redfish.OperationApplyTime": "OnReset" }
+#     (redfish) http push mc_bundle.sfw /redfish/v1/UpdateService/FWUpdate json\upload.json
 #
 # @description-end
 #
@@ -64,12 +60,12 @@ class CommandHandler(CommandHandlerBase):
     def prepare_url(self, redfishConfig, command):
         self.command = command
         _, self.startingurl = ArgExtract.get_value(command, 3)
-        Trace.log(TraceLevel.INFO, 'http push: url (1) ({})'.format(self.startingurl))
+        Trace.log(TraceLevel.INFO, '[] http push: url ({})'.format(self.startingurl))
         return (self.startingurl)
 
     @classmethod
     def process_json(self, redfishConfig, url):
-        Trace.log(TraceLevel.INFO, '[] http push: url (2) ({})'.format(url))
+        Trace.log(TraceLevel.DEBUG, '[] http push: url (2) ({})'.format(url))
         self.fileError = False
         _, self.filename = ArgExtract.get_value(self.command, 2)
         if os.path.exists(self.filename):

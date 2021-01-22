@@ -15,9 +15,12 @@
 
 from core.label import Label
 from core.trace import TraceLevel, Trace
+from core.jsonBuilder import JsonBuilder, JsonType
 import base64
 import config
 import json
+import os
+import requests
 import socket
 import ssl
 import sys
@@ -25,9 +28,6 @@ import time
 import traceback
 import urllib.request, urllib.error
 import warnings
-
-import requests
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 ################################################################################
 # UrlStatus
@@ -69,93 +69,85 @@ class UrlStatus():
 ################################################################################
 class UrlAccess():
 
+    #
+    # process_push
+    #     Used to perform an HTTP push of a file and possible JSON data.
+    #     Authentication data is automatically added to the HTTP request.
+    #     These method uses the python requests package
+    #
     @classmethod
     def process_push(self, redfishConfig, link, filename, payload = None):
         Trace.log(TraceLevel.INFO, '++ UrlAccess: process_push - ({}) session ({}:{})'.format(link.url, Label.decode(config.sessionIdVariable), redfishConfig.sessionKey))
 
-        warnings.filterwarnings('ignore', message='Unverified HTTPS request')
-
         startTime = time.time()
+
+        warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
         s = requests.Session()
 
-        Trace.log(TraceLevel.INFO, '++ UrlAccess: process_push - filename ({})'.format(filename))
+        fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_value('mcip') + link.url
+        Trace.log(TraceLevel.INFO, '   -- fullUrl: {}'.format(fullUrl))
+        Trace.log(TraceLevel.INFO, '   -- filename ({})'.format(filename))
 
-        files = {
-            ('UpdateFile', (filename, open(filename, 'rb'), 'application/octet-stream'))
-        }
+        JsonBuilder.startNew()
+        JsonBuilder.newElement('jsonpayload', JsonType.DICT)
 
+        # Add authentication
         if redfishConfig.get_bool('httpbasicauth'):
-            Trace.log(TraceLevel.DEBUG, '   -- Using HTTP Basic Auth')
-            uername_password = redfishConfig.get_value('username') + ':' + redfishConfig.get_value('password')
-            encoded = base64.b64encode(str.encode(uername_password))
-            Trace.log(TraceLevel.DEBUG, '   -- uername_password is ({}) encoded is ({})'.format(uername_password, encoded))
+            encoded = base64.b64encode(str.encode(redfishConfig.get_value('username') + ':' + redfishConfig.get_value('password')))
+            Trace.log(TraceLevel.DEBUG, '   -- HTTP Basic Authorization: {}'.format(encoded))
             s.headers.update({'Authorization': 'Basic ' + str(encoded), })
         else:
-            Trace.log(TraceLevel.INFO, '   -- Using X-Auth-Token: {}'.format(redfishConfig.sessionKey))
-            
-            # s.headers.update({'X-Auth-Token': redfishConfig.sessionKey, 'Content-Type': 'application/json; charset=utf-8'})
+            Trace.log(TraceLevel.INFO, '   -- X-Auth-Token: {}'.format(redfishConfig.sessionKey))
             s.headers.update({'X-Auth-Token': redfishConfig.sessionKey})
 
+        # Add passed in JSON data
+        if payload is not None:
+            Trace.log(TraceLevel.INFO, '   -- post w/ JSON')
+            if (redfishConfig.get_bool('dumppostdata')):
+                Trace.log(TraceLevel.INFO, '[[ PAYLOAD DATA ({}) ]]'.format(link.url))
+                print(json.dumps(payload, indent=4))
+                Trace.log(TraceLevel.INFO, '[[ PAYLOAD DATA END ]]')
+        else:
+            payload = {}
+
+        files = {
+            'json': (None, json.dumps(payload), 'application/json'),
+            'file': (os.path.basename(filename), open(filename, 'rb'), 'application/octet-stream')
+        }
+
         try:
-            fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_value('mcip') + link.url
-            Trace.log(TraceLevel.INFO, '   -- fullUrl: {}'.format(fullUrl))
-
-            if payload is None:
-                Trace.log(TraceLevel.INFO, '   @@ post no JSON')
-                response = s.request('POST', fullUrl, files=files)
-            else:
-                Trace.log(TraceLevel.INFO, '   @@ post w/ JSON')
-                if (redfishConfig.get_bool('dumppostdata')):
-                    Trace.log(TraceLevel.INFO, '[[ POST DATA ({}) ]]'.format(link.url))
-                    print(json.dumps(payload, indent=4))
-                    Trace.log(TraceLevel.INFO, '[[ POST DATA END ]]')
-                # response = s.request('POST', fullUrl, data=payload, files=files, verify=False)
-                multipart_req = requests.Request('POST', fullUrl, files=files, data=payload).prepare()
-
-            try:
-                Trace.log(TraceLevel.INFO, '===== A =====')
-                print(multipart_req.body.decode('utf-8'))
-                Trace.log(TraceLevel.INFO, '===== = =====')
-            except Exception as e:
-                Trace.log(TraceLevel.ERROR, 'EXCEPTION (1): {}'.format(e))
-
-
-            Trace.log(TraceLevel.INFO, '============================== NEW B ==============================')
-            m = MultipartEncoder(
-                fields={'Targets': '[]', '@Redfish.OperationApplyTime': 'Immediate',
-                        'UpdateFile': ('filename', open(filename, 'rb'), 'application/octet-stream')}
-            )
-
-            multipart_req = requests.Request('POST', fullUrl, data=m, headers={'Content-Type': m.content_type}).prepare()
-            print(multipart_req.body)
-            # r = requests.post('http://httpbin.org/post', data=m, headers={'Content-Type': m.content_type})
-            Trace.log(TraceLevel.INFO, '============================== END B ==============================')
-
-            response = s.request('POST', fullUrl, data=m, headers={'Content-Type': m.content_type}, verify=False)
-            # response = s.request('POST', fullUrl, data=payload, files=files, verify=False)
-
-            Trace.log(TraceLevel.INFO, '============================== NEW RESPONSE ==============================')
-            print(response.text)
-            print('status_code: {}'.format(response.status_code))
-            print('reason: {}'.format(response.reason))
-            print('request: {}'.format(response.request))
-            Trace.log(TraceLevel.INFO, '============================== END RESPONSE ==============================')
-
-            link.elapsedMicroseconds = (time.time() - startTime) * 1000000
+            response = s.request('POST', fullUrl, files=files, verify=False)
             link.urlData = response.text
             link.update_status(response.status_code, response.reason)
+            try:
+                link.jsonData = json.loads(link.urlData)
+            except:
+                pass
+
+            # Trace.log(TraceLevel.INFO, '============================== RESPONSE ==============================')
+            # print(response.content)
+            # print(response.text)
+            # print('status_code: {}'.format(response.status_code))
+            # print('reason: {}'.format(response.reason))
+            # print('request: {}'.format(response.request))
+            # Trace.log(TraceLevel.INFO, '============================== END RESPONSE ==============================')
 
         except Exception as e:
-            Trace.log(TraceLevel.ERROR, 'EXCEPTION: {}'.format(e))
-
-        try:
-            link.jsonData = json.loads(link.urlData)
-        except:
+            Trace.log(TraceLevel.ERROR, 'Exception: request(POST) - {}'.format(e))
+            link.update_status(418, 'Exception: request(POST) - ' + str(e))
             pass
+
+        link.elapsedMicroseconds = (time.time() - startTime) * 1000000
 
         return link
 
+    #
+    # process_request
+    #     Used to perform an HTTP operation of GET, POST, DELETE.
+    #     Authentication data is automatically added to the HTTP request.
+    #     These method should be updated to use the python requests package
+    #
     @classmethod
     def process_request(self, redfishConfig, link, method = 'GET', addAuth = True, data = None):
 
@@ -253,6 +245,11 @@ class UrlAccess():
             Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): Socket Error {}: {}'.format(link.url, 598, 'socket.timeout'))
             pass
 
+        except urllib.error.HTTPError as err:
+            link.update_status(err.code, err.reason)
+            Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): HTTP Error {}: {}'.format(link.url, err.code, err.reason))
+            pass
+
         except urllib.error.URLError as err:
             errorCode = 0
             if hasattr(err,'code'):
@@ -275,10 +272,5 @@ class UrlAccess():
                     Trace.log(TraceLevel.INFO, 'errorMessage = {}'.format(errorMessage))
                 Trace.log(TraceLevel.INFO, '='*120)
                 pass
-
-        except urllib.error.HTTPError as err:
-            link.update_status(err.code, err.reason)
-            Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): HTTP Error {}: {}'.format(link.url, err.code, err.reason))
-            pass
         
         return link
