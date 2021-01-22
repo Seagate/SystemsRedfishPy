@@ -285,6 +285,7 @@ class RedfishSystem:
             if (redfishConfig.get_version() < 2):
                 cls.fill_storage_services_id(redfishConfig, key)
                 link = UrlAccess.process_request(redfishConfig, UrlStatus(cls.get_uri_simple("StorageServicesId")), 'GET', True, None)                
+                cls.store_uri("Drives", link)
                 uri = cls.get_uri_simple("Drives")
             else:
                 cls.fill_ids(redfishConfig, key)

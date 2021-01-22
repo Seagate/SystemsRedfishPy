@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.1.0] - 2021-1-22
+- Small correction to how the Disks URL is discovered under serviceversion=1. This version will be pushed to github.
+
 ## [2.0.7] - 2021-1-22
 - Updated the `http push` command to work correctly for Redfish Service firmware uploads.
 
