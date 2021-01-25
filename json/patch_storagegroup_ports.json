@@ -1,0 +1,10 @@
+{
+    "ServerEndpointGroups": [
+        {
+            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/A0"
+        },
+        {
+            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/B0"
+        }
+    ]
+}
