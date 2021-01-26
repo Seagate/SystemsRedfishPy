@@ -135,12 +135,21 @@ class CommandHandler(CommandHandlerBase):
             JsonBuilder.addElement('dict', JsonType.DICT, 'Members', JsonBuilder.getElement('array'))
             JsonBuilder.addElement('main', JsonType.DICT, 'AllocatedPools', JsonBuilder.getElement('dict'))
 
-        # ClassesOfService
-        jsonType, level = JsonBuilder.getValue('level', self.command)
-        if (jsonType is not JsonType.NONE):
-            JsonBuilder.newElement('dict', JsonType.DICT, True)
-            JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', RedfishSystem.get_uri(redfishConfig, 'ClassesOfService') + level.upper())
-            JsonBuilder.addElement('main', JsonType.DICT, 'ClassesOfService', JsonBuilder.getElement('dict'))
+        # RAID Type
+        if (redfishConfig.get_version() < 2):
+            # ClassesOfService
+            jsonType, level = JsonBuilder.getValue('level', self.command)
+            if (jsonType is not JsonType.NONE):
+                JsonBuilder.newElement('dict', JsonType.DICT, True)
+                JsonBuilder.addElement('dict', JsonType.STRING, '@odata.id', RedfishSystem.get_uri(redfishConfig, 'ClassesOfService') + level.upper())
+                JsonBuilder.addElement('main', JsonType.DICT, 'ClassesOfService', JsonBuilder.getElement('dict'))
+        else:
+            # SupportedRAIDTypes
+            jsonType, level = JsonBuilder.getValue('level', self.command)
+            if (jsonType is not JsonType.NONE):
+                JsonBuilder.newElement('array', JsonType.ARRAY, True)
+                JsonBuilder.addElement('array', JsonType.STRING, '', level.upper())
+                JsonBuilder.addElement('main', JsonType.DICT, 'SupportedRAIDTypes', JsonBuilder.getElement('array'))
 
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))
 

@@ -34,9 +34,12 @@ class RedfishConfig:
     dictionary = OrderedDict()
     sessionKey = None
     sessionValid = False
+    configurationfile = ''
 
     @classmethod
     def __init__(self, filename):
+
+        self.configurationfile = filename
 
         #
         # Add new configuration settings here, they will be automatically written to the JSON file.
@@ -44,7 +47,6 @@ class RedfishConfig:
         self.dictionary['annotate'] = True
         self.dictionary['brand'] = 'systems'
         self.dictionary['certificatecheck'] = False
-        self.dictionary['configurationfile'] = filename
         self.dictionary['dumphttpdata'] = False
         self.dictionary['dumpjsondata'] = False
         self.dictionary['dumppostdata'] = False
@@ -54,28 +56,31 @@ class RedfishConfig:
         self.dictionary['linktestdelay'] = 0
         self.dictionary['mcip'] = ''
         self.dictionary['password'] = ''
+        self.dictionary['serviceversion'] = 2
         self.dictionary['showelapsed'] = False
         self.dictionary['trace'] = int(TraceLevel.INFO)
         self.dictionary['urltimeout'] = 30
         self.dictionary['usefinalslash'] = True
         self.dictionary['username'] = ''
-        self.dictionary['version'] = __version__
         
         Trace.log(TraceLevel.DEBUG, '++ Initilize Redfish API configuration from ({})...'.format(filename))
 
         currentvalue = 0
         
         with open(filename, "r") as read_file:
-            settings = json.load(read_file)
+            try:
+                Trace.log(TraceLevel.VERBOSE, 'Open JSON configuration file {}'.format(read_file))
+                settings = json.load(read_file)
 
-            for key in self.dictionary:
-                if key in settings:
-                    self.dictionary[key] = settings[key]
-                Trace.log(TraceLevel.DEBUG, '   -- {0: <8} : {1}'.format(key, self.dictionary[key]))
+                for key in self.dictionary:
+                    if key in settings:
+                        self.dictionary[key] = settings[key]
+                    Trace.log(TraceLevel.DEBUG, '   -- {0: <8} : {1}'.format(key, self.dictionary[key]))
 
-        self.update_trace('trace', currentvalue, self.dictionary['trace'])
-        self.dictionary['version'] = __version__
-        self.save()
+                self.update_trace('trace', currentvalue, self.dictionary['trace'])
+                self.save()
+            except:
+                Trace.log(TraceLevel.ERROR, 'Cannot parse JSON configuration file {}'.format(read_file))
 
     @classmethod
     def get_value(self, key):
@@ -87,6 +92,24 @@ class RedfishConfig:
             value = int(self.dictionary[key])
         except:
             value = -1
+        return value
+
+    @classmethod
+    def get_float(self, key):
+        try:
+            value = float(self.dictionary[key])
+        except:
+            value = -1.0
+        return value
+
+    @classmethod
+    def get_version(self):
+        try:
+            value = int(self.dictionary['serviceversion'])
+            if value < 0:
+                value = 1
+        except:
+            value = 2
         return value
 
     @classmethod
@@ -125,30 +148,28 @@ class RedfishConfig:
 
     @classmethod
     def save(self):
-        configurationfile = self.dictionary['configurationfile']
-        Trace.log(TraceLevel.VERBOSE, '-- Save Redfish API configuration to ({})'.format(configurationfile))
+        Trace.log(TraceLevel.VERBOSE, '-- Save Redfish API configuration to ({})'.format(self.configurationfile))
         try:
-            with open(configurationfile, "w") as write_file:
+            with open(self.configurationfile, "w") as write_file:
                 json.dump(self.dictionary, write_file, indent=4)
         except:
-            Trace.log(TraceLevel.ERROR, '-- Unable to save configuration to ({}) - check spelling'.format(configurationfile))
+            Trace.log(TraceLevel.ERROR, '-- Unable to save configuration to ({}) - check spelling'.format(self.configurationfile))
             pass
 
     @classmethod
     def update(self, parameter, value):
         
         updated = False
-        configurationfile = self.dictionary['configurationfile']
 
-        Trace.log(TraceLevel.VERBOSE, '   -- Update Redfish API configuration parameter ({}), value ({}), config file ({})'.format(parameter, value, configurationfile))
+        Trace.log(TraceLevel.VERBOSE, '   -- Update Redfish API configuration parameter ({}), value ({}), config file ({})'.format(parameter, value, self.configurationfile))
 
-        with open(configurationfile, "r") as read_file:
+        with open(self.configurationfile, "r") as read_file:
             settings = json.load(read_file)
 
         try:
             currentvalue = self.dictionary[parameter]
             self.dictionary[parameter] = settings[parameter] = value
-            with open(configurationfile, "w") as write_file:
+            with open(self.configurationfile, "w") as write_file:
                 json.dump(settings, write_file, indent=4)
                 self.update_trace(parameter, currentvalue, value)
             # Update the trace level as needed
@@ -167,9 +188,7 @@ class RedfishConfig:
         command = command.strip()
         
         if (command[0] == '!'):
-            if (command == '!version'):
-                Trace.log(TraceLevel.INFO, '   ++ CFG: Version ({})'.format(self.dictionary['version']))
-            elif (command == '!dump'):
+            if (command == '!dump'):
                 self.display()
                 
             else:

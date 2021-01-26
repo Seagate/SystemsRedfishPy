@@ -1,0 +1,42 @@
+{
+    "Name": "ComposedVolumeA02",
+    "Description": "Composed Volume A02",
+    "RAIDType": "RAID5",
+    "CapacityBytes": 2000000000,
+    "LogicalUnitNumber": 1,
+
+    "AccessCapabilities": [
+        "Read",
+        "Write"
+    ],
+
+    "Links": {
+        "ClientEndpointGroups": [
+            {
+                "@odata.id": "/redfish/v1/Fabrics/SAS/Endpoints/500605b00db9a071"
+            }
+        ],
+        "ResourceBlocks": [
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.4"
+            },
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.5"
+            },
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.6"
+            },
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.7"
+            }
+        ],
+        "ServerEndpointGroups": [
+            {
+                "@odata.id": "/redfish/v1/Fabrics/SAS/Endpoints/A0"
+            },
+            {
+                "@odata.id": "/redfish/v1/Fabrics/SAS/Endpoints/A1"
+            }
+        ]
+    }
+}

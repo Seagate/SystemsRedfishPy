@@ -1,5 +1,42 @@
 # Change Log
 
+## [2.1.0] - 2021-1-22
+- Small correction to how the Disks URL is discovered under serviceversion=1. This version will be pushed to github.
+
+## [2.0.7] - 2021-1-22
+- Updated the `http push` command to work correctly for Redfish Service firmware uploads.
+
+## [2.0.6] - 2021-1-14
+- New example JSON files for volume composition under json/
+- New `compose volume` command to compose a volume using the Redfish Composition Service
+- New `run cli` command to execute any MC API CLI command using the Redfish interface
+
+## [2.0.5] - 2020-11-24
+- Added requirements.txt which stipulates some new requirements for new features
+- Added `http push` which allows a user to send a file to the service using http and application/octet-stream, see requirements.txt
+- Added `reset system` which allows the user execute a restart controller command
+- Added `show discovered` and `reset discoverd` which allows the user to see all redfish service discovered URLs
+- Removed the `configurationfile` setting from the configuration file
+- Replaced the `version` configuration setting with a new `serviceversion` setting - this variable is used to work with the first version of the Redfish Service (serviceversion=1) or the latest Redfish Service (serviceversion=2) that supports Fabrics, Composition Service and other new features
+- Added command history that works under Windows and Linux, see requirements.txt
+
+## [2.0.4] - 2020-10-29
+- Expanded UrlAcess.process_request() to traverse all items in the header to better handle the 'json' content type
+
+## [2.0.3] - 2020-09-08
+- Corrected 'purge system' to handle both linear and virtual storage systems
+- Corrected JSON errors in redfishAPI.json
+- Removed the need for Python version 3.6 or greater. 3.x is sufficient.
+- Add 'show fabrics'
+
+## [2.0.2] - 2020-07-22
+- Updated 'create session' to display the session key
+- Enhanced 'show storagegroups' to check JSON data inclusion before retrieving values.
+
+## [2.0.1] - 2020-07-16
+- Changes based on Redfish Service Phase II updates 
+- Updates to 'redfish odata' and 'redfish metadata'
+
 ## [1.2.9] - 2020-09-08
 - Corrected 'purge system' to handle both linear and virtual storage systems
 

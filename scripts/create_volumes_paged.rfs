@@ -41,11 +41,11 @@ create volume name=BVolume02 size=200000000000 pool=B
 #    The value used for lun must be wrapped in single quotes
 #
 
-create storagegroup lun='1' volume=AVolume01 access=read-write ports=A0,A1,B0,B1 initiators=500605b00ab61310
-create storagegroup lun='2' volume=AVolume02 access=read-write ports=A0,A1,B0,B1 initiators=500605b00ab61310
+create storagegroup lun='1' volume=AVolume01 access=read-write ports=A0,A1 initiators=500605b00db9a070
+create storagegroup lun='2' volume=AVolume02 access=read-write ports=A0,A1 initiators=500605b00db9a070
 
-create storagegroup lun='11' volume=BVolume01 access=read-write ports=A0,A1,B0,B1 initiators=500605b00ab61311
-create storagegroup lun='12' volume=BVolume02 access=read-write ports=A0,A1,B0,B1 initiators=500605b00ab61311
+create storagegroup lun='11' volume=BVolume01 access=read-write ports=B0,B1 initiators=500605b00db9a071
+create storagegroup lun='12' volume=BVolume02 access=read-write ports=B0,B1 initiators=500605b00db9a071
 
 #
 # Display Configuration

@@ -62,40 +62,28 @@ class EndpointInformation:
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
         if (link.valid):
-            Trace.log(TraceLevel.DEBUG, '   ++ Item: ({}, {})'.format(link.jsonData['Name'], link.jsonData['GroupType']))
 
-            # Extract the Endpoint URI if this item has GroupType == Server
+            if ('Name' in link.jsonData):
+                Trace.log(TraceLevel.DEBUG, '   ++ Item: ({})'.format(link.jsonData['Name']))
+                self.Description = link.jsonData['Name']
+                
+            if ('Status' in link.jsonData):
+                status = link.jsonData['Status']
+                if ('State' in status):
+                    self.State = status['State']
+                if ('Health' in status):
+                    self.Health = status['Health']
 
-            try:
-                self.GroupType = link.jsonData['GroupType']
+            if ('Identifiers' in link.jsonData):
+                ids = link.jsonData['Identifiers']
+                self.DurableName = ids[0]['DurableName']
 
-                if ((self.GroupType == "Server") and ('All' not in link.jsonData['Id'])):
-                    endpoints = link.jsonData['Endpoints']
-                    for i in range(len(endpoints)):
-                        # Example: "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/500605b00ab61310"
-                        self.EndpointURI = endpoints[i]['@odata.id']
+            if ('Id' in link.jsonData):
+                self.Id = link.jsonData['Id']
 
-                    Trace.log(TraceLevel.DEBUG, '   ++ Examine: ({})'.format(self.EndpointURI))
-
-                    link2 = UrlAccess.process_request(redfishConfig, UrlStatus(self.EndpointURI))
-                    if (link2.valid):
-                        Trace.log(TraceLevel.DEBUG, '   ++ Endpoint: ({}, {})'.format(link2.jsonData['Name'], link2.jsonData['Id']))
-
-                        self.Name = link2.jsonData['Name']
-                        self.Description =link2.jsonData['Description']
-
-                        status = link2.jsonData['Status']
-                        self.State = status['State']
-                        self.Health = status['Health']
-
-                        ids = link2.jsonData['Identifiers']
-                        self.DurableName = ids[0]['DurableName']
-
-                        self.Id = link2.jsonData['Id']
-                        valid = True
-
-            except:
-                self.Description = 'Unknown'                        
+            if ('Description' in link.jsonData):
+                if ('port' in link.jsonData['Description']):
+                    valid = True
 
         return (valid)
 
@@ -111,7 +99,7 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def prepare_url(self, redfishConfig, command):
         self.items = []
-        return (RedfishSystem.get_uri(redfishConfig, 'EndpointGroups'))
+        return (RedfishSystem.get_uri(redfishConfig, 'Endpoints'))
 
     @classmethod
     def process_json(self, redfishConfig, url):

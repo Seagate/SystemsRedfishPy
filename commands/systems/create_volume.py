@@ -117,7 +117,7 @@ class CommandHandler(CommandHandlerBase):
                 JsonBuilder.addElement('array', JsonType.DICT, '', JsonBuilder.getElement('dict2'))
             JsonBuilder.addElement('main', JsonType.DICT, 'CapacitySources', JsonBuilder.getElement('array'))
 
-        # CapacitySources (linera)
+        # CapacitySources (linear)
         jsonType, pool = JsonBuilder.getValue('diskgroup', self.command)
         if (jsonType is not JsonType.NONE):
             JsonBuilder.newElement('array', JsonType.ARRAY, True)
@@ -133,11 +133,12 @@ class CommandHandler(CommandHandlerBase):
             JsonBuilder.addElement('main', JsonType.DICT, 'CapacitySources', JsonBuilder.getElement('array'))
 
         # Links / ClassOfService
-        JsonBuilder.newElement('dict', JsonType.DICT, True)
-        JsonBuilder.newElement('dict2', JsonType.DICT, True)
-        JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', RedfishSystem.get_uri(redfishConfig, 'ClassesOfServiceDefault'))
-        JsonBuilder.addElement('dict', JsonType.DICT, 'ClassOfService', JsonBuilder.getElement('dict2'))
-        JsonBuilder.addElement('main', JsonType.DICT, 'Links', JsonBuilder.getElement('dict'))
+        if (redfishConfig.get_version() < 2):
+            JsonBuilder.newElement('dict', JsonType.DICT, True)
+            JsonBuilder.newElement('dict2', JsonType.DICT, True)
+            JsonBuilder.addElement('dict2', JsonType.STRING, '@odata.id', RedfishSystem.get_uri(redfishConfig, 'ClassesOfServiceDefault'))
+            JsonBuilder.addElement('dict', JsonType.DICT, 'ClassOfService', JsonBuilder.getElement('dict2'))
+            JsonBuilder.addElement('main', JsonType.DICT, 'Links', JsonBuilder.getElement('dict'))
 
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))
 

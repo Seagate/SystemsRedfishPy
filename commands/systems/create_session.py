@@ -49,6 +49,7 @@ class CommandHandler(CommandHandlerBase):
     name = 'create session'
 
     def prepare_url(self, redfishConfig, command):
+        Trace.log(TraceLevel.INFO, '   -- ServiceVersion: {}'.format(redfishConfig.get_version()))
         return (RedfishSystem.get_uri(redfishConfig, 'Sessions'))
 
     @classmethod
@@ -81,6 +82,7 @@ class CommandHandler(CommandHandlerBase):
                 Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
             
             redfishConfig.sessionKey = link.response.getheader('X-Auth-Token', '')
+            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('sessionKey', redfishConfig.sessionKey))
             if (redfishConfig.sessionKey != ''):
                 redfishConfig.sessionValid = True
 

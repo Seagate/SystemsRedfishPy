@@ -1,0 +1,4 @@
+{
+    "Targets": [ "/redfish/v1/Managers/1" ],
+    "@Redfish.OperationApplyTime": "OnReset"
+}

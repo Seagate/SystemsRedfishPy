@@ -1,0 +1,22 @@
+#
+# This script is used to gather HTTP GET performance numbers so that a current Redfish Service version can be compared to older versions.
+#
+# create session
+!trace 4
+
+# Show the current Redfish Service version
+http get /redfish/v1
+
+# Run a URLs test to gather a baseline number
+redfish urls
+
+# Run HTTP GET operations against a pre-defined set of URIs
+run loop 100 /redfish/v1/SessionService/Sessions/2
+run loop 100 /redfish/v1/Systems/00C0FF437ED5/Storage/controller_a/Drives/0.0
+run loop 100 /redfish/v1/Systems/00C0FF437ED5/Storage/controller_a/Volumes/00c0ff5112490000f6235a5f01000000
+run loop 100 /redfish/v1/Systems/00C0FF437ED5/Storage/controller_a/StoragePools/A
+run loop 100 /redfish/v1/Systems/00C0FF437ED5/Storage/controller_b/StoragePools/dgA01
+run loop 100 /redfish/v1/Systems/00C0FF437ED5/Storage/controller_b/StorageGroups/00c0ff5112490000f6235a5f01000000_00c0ff51124900007db6945e01010000
+run loop 100 /redfish/v1/Chassis/enclosure_0/Power
+run loop 100 /redfish/v1/Systems/00C0FF437ED5
+run loop 100 /redfish/v1/Fabrics/SAS/Endpoints/500605b00db9a070

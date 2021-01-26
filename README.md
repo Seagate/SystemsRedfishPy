@@ -74,9 +74,12 @@ Your client computer must have Python3 (or later) installed. You will also need 
 and know the IP Address of the target controller running the Redfish Service. User credentials are required in order to
 create a Redfish sessions and provision storage.
 
-Using **SystemsRedfishPy** does not rely on any other packages. But HTML and XML packages are used if you desire to run unit test
-cases and produce HTML or XML reports. See the [test document](UNITTEST.md) for more information.
+Using **SystemsRedfishPy** relies on the packages specified in requirements.txt. But HTML and XML packages are used if you
+desire to run unit test cases and produce HTML or XML reports and these are not automatically installed. See the [test document](UNITTEST.md) for more information.
 
+- `pip install -r requirements.txt`
+
+**Note:** You may have to use `pip install --user -r requirements.txt` in some Windows environment.
 
 ## Quick Tutorial
 
@@ -86,20 +89,24 @@ interactive mode. All commands entered at the prompt can also be pasted into a t
 Open a terminal window and change directories to the SystemsRedfishPy folder. Run the command 'python redfishAPI.py'
 and you will be presented with a '(redfish)' prompt.
 
-As a best practice, it is suggested that you copy redfishAPI.json to myconfig.json. Then edit the following properties in myconfig.json.
-* "configurationfile": "myconfig.json",
+As a best practice, it is suggested that you copy redfishAPI.json to myconfig.json or any name of your choice. Then edit the following properties in that file:
 * "dumphttpdata": "True",
 * "mcip": "[your-service-ip]",
 * "password": "[service-password]",
 * "username": "[service-username]",
 
+Additional Properties Note:
+* Set `!serviceversion 1` - to work with the earlier version of the Redfish Service that supported ClassesOfService
+* Set `!serviceversion 2` - to work with the latest version of the Redfish Service that supports fabrics, composition, etc.
+* This can be done at the (redfish) prompt using !serviceversion [1|2]
+
 Then, use python redfishAPI.py -c myconfig.json to run interactive commands using your system configuration settings.
 
 ```bash
-> python3.6 redfishAPI.py -c myconfig.json
+> python3 redfishAPI.py -c myconfig.json
 
 --------------------------------------------------------------------------------
-[1.2.5] Redfish API
+[2.0.7] Redfish API
 --------------------------------------------------------------------------------
 [] Run Redfish API commands interactively...
 
@@ -127,32 +134,31 @@ To configure which controller to talk to:
 | Command              | Description |
 | -------------------- | ----------- |
 | !mcip 10.235.221.120 | Change all HTTP communications to use this new ip address. |
-| !username [name]     | Change the username to '[name]' that is used to log in to the Redfish Service. |
-| !password [password] | Change the password to '[password]' that is used to log in to the Redfish Service. |
+| !username [name]     | Change the username to `[name]` that is used to log in to the Redfish Service. |
+| !password [password] | Change the password to `[password]` that is used to log in to the Redfish Service. |
 
 When running commands, you have several options to help debug issues, and to configure the system. Here is a complete list:
 
 | Command                         | Description |
 | ------------------------------- | ----------- |
-| !annotate [True,False]          | Provides a banner for every line of script file processed. Default is True. |
-| !brand [product]                | Specifies the folder to retrieve commands from. Default is systems, but example is also provided. |
-| !certificatecheck [True,False]  | When False, the URL will be opened using context=ssl._create_unverified_context. Default is False. |
-| !configurationfile [filename]   | Declare the filename where this data is stored. Should match actual filename. |
+| !annotate [True,False]          | Provides a banner for every line of script file processed. Default is `True`. |
+| !brand [product]                | Specifies the folder to retrieve commands from. Default is `systems`, but `example` is also provided. This is a subfolder of `commands`. |
+| !certificatecheck [True,False]  | When False, the URL will be opened using context=ssl._create_unverified_context. Default is `False`. |
 | !dump                           | Print out all configuration options. This is useful to learn what settings are available. |
-| !dumphttpdata [True,False]      | Display all HTTP data read from the Redfish Service. Useful for additional info. Default is False. |
-| !dumpjsondata [True,False]      | Display all JSON data read from the Redfish Service. Default is False. |
-| !dumppostdata [True,False]      | Display all data that is sent via an HTTP POST operation. Default is False. |
-| !entertoexit [True,False]       | When True, pressing Enter in interactive mode will exit the tool. Default is False. |
-| !http [https,https]             | Switch between use http:// and https://. Default is https. |
-| !linktestdelay [seconds]        | How long to delay between URLs when running the 'redfish urls' command. Default is 0. |
+| !dumphttpdata [True,False]      | Display all HTTP data read from the Redfish Service. Useful for additional info. Default is `False`. |
+| !dumpjsondata [True,False]      | Display all JSON data read from the Redfish Service. Default is `False`. |
+| !dumppostdata [True,False]      | Display all data that is sent via an HTTP POST operation. Default is `False`. |
+| !entertoexit [True,False]       | When True, pressing Enter in interactive mode will exit the tool. Default is `False`. |
+| !http [https,https]             | Switch between use http:// and https://. Default is `https`. |
+| !linktestdelay [seconds]        | How long to delay between URLs when running the 'redfish urls' command. Default is `0`. |
 | !mcip 10.235.221.120            | Change all HTTP communications to use this new ip address. |
-| !password [password]            | Change the password to '[password]' that is used to log in to the Redfish Service. |
-| !showelapsed [True,False]       | Display how long each command took. Default is False. |
-| !trace [4-7]                    | Turn on additional tracing. 4=DEFAULT, 5=VERBOSE, 6=DEBUG, 7=TRACE. |
-| !urltimeout [seconds]           | How long to wait for a URL request before timing out. Default is 30. |
-| !usefinalslash [True,False]     | When True, all Redfish URIs will have a slash as the final character in the URL. Default is True. |
-| !username [name]                | Change the username to '[name]' that is used to log in to the Redfish Service. |
-| !version                        | Read only value of the last version used to write to this file. |
+| !password [password]            | Change the password to `[password]` that is used to log in to the Redfish Service. |
+| !serviceversion [1,2]           | Specify the Redfish Service version. This changes command behavior based on supported schemas. Default is `2`. |
+| !showelapsed [True,False]       | Display how long each command took. Default is `False`. |
+| !trace [4-7]                    | Turn on additional tracing. 4=DEFAULT, 5=VERBOSE, 6=DEBUG, 7=TRACE. Default is `4`. |
+| !urltimeout [seconds]           | How long to wait for a URL request before timing out. Default is `30`. |
+| !usefinalslash [True,False]     | When True, all Redfish URIs will have a slash as the final character in the URL. Default is `True`. |
+| !username [name]                | Change the username to `[name]` that is used to log in to the Redfish Service. |
 
 
 ### Redfish Commands
@@ -163,11 +169,12 @@ establish a session.
 
 ```bash
 --------------------------------------------------------------------------------
-[1.2.5] Redfish API
+[2.0.7] Redfish API
 --------------------------------------------------------------------------------
 [] Run Redfish API commands interactively...
 
 (redfish) create session
+   -- ServiceVersion: 2
    -- Discovered: Root               >> /redfish/v1
    -- Discovered: Systems            >> /redfish/v1/ComputerSystem/
    -- Discovered: Chassis            >> /redfish/v1/Chassis/
@@ -218,12 +225,13 @@ As a note, most Redfish commands require that you establish a session with the t
 the 'http post' command to create a session, you should also call 'save session [id] [key]' so that all following
 http commands can use the session credentials.
  
-| Command                             | Description |
-| ----------------------------------- | ----------- |
-| http get [url]                      | Perform an HTTP GET operation on a URI |
-| http post [url] [json or filename]  | Perform an HTTP POST operation on a URI, sending the specified JSON data |
-| http patch [url] [json or filename] | Perform an HTTP PATCH operation on a URI, sending the specified JSON data |
-| http delete [url]                   | Perform an HTTP DELETE operation on a URI |
+| Command                                       | Description |
+| --------------------------------------------- | ----------- |
+| http get [url]                                | Perform an HTTP GET operation on a URI |
+| http post [url] [json or filename]            | Perform an HTTP POST operation on a URI, sending the specified JSON data |
+| http patch [url] [json or filename]           | Perform an HTTP PATCH operation on a URI, sending the specified JSON data |
+| http delete [url]                             | Perform an HTTP DELETE operation on a URI |
+| http push [url] [imagefile] [<]json or file]  | Perform an HTTP POST operation to transfer a file to a URI |
 
 Examples:
 
