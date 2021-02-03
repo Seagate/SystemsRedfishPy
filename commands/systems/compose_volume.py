@@ -227,16 +227,12 @@ class CommandHandler(CommandHandlerBase):
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))
 
         # HTTP 201 Created
-        if (link.urlStatus == 201):
-
-            if (link.jsonData != None):
-                Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Name', link.jsonData['Name']))
-                Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('SerialNumber', link.jsonData['Id']))
-            else:
-                Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
-        else:
+        if (link.jsonData != None):
+            Trace.log(TraceLevel.INFO, '[[ JSON DATA ]]')
             Trace.log(TraceLevel.INFO, json.dumps(link.jsonData, indent=4))
-
+            Trace.log(TraceLevel.INFO, '[[ JSON DATA END ]]')
+        else:
+            Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
 
     @classmethod
     def display_results(self, redfishConfig):

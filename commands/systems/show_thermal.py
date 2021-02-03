@@ -141,12 +141,19 @@ class CommandHandler(CommandHandlerBase):
                             else:
                                 Enclosure = 'unknown'
 
-                            MemberId = link['MemberId']
-                            Name = link['Name']
-                            ReadingCelsius = str(link['ReadingCelsius'])
-                            statusDict = link['Status']
-                            StatusState = statusDict['State']
-                            StatusHealth = statusDict['Health']
+                            value = 'Test' if 1 == 1 else 'NoTest'
+
+                            MemberId = link['MemberId'] if 'MemberId' in link else 'N/A'
+                            Name = link['Name'] if 'Name' in link else 'N/A'
+                            ReadingCelsius = link['ReadingCelsius'] if 'ReadingCelsius' in link else 'N/A'
+
+                            if ('Status' in link):
+                                statusDict = link['Status']
+                                StatusState = statusDict['State'] if 'State' in statusDict else 'N/A'
+                                StatusHealth = statusDict['Health'] if 'Health' in statusDict else 'N/A'
+                            else:
+                                StatusState = 'N/A'
+                                StatusHealth = 'N/A'
     
                             # Adjust certain strings
                             SensorName = Name.replace('sensor_temp_', '')

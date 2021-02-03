@@ -1,0 +1,63 @@
+#
+# Redfish Service Regression Test
+#
+
+http get /redfish
+http get /redfish/v1
+redfish metadata
+http get /redfish/v1/$metadata
+http get /redfish/v1/odata
+
+redfish version
+
+create session
+show sessions
+
+show disks
+show initiators
+show ports
+show enclosures
+show fabrics
+show fans
+show thermal
+
+#
+# Create and Map Volumes (virtual)
+#
+
+purge system
+
+create diskgroup name=dgA01 disks=0.0,0.1,0.2,0.3 pool=A level=raid5
+create diskgroup name=dgA02 disks=0.4,0.5,0.6,0.7 pool=A level=raid6
+create diskgroup name=dgA03 disks=0.8,0.9 pool=A level=raid1
+
+create volume name=AVolume01 size=100000000000 pool=A
+create volume name=AVolume02 size=200000000000 pool=A
+
+create storagegroup lun='1' volume=AVolume01 access=read-write ports=A0,A1 initiators=500605b00db9a070
+create storagegroup lun='2' volume=AVolume02 access=read-write ports=A0,A1 initiators=500605b00db9a070
+
+show system
+
+set volume name=NewAVolume01 volume=00c0ff5112490000592e186001000000
+show volumes
+
+
+#
+# Compose Volumes
+#
+
+purge system
+
+compose volume name=ComposedVolume01 size=100000000000 raid=raid6 lun=1 access=read-write blocks=0.0,0.1,0.2,0.3 fabric=SAS ports=A0,A1,B0,B1 initiators=500605b00db9a070
+compose volume name=ComposedVolume02 size=100000000000 raid=raid5 lun=2 access=read-write blocks=0.4,0.5,0.6,0.7 fabric=SAS ports=A0,A1,B0,B1 initiators=500605b00db9a071
+	 
+show system
+
+#
+# Misc
+#
+run loop 50 /redfish/v1
+run cli show volumes
+
+delete sessions $sessionid

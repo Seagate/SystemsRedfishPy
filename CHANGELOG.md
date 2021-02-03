@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.1.1] - 2021-2-3
+- Added [Troubleshooting Guide](troubleshooting.md)
+- Corrections and enhancements to `show thermal`, `create volume`, `compose volume`, `create diskgroup`,`create storagegroup`,
+
 ## [2.1.0] - 2021-1-22
 - Small correction to how the Disks URL is discovered under serviceversion=1. This version will be pushed to github.
 
@@ -36,13 +40,6 @@
 ## [2.0.1] - 2020-07-16
 - Changes based on Redfish Service Phase II updates 
 - Updates to 'redfish odata' and 'redfish metadata'
-
-## [1.2.9] - 2020-09-08
-- Corrected 'purge system' to handle both linear and virtual storage systems
-
-## [1.2.8] - 2020-09-08
-- Corrected JSON errors in redfishAPI.json
-- Removed the need for Python version 3.6 or greater. 3.x is sufficient.
 
 ## [1.2.7] - 2020-07-09
 - Added new config option 'httpbasicauth' True|False. When True, use HTTP Basic Auth instead of Sessions.
