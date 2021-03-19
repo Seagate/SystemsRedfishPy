@@ -1,5 +1,11 @@
 # Change Log
 
+## [2.1.3] - 2021-3-19
+- Added `help configuration` to show how to use dump and set config values, also sorted help command output
+
+## [2.1.2] - 2021-3-18
+- Added `show tasks`
+
 ## [2.1.1] - 2021-2-3
 - Added [Troubleshooting Guide](troubleshooting.md)
 - Corrections and enhancements to `show thermal`, `create volume`, `compose volume`, `create diskgroup`,`create storagegroup`,

@@ -133,3 +133,5 @@ reports/
 myconfig.json
 .project
 .pydevproject
+.vscode
+redfishAPI.hist

@@ -70,7 +70,7 @@ python3 redfishAPI.py
 
 ## Requirements
 
-Your client computer must have Python3 (or later) installed. You will also need network access to the desired controller,
+Your client computer must have Python3.6 (or later) installed. You will also need network access to the desired controller,
 and know the IP Address of the target controller running the Redfish Service. User credentials are required in order to
 create a Redfish sessions and provision storage.
 

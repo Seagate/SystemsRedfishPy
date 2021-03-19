@@ -150,8 +150,9 @@ class Help():
                 print('')
                 print(' {0: <24}  {1}'.format('Command', 'Synopsis'))
                 print(' ' + '='*170)
-                for key in cls.synopses:
-                    print(' {0: <24}  {1}'.format(key, cls.synopses[key]))
+
+                for item in sorted(cls.synopses.items()) :                
+                    print(' {0: <24}  {1}'.format(item[0], item[1]))
 
             elif (cls.command_found(cls.command)):
                 print('')
