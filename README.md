@@ -106,14 +106,14 @@ Then, use python redfishAPI.py -c myconfig.json to run interactive commands usin
 > python3 redfishAPI.py -c myconfig.json
 
 --------------------------------------------------------------------------------
-[2.0.7] Redfish API
+[2.1.4] Redfish API
 --------------------------------------------------------------------------------
 [] Run Redfish API commands interactively...
 
 (redfish)
 ```
 
-There are four main categories of commands that can be entered.
+There are five main categories of commands that can be entered.
  
 ### Help
 
@@ -151,7 +151,7 @@ When running commands, you have several options to help debug issues, and to con
 | !entertoexit [True,False]       | When True, pressing Enter in interactive mode will exit the tool. Default is `False`. |
 | !http [https,https]             | Switch between use http:// and https://. Default is `https`. |
 | !linktestdelay [seconds]        | How long to delay between URLs when running the 'redfish urls' command. Default is `0`. |
-| !mcip 10.235.221.120            | Change all HTTP communications to use this new ip address. |
+| !mcip [ip]                      | Change all HTTP communications to use this new ip address. |
 | !password [password]            | Change the password to `[password]` that is used to log in to the Redfish Service. |
 | !serviceversion [1,2]           | Specify the Redfish Service version. This changes command behavior based on supported schemas. Default is `2`. |
 | !showelapsed [True,False]       | Display how long each command took. Default is `False`. |
@@ -169,24 +169,27 @@ establish a session.
 
 ```bash
 --------------------------------------------------------------------------------
-[2.0.7] Redfish API
+[2.1.4] Redfish API
 --------------------------------------------------------------------------------
 [] Run Redfish API commands interactively...
 
 (redfish) create session
    -- ServiceVersion: 2
-   -- Discovered: Root               >> /redfish/v1
-   -- Discovered: Systems            >> /redfish/v1/ComputerSystem/
-   -- Discovered: Chassis            >> /redfish/v1/Chassis/
-   -- Discovered: StorageServices    >> /redfish/v1/StorageServices/
-   -- Discovered: Managers           >> /redfish/v1/Managers/
-   -- Discovered: Tasks              >> /redfish/v1/TaskService/
-   -- Discovered: SessionService     >> /redfish/v1/SessionService/
-   -- Discovered: Sessions           >> /redfish/v1/SessionService/Sessions/
-   -- Discovered: metadata           >> /redfish/v1$metadata/
-   -- Discovered: odata              >> /redfish/v1odata/
+   -- IP Address    : https://<ip>
+   -- Discovered: Root                      >> /redfish/v1
+   -- Discovered: Chassis                   >> /redfish/v1/Chassis/
+   -- Discovered: CompositionService        >> /redfish/v1/CompositionService/
+   -- Discovered: Fabrics                   >> /redfish/v1/Fabrics/
+   -- Discovered: Managers                  >> /redfish/v1/Managers/
+   -- Discovered: SessionService            >> /redfish/v1/SessionService/
+   -- Discovered: Systems                   >> /redfish/v1/Systems/
+   -- Discovered: Tasks                     >> /redfish/v1/TaskService/
+   -- Discovered: UpdateService             >> /redfish/v1/UpdateService/
+   -- Discovered: Sessions                  >> /redfish/v1/SessionService/Sessions/
+   -- Discovered: metadata                  >> /redfish/v1/$metadata/
+   -- Discovered: odata                     >> /redfish/v1/odata/
 
-[] Redfish session established (4:29eb5e61a38061fc6b1bce6afb036a5d)
+[] Redfish session established (4:<sessionkey>)
 
 [] Elapsed time: 0m 2s to execute command
 ```
@@ -194,7 +197,6 @@ establish a session.
 The main redfish commands are used for debugging or learning more about the data returned by the Redfish Service.
 
 For example:
-
 
 | Command                     | Description |
 | --------------------------- | ----------- |
@@ -243,6 +245,41 @@ Examples:
 (redfish) http get /redfish/v1/Chassis
 (redfish) http get /redfish/v1/Managers
 (redfish) http post /redfish/v1/SessionService/Sessions credentials.json
+```
+### Get Log Commands
+
+The get logs commands allow you retrieve controller or drive logs. Here are examples of executing each.
+
+```bash
+(redfish) get logs component=controller
+
+++ get logs: /redfish/v1/Systems/00C0FF437ED5/LogServices/controller_a/Actions/LogService.CollectDiagnosticData...
+++ POST get logs (controller, CollectControllerLog)
+
+   >> Monitor task 'getlogs-task' for Completed
+      == TaskState: 'Running' (sleep 30)
+      == TaskState: 'Running' (sleep 30)
+      == TaskState: 'Running' (sleep 30)
+      == TaskState: 'Running' (sleep 30)
+      == TaskState: 'Running' (sleep 30)
+      == TaskState: 'Running' (sleep 3)
+      == TaskState: 'Running' (sleep 3)
+      == TaskState: 'Running' (sleep 3)
+      == TaskState: 'Running' (sleep 3)
+      == TaskState: 'Running' (sleep 3)
+      == TaskState: 'Completed'
+
+++ POST get logs (controller, DownloadLogData)
+   -- Status        : 200
+   -- Reason        : OK
+   -- Download complete to 'logfile.zip'
+```
+
+An example of retrieving disk drive logs.
+
+```bash
+(redfish) get logs component=drive
+
 ```
 
 ### Design

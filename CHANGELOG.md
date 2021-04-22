@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.1.4] - 2021-4-20
+- Added `get logs` to retrieve controller and disk drive logs
+- Added `cs` alias as a short cut to run `create session`
+- Added `decode` flag for UrlAccess.process_request() to handle retrieval of log files
+- The URI discovery tag `ActiveController` is now `StorageActiveController` to relate better to the URI
+- Added URI discovery service for `SystemsLogServices`
+- Added the display of IP Address when creating a session for easier debug
+
 ## [2.1.3] - 2021-3-19
 - Added `help configuration` to show how to use dump and set config values, also sorted help command output
 
