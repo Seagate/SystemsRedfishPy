@@ -149,7 +149,7 @@ class UrlAccess():
     #     These method should be updated to use the python requests package
     #
     @classmethod
-    def process_request(self, redfishConfig, link, method = 'GET', addAuth = True, data = None):
+    def process_request(self, redfishConfig, link, method = 'GET', addAuth = True, data = None, decode = True):
 
         try:
             Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request - {} ({}) session ({}:{})'.format(method, link.url, Label.decode(config.sessionIdVariable), redfishConfig.sessionKey))
@@ -196,7 +196,10 @@ class UrlAccess():
             Trace.log(TraceLevel.TRACE, '   >> elapsed={}'.format(elapsed))
 
             link.elapsedMicroseconds = elapsed
-            link.urlData = link.response.read().decode('utf-8')
+            if decode:
+                link.urlData = link.response.read().decode('utf-8')
+            else:
+                link.urlData = link.response.read()
             
             Trace.log(TraceLevel.TRACE, '[[ urlData DATA ]]')
             Trace.log(TraceLevel.TRACE, '{}'.format(link.urlData))

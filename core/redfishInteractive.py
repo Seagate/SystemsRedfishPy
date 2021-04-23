@@ -66,7 +66,7 @@ class HistoryCompleter(object):
 ################################################################################
 class RedfishPrompt():
 
-    aliases = {'rf':'redfish'}
+    aliases = {'rf':'redfish', 'cs':'create session'}
 
     def cmdloop(self, redfishConfig, prompt='redfish'):
 
@@ -104,7 +104,7 @@ class RedfishPrompt():
                 Trace.log(TraceLevel.TRACE, '>> PROCESS line={}'.format(line))
                 # Check for the use of any alias
                 words = line.split(' ')
-                if (words and len(words) > 1):
+                if (words and len(words) > 0):
                     if (words[0] in self.aliases):
                         line = line.replace(words[0], self.aliases[words[0]], 1)
 

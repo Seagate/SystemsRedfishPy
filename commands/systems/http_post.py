@@ -89,7 +89,7 @@ class CommandHandler(CommandHandlerBase):
     def process_json(self, redfishConfig, url):
         Trace.log(TraceLevel.INFO, '[] http post: url ({})'.format(url))
         _, jsonData = ArgExtract.get_json(self.command, 3)
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(jsonData, indent=4))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(jsonData, indent=4), decode=False)
         self.link = link
 
     @classmethod

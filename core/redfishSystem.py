@@ -42,7 +42,7 @@ class RedfishSystem:
     #
     @classmethod
     def discovered_uri(cls, key, value):
-        Trace.log(TraceLevel.INFO, '   -- Discovered: {0:18} >> {1}'.format(key, value))
+        Trace.log(TraceLevel.INFO, '   -- Discovered: {0:25} >> {1}'.format(key, value))
 
     #
     # Store a new URI
@@ -206,7 +206,7 @@ class RedfishSystem:
                         for ipv4 in link.jsonData['IPv4Addresses']:
                             if ('Address' in ipv4 and ipv4['Address'] == redfishConfig.get_value('mcip')):
                                 cls.store_uri_value('ActiveControllerId', controller_name)
-                                cls.store_uri_value('ActiveController', cls.get_uri_simple('Storage') + controller_name + '/')
+                                cls.store_uri_value('StorageActiveController', cls.get_uri_simple('Storage') + controller_name + '/')
 
     #
     # Update the system URI dictionary for the specificed key
@@ -289,7 +289,7 @@ class RedfishSystem:
                 uri = cls.get_uri_simple("Drives")
             else:
                 cls.fill_ids(redfishConfig, key)
-                cls.store_uri_value("Drives", cls.get_uri_simple("ActiveController") + "Drives/" )
+                cls.store_uri_value("Drives", cls.get_uri_simple("StorageActiveController") + "Drives/" )
             uri = cls.get_uri_simple("Drives")
 
         if (key == "Endpoints"):
@@ -300,7 +300,7 @@ class RedfishSystem:
                 cls.store_uri("Endpoints", link)
             else:
                 cls.fill_ids(redfishConfig, key)
-                cls.store_uri_value("Endpoints", cls.get_uri_simple("ActiveController") + "Endpoints/" )
+                cls.store_uri_value("Endpoints", cls.get_uri_simple("StorageActiveController") + "Endpoints/" )
             uri = cls.get_uri_simple("Endpoints")
 
         if (key == "EndpointGroups"):
@@ -311,7 +311,7 @@ class RedfishSystem:
                 cls.store_uri("EndpointGroups", link)
             else:
                 cls.fill_ids(redfishConfig, key)
-                cls.store_uri_value("EndpointGroups", cls.get_uri_simple("ActiveController") + "EndpointGroups/" )
+                cls.store_uri_value("EndpointGroups", cls.get_uri_simple("StorageActiveController") + "EndpointGroups/" )
             uri = cls.get_uri_simple("EndpointGroups")
 
         if (key == "StorageGroups"):
@@ -322,7 +322,7 @@ class RedfishSystem:
                 cls.store_uri("StorageGroups", link)
             else:
                 cls.fill_ids(redfishConfig, key)
-                cls.store_uri_value("StorageGroups", cls.get_uri_simple("ActiveController") + "StorageGroups/" )
+                cls.store_uri_value("StorageGroups", cls.get_uri_simple("StorageActiveController") + "StorageGroups/" )
             uri = cls.get_uri_simple("StorageGroups")
 
         if (key == "StoragePools"):
@@ -333,7 +333,7 @@ class RedfishSystem:
                 cls.store_uri("StoragePools", link)
             else:
                 cls.fill_ids(redfishConfig, key)
-                cls.store_uri_value("StoragePools", cls.get_uri_simple("ActiveController") + "StoragePools/" )
+                cls.store_uri_value("StoragePools", cls.get_uri_simple("StorageActiveController") + "StoragePools/" )
             uri = cls.get_uri_simple("StoragePools")
 
         if (key == "Volumes"):
@@ -344,8 +344,13 @@ class RedfishSystem:
                 cls.store_uri("Volumes", link)
             else:
                 cls.fill_ids(redfishConfig, key)
-                cls.store_uri_value("Volumes", cls.get_uri_simple("ActiveController") + "Volumes/" )
+                cls.store_uri_value("Volumes", cls.get_uri_simple("StorageActiveController") + "Volumes/" )
             uri = cls.get_uri_simple("Volumes")
+
+        if (key == "ActiveControllerId"):
+            Trace.log(TraceLevel.TRACE, '   @@ ActiveControllerId serviceversion ({})'.format(redfishConfig.get_version()))
+            cls.fill_ids(redfishConfig, key)
+            uri = cls.get_uri_simple("ActiveControllerId")
 
         if (key == "SystemId"):
             Trace.log(TraceLevel.TRACE, '   @@ SystemId serviceversion ({})'.format(redfishConfig.get_version()))
@@ -356,6 +361,14 @@ class RedfishSystem:
         if (key == "ClassesOfServiceDefault"):
             cls.store_uri_value("ClassesOfServiceDefault", '/redfish/v1/StorageServices(1)/ClassesOfService(Default)')
             uri = cls.get_uri_simple("ClassesOfServiceDefault")
+
+        if (key == "SystemsLogServices"):
+            Trace.log(TraceLevel.TRACE, '   @@ SystemsLogServices serviceversion ({})'.format(redfishConfig.get_version()))
+            if (redfishConfig.get_version() >= 2):
+                cls.fill_ids(redfishConfig, key)
+                tempuri = cls.get_uri_simple("SystemId") + 'LogServices/' + cls.get_uri_simple('ActiveControllerId')
+                cls.store_uri_value("SystemsLogServices", tempuri)
+            uri = cls.get_uri_simple("SystemsLogServices")
 
         return uri
 

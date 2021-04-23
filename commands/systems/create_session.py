@@ -50,6 +50,7 @@ class CommandHandler(CommandHandlerBase):
 
     def prepare_url(self, redfishConfig, command):
         Trace.log(TraceLevel.INFO, '   -- ServiceVersion: {}'.format(redfishConfig.get_version()))
+        Trace.log(TraceLevel.INFO, '   -- IP Address    : {}://{}'.format(redfishConfig.get_value('http'), redfishConfig.get_value('mcip')))
         return (RedfishSystem.get_uri(redfishConfig, 'Sessions'))
 
     @classmethod
