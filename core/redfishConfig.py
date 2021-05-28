@@ -14,6 +14,7 @@
 #
 
 import json
+import socket
 from collections import OrderedDict
 from core.trace import TraceLevel, Trace
 from version import __version__
@@ -90,21 +91,23 @@ class RedfishConfig:
 
     @classmethod
     def get_value(self, key):
-        # Trace.log(TraceLevel.VERBOSE, 'get_value({})={}'.format(key, self.dictionary[key][0]))
+        #Trace.log(TraceLevel.DEBUG, 'get_value({})={}'.format(key, self.dictionary[key][0]))
         return self.dictionary[key][0]
 
     @classmethod
     def get_int(self, key):
+        #Trace.log(TraceLevel.DEBUG, 'get_int({}) = {}'.format(key, self.get_value(key)))
         try:
-            value = int(get_value[key])
+            value = int(self.get_value(key))
         except:
             value = -1
         return value
 
     @classmethod
     def get_float(self, key):
+        #Trace.log(TraceLevel.DEBUG, 'get_float({}) = {}'.format(key, self.get_value(key)))
         try:
-            value = float(get_value[key])
+            value = float(self.get_value(key))
         except:
             value = -1.0
         return value
@@ -136,6 +139,12 @@ class RedfishConfig:
     @classmethod
     def get_urltimeout(self):
         return int(self.get_value('urltimeout'))
+
+    @classmethod
+    def get_mcip(self):
+        mcip = socket.gethostbyname(self.get_value('mcip'))
+        Trace.log(TraceLevel.DEBUG, 'get_mcip() = {}'.format(mcip))
+        return mcip
 
     @classmethod
     def display(self):

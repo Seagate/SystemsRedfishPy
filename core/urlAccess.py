@@ -85,7 +85,7 @@ class UrlAccess():
 
         s = requests.Session()
 
-        fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_value('mcip') + link.url
+        fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_mcip() + link.url
         Trace.log(TraceLevel.INFO, '   -- fullUrl: {}'.format(fullUrl))
         Trace.log(TraceLevel.INFO, '   -- filename ({})'.format(filename))
 
@@ -153,7 +153,7 @@ class UrlAccess():
 
         try:
             Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request - {} ({}) session ({}:{})'.format(method, link.url, Label.decode(config.sessionIdVariable), redfishConfig.sessionKey))
-            fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_value('mcip') + link.url
+            fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_mcip() + link.url
 
             request = urllib.request.Request(fullUrl, method = method)
 

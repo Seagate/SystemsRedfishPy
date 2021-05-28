@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.1.5] - 2021-5-28
+- Corrected an issue with getting configuration settings, which affected commands like `redfish urls`
+- Added the capability of handling a `hostname` as well as an IP Address for the storage array access.
+
 ## [2.1.4] - 2021-4-20
 - Added `get logs` to retrieve controller and disk drive logs
 - Added `cs` alias as a short cut to run `create session`
