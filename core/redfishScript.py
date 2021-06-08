@@ -33,6 +33,9 @@ class RedfishScript:
         Trace.log(TraceLevel.INFO, '')
         Trace.log(TraceLevel.INFO, '[] Execute Redfish API script file ({})...'.format(scriptfile))
 
+        level, levelstr = redfishConfig.get_tracelevel()
+        print('-- TraceLevel [{}] {}'.format(level, levelstr))
+
         # Run script mode
         if (path.exists(scriptfile) == False):
             Trace.log(TraceLevel.ERROR, 'Redfish API script file ({}) does not exist!'.format(scriptfile))

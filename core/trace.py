@@ -31,6 +31,7 @@ class TraceLevel(IntEnum):
 class Trace:
 
     tracelevel = TraceLevel.NONE
+    tracelabels = ["NONE", "FATAL", "ERROR", "WARN", "INFO", "VERBOSE", "DEBUG", "TRACE"]
 
     preface = {
         TraceLevel.NONE  : '',
@@ -57,6 +58,11 @@ class Trace:
         except Exception as e:
             Trace.log(TraceLevel.ERROR, '   -- Unable to set trace level ({}) for cls {}: Exception: {}'.format(newlevel, cls, str(e)))
             pass
+
+    @classmethod
+    def getlevel(cls):
+        return cls.tracelevel, cls.tracelabels[cls.tracelevel]
+
 
     @classmethod
     def log(cls, level, entry):

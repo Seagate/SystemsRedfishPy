@@ -147,6 +147,10 @@ class RedfishConfig:
         return mcip
 
     @classmethod
+    def get_tracelevel(self):
+        return Trace.getlevel()
+
+    @classmethod
     def display(self):
         # self.dictionary[key][0]
         # self.dictionary[key][1]
