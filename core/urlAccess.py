@@ -200,7 +200,7 @@ class UrlAccess():
                 link.urlData = link.response.read().decode('utf-8')
             else:
                 link.urlData = link.response.read()
-            
+
             Trace.log(TraceLevel.TRACE, '[[ urlData DATA ]]')
             Trace.log(TraceLevel.TRACE, '{}'.format(link.urlData))
             Trace.log(TraceLevel.TRACE, '[[ urlData DATA END ]]')
@@ -214,7 +214,12 @@ class UrlAccess():
                         Trace.log(TraceLevel.TRACE, '   -- headers[{}]={}'.format(itemCount, item))
                         if len(item) >= 2:
                             if 'json' in item[1]:
-                                link.jsonData = json.loads(link.urlData)
+                                if isinstance(link.urlData, str):
+                                    link.jsonData = json.loads(link.urlData)
+                                elif isinstance(link.urlData, bytes):
+                                    link.jsonData = json.loads(str(link.urlData.decode("utf-8")))
+                                else:
+                                    Trace.log(TraceLevel.WARN, '   ++ UrlAccess: unhandled link.urlData type = {}'.format(type(link.urlData)))
                                 contentTypeHandled = True
                         itemCount += 1 
 
@@ -251,6 +256,11 @@ class UrlAccess():
         except urllib.error.HTTPError as err:
             link.update_status(err.code, err.reason)
             Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): HTTP Error {}: {}'.format(link.url, err.code, err.reason))
+            Trace.log(TraceLevel.TRACE, '===== [[ headers DATA ]] =====')
+            Trace.log(TraceLevel.TRACE, '{}'.format(err.headers))
+            Trace.log(TraceLevel.TRACE, '[[ headers DATA END ]]')
+
+            Trace.log(TraceLevel.INFO, '   -- command-status: {}'.format(err.headers.get('command-status')))
             pass
 
         except urllib.error.URLError as err:

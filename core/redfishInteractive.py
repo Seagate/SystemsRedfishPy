@@ -121,6 +121,9 @@ class RedfishInteractive:
 
     def execute(self, redfishConfig):
 
+        level, levelstr = redfishConfig.get_tracelevel()
+        print('-- TraceLevel [{}] {}'.format(level, levelstr))
+
         # Configure history and tab completers
         readline.parse_and_bind('tab: complete')
         readline.set_completer(HistoryCompleter().complete)
@@ -134,6 +137,3 @@ class RedfishInteractive:
         Trace.log(TraceLevel.INFO, '[] Run Redfish API commands interactively...')
 
         RedfishPrompt().cmdloop(redfishConfig)
-
-
-
