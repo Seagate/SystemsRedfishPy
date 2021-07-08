@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.1.7] - 2021-7-8
+- Changed default urltimeout to 300 to properly handle log file retrieval.
+- Allow the user to specify a filename when running `get logs`
+- Changed the help for create diskgroup to list 'raid10'
+
+## [2.1.6] - 2021-6-7
+- Added a new print to display the current trace level during start up.
+- Corrected the urlAccess handling of url data that is either bytes or str.
+
 ## [2.1.5] - 2021-5-28
 - Corrected an issue with getting configuration settings, which affected commands like `redfish urls`
 - Added the capability of handling a `hostname` as well as an IP Address for the storage array access.

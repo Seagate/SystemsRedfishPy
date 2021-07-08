@@ -18,10 +18,11 @@
 #
 # @description-start
 #
-# 'create diskgroup name=[name] disks=[disk1,disk2,disk3,disk4] pool=[A|B] level=[raid0|raid1|raid5|raid6|adapt]'
+# 'create diskgroup name=[name] disks=[disk1,disk2,disk3,disk4] pool=[A|B] level=[raid0|raid1|raid5|raid6|raid10|adapt]'
 #
 # Example:
 # create diskgroup name=dgA01 disks=0.7,0.8 pool=A level=raid1
+# create diskgroup name=dgA02 disks=0.20,0.21,0.22,0.23 pool=A level=raid10
 #
 # @description-end
 #

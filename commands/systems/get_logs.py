@@ -14,11 +14,11 @@
 #
 # @command get logs
 #
-# @synopsis Retrieve controller or disk drive logs and store in logs.zip.
+# @synopsis Retrieve controller or disk drive logs and store in archive file.
 #
 # @description-start
 #
-# 'get logs component=[controller|drive] logtype=[disk|diskfarm|etc] drivenumber=[enclosure.slot]
+# get logs component=[controller|drive] logtype=[disk|diskfarm|etc] drivenumber=[enclosure.slot] file=[filename]
 #
 # Note:
 #     This command is only valid for Redfish Service Version 2.
@@ -35,12 +35,16 @@
 #     'drivenumber' - Required for 'drive', not used for 'controller'
 #         options: enclosure.slot, for example 0.24
 #
+#     'file' - Optional
+#         options: default is to store the data to 'logfile.zip'
+#                  user can also specify a filename
+#
 #     Note: Not all drive log types are available for all drives. If a drive log type is
 #           supplied that is not supported by the drive, the command will fail.
 #
 # Examples:
-#     get logs component=controller
-#     get logs component=drive logtype=diskfarm drivenumber=0.1
+#     get logs component=controller file=controller_logs.zip
+#     get logs component=drive logtype=diskfarm drivenumber=0.1 file=diskfarm.zip
 #
 # @description-end
 #
@@ -51,6 +55,8 @@ from core.jsonBuilder import JsonBuilder, JsonType
 from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
+from pathlib import Path
+import os.path
 import time
 import zipfile
 
@@ -63,10 +69,11 @@ def display_log_results(link, log_filename, display_contents):
     Trace.log(TraceLevel.INFO, "   -- {0: <14}: {1}".format('Reason', link.urlReason))
 
     if link.urlStatus == 200 and link.urlData != None:
-        outF = open(log_filename, 'wb')
-        outF.write(link.urlData)
-        outF.close()
-        Trace.log(TraceLevel.INFO, "   -- Download complete to '{}'".format(log_filename))
+        with open(log_filename, 'wb') as f:
+            f.write(link.urlData)
+            f.close()
+            fstats = os.stat(log_filename)
+            Trace.log(TraceLevel.INFO, "   -- Download complete to '{}' ({:,})".format(log_filename, fstats.st_size))
 
         if display_contents:
             Trace.log(TraceLevel.INFO, "")
@@ -190,16 +197,55 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def process_json(self, redfishConfig, url):
         Trace.log(TraceLevel.INFO, "")
-        Trace.log(TraceLevel.INFO, "++ get logs: {}...".format(url))
+        Trace.log(TraceLevel.INFO, "++ get logs: {}".format(url))
 
         if (redfishConfig.get_version() < 2):
-            Trace.log(TraceLevel.INFO, "ERROR: get logs is only supported in service version 2: (ServiceVersion={})".format(redfishConfig.get_version()))
+            Trace.log(TraceLevel.ERROR, "get logs is only supported in service version 2: (ServiceVersion={})".format(redfishConfig.get_version()))
             return
 
         jsonType, component = JsonBuilder.getValue('component', self.command)
         if (jsonType is JsonType.NONE):
-            Trace.log(TraceLevel.INFO, "ERROR: get logs requires that you provide a 'component' (controller, drive)")
+            Trace.log(TraceLevel.ERROR, "get logs requires that you provide a 'component' (controller, drive)")
             return
+
+        jsonType, logfilename = JsonBuilder.getValue('file', self.command)
+        if (jsonType is JsonType.NONE):
+            log_filename = 'logfile.zip'
+        else:
+            log_filename = Path(logfilename).expanduser()
+
+        Trace.log(TraceLevel.DEBUG, "@@ testing ({})".format(log_filename))
+        try:
+            if os.path.isfile(log_filename):
+                Trace.log(TraceLevel.DEBUG, "@@ File ({}) exists!".format(log_filename))
+            else:
+                Trace.log(TraceLevel.DEBUG, "@@ File ({}) does not exists!".format(log_filename))
+        except Exception as e:
+            Trace.log(TraceLevel.ERROR, "@@ os.path.isfile exception: {}".format(str(e)))
+
+        # Validate that the file does not exist, or that the user wishes to overwite it.
+        if os.path.isfile(log_filename):
+            print("File ({}) exists!".format(log_filename))
+            val = input("Do you want to overwrite it? [y|n] ")
+            if val != 'y':
+                return
+
+        # Validate that the user can write to the file
+        if os.path.isfile(log_filename):
+            if os.access(log_filename, os.W_OK) == False:
+                Trace.log(TraceLevel.ERROR, "File ({}) is not writable!".format(log_filename))
+                return
+        else:
+            # verify that the file can be created
+            print("@@ testing 2 ({})".format(log_filename))
+            with open(log_filename, 'wb') as f:
+                f.write(b"0x74x65x73x74") # 'test'
+                f.close()
+                fstats = os.stat(log_filename)
+                Trace.log(TraceLevel.DEBUG, "TEST: create file ({}) size ({:,})".format(log_filename, fstats.st_size))
+                if fstats.st_size == 0:
+                    Trace.log(TraceLevel.ERROR, "unable to create file ({})".format(log_filename))
+                    return
 
         # From the command, build up the required JSON data
 
@@ -230,8 +276,6 @@ class CommandHandler(CommandHandlerBase):
             return
 
         # Execute the required HTTP operations to perform the log pull
-
-        log_filename = 'logfile.zip'
 
         if component == 'controller':
             Trace.log(TraceLevel.INFO, "++ POST get logs (controller, CollectControllerLog)")
