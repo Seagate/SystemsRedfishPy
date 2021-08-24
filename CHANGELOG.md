@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.1.8] - 2021-8-24
+- Corrections to HTTP Basic Auth handling
+- Corrections to markdown links and configuration text
+
 ## [2.1.7] - 2021-7-8
 - Changed default urltimeout to 300 to properly handle log file retrieval.
 - Allow the user to specify a filename when running `get logs`

@@ -63,7 +63,7 @@ class RedfishConfig:
         self.dictionary['password']         = ['', '<string>    Change the password to [password] that is used to log in to the Redfish Service.']
         self.dictionary['serviceversion']   = [2, '1|2         Specify the Redfish Service version. This changes command behavior based on supported schemas. Default is 2.']
         self.dictionary['showelapsed']      = [False, 'True|False  Display how long each command took. Default is False.']
-        self.dictionary['trace']            = [int(TraceLevel.INFO), '4-7         Turn on additional tracing. 4=DEFAULT, 5=VERBOSE, 6=DEBUG, 7=TRACE. Default is 4.']
+        self.dictionary['trace']            = [int(TraceLevel.INFO), '4-7         Turn on additional tracing. 4=INFO, 5=VERBOSE, 6=DEBUG, 7=TRACE. Default is 4=INFO.']
         self.dictionary['urltimeout']       = [300, '<int>       How long to wait for a URL request before timing out. Default is 300.']
         self.dictionary['usefinalslash']    = [True, 'True|False  When True, all Redfish URIs will have a slash as the final character in the URL. Default is True.']
         self.dictionary['username']         = ['', '<string>    Change the username to [name] that is used to log in to the Redfish Service.']

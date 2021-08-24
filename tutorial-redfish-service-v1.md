@@ -10,12 +10,12 @@
 accessed over HTTP or Secure HTTP. The interface uses a number of HTTP operations to perform Create, Read, Update, and Delete (CRUD) operations.
 This service uses HTTP operations POST to Create, GET to Read, PATCH to Update, and DELETE to Delete. The main features of this service are to
 review status of a storage system, provision and expose new storage volumes, and various features for storage system management. This tutorial
-covers how these features are accomplished using the Redfish Service. 
+covers how these features are accomplished using the Redfish Service 1.0. 
 
-Redfish Clients can communicate with this Redfish Service using a variety of different tools including **curl**, DMTF provided validators like
-**RedfishServiceValidator**, and Seagate provided python client called **SystemsRedfishPy**. This tutorial uses SystemsRedfishPy to perform the
-HTTP operations needed to provision and manage a storage system. How to use SystemsRedfishPy is covered in separate documents where this tutorial
-focuses on the Redfish interface and learning Redfish/Swordfish commands.
+Redfish Clients communicate with this Redfish Service using a variety of different tools including **curl**, DMTF provided validators like
+**RedfishServiceValidator**, **Postman**, and Seagate provided python client called **SystemsRedfishPy**. This tutorial uses SystemsRedfishPy
+to perform the HTTP operations needed to provision and manage a storage system. How to use SystemsRedfishPy is covered in separate documents
+where this tutorial focuses on the Redfish interface and learning Redfish/Swordfish commands.
 
 ## Table of Contents
 * [(1) Determine Redfish Version](#section1)
@@ -41,15 +41,22 @@ focuses on the Redfish interface and learning Redfish/Swordfish commands.
 The root URI for Redfish is `/redfish`. An HTTP GET of this URI returns JSON data that contains the current version of the Redfish specification
 supported by the service. 
 
-**Note:** This tool does not require the full URL. When a URI of **/redfish** is entered by the user, the tool creates a full URL using tool configuration 
-variables. The protocol is determined by **!http** and that value is used with **!mcip** to form a full URL. For example, the user enters **/redfish**
-but the tool performs a HTTP operation on **https://10.235.221.172/redfish**. This tutorial uses this shortened URI syntax.
+**Note:** The SystemRedfishPy tool does not require the full URL. When a URI of **/redfish** is entered by the user, the tool uses a full URL
+using tool configuration variables: **http** and **mcip**, From the (redfish) prompt enter `!dump` to see current settings . The protocol is determined by **http** and that value is used with **mcip** to form a full URL. For example, the user enters **/redfish**
+but the tool performs a HTTP operation on **https://10.230.220.100/redfish**. This tutorial uses this shortened URI syntax.
+
+Quick Start 
+
+Create your own configuration file to store your desired settings. In this example, **myconfig.json** was chosen. The recomendation is to use
+one config json file per storage array system so that you can quickly connect to multiple desired Redfish Services.
 
 ```
+cp redfishAPI.json myconfig.json
+
 SystemsRedfishPy> python --version
 Python 3.7.4
 
-SystemsRedfishPy> python redfishAPI.py -c i100b.json
+SystemsRedfishPy> python redfishAPI.py -c myconfig.json
 
 --------------------------------------------------------------------------------
 [1.2.7] Redfish API
@@ -58,7 +65,7 @@ SystemsRedfishPy> python redfishAPI.py -c i100b.json
 
 (redfish) !certificatecheck False
 (redfish) !http https
-(redfish) !mcip 10.235.221.172
+(redfish) !mcip <ipaddress>
 (redfish) !password <password>
 (redfish) !username <username>
 
@@ -66,7 +73,7 @@ SystemsRedfishPy> python redfishAPI.py -c i100b.json
    >> configuration values:
       -- certificatecheck     : False
       -- http                 : https
-      -- mcip                 : 10.235.221.172
+      -- mcip                 : <ipaddress>
       -- password             : <password>
       -- username             : <username>
 
@@ -379,7 +386,8 @@ replaced with the correct values when executed.
 Once a session is created, it remains active for 30 minutes since the last executed command.
 
 **Note:** An extra command is executed below so that the **X-Auth-Token** is stored for all future HTTP calls. The tool will automatically add the
-token to all HTTP headers that require authentication.
+token to all HTTP headers that require authentication. The `<session-hash>` should be replaced with the actual token returned, for example a value such as **bfe59eff3b71415853deaceb82612b7e**.
+
 
 ```
 (redfish) http post /redfish/v1/SessionService/Sessions { "UserName": "<username>", "Password": "<password>" }
@@ -390,7 +398,7 @@ token to all HTTP headers that require authentication.
 [] Status       : 201
 [] Reason       : Created
 
-[] HTTP Headers : [('Connection', 'close'), ('Content-Type', 'application/json; charset="utf-8"'), ('Content-Length', '274'), ('X-Frame-Options', 'SAMEORIGIN'), ('Content-Security-Policy', "script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src * 'self' data:; base-uri 'self'; object-src 'self'"), ('X-Content-Type-Options', 'nosniff'), ('X-XSS-Protection', '1'), ('Strict-Transport-Security', 'max-age=31536000; '), ('Cache-Control', 'no-cache, no-store, must-revalidate'), ('X-Auth-Token', 'bfe59eff3b71415853deaceb82612b7e')]
+[] HTTP Headers : [('Connection', 'close'), ('Content-Type', 'application/json; charset="utf-8"'), ('Content-Length', '274'), ('X-Frame-Options', 'SAMEORIGIN'), ('Content-Security-Policy', "script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src * 'self' data:; base-uri 'self'; object-src 'self'"), ('X-Content-Type-Options', 'nosniff'), ('X-XSS-Protection', '1'), ('Strict-Transport-Security', 'max-age=31536000; '), ('Cache-Control', 'no-cache, no-store, must-revalidate'), ('X-Auth-Token', '<session-hash>')]
 
 [] JSON Data    : {
     "@odata.context": "/redfish/v1/$metadata#Session.Session",
@@ -402,9 +410,9 @@ token to all HTTP headers that require authentication.
     "UserName": "<username>"
 }
 
-(redfish) save session 2 bfe59eff3b71415853deaceb82612b7e
+(redfish) save session 2 <session-hash>
 
-[] Redfish session saved (2:bfe59eff3b71415853deaceb82612b7e)
+[] Redfish session saved (2:<session-hash>)
 ```
 
 Now that we have created a session, and saved the authentication key, we can access all other URIs.
@@ -423,7 +431,7 @@ The following is an example of attempting to perform a Redfish operation before 
 
 (redfish) create session
 
-[] Redfish session established (2:87cd7bf8c032eb7a12be5031eef502bd)
+[] Redfish session established (2:<session-hash>)
 
 (redfish) http get /redfish/v1/StorageServices/
 [] http get: url (/redfish/v1/StorageServices/)

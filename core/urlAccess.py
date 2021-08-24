@@ -161,6 +161,7 @@ class UrlAccess():
                 Trace.log(TraceLevel.DEBUG, '   -- Using HTTP Basic Auth')
                 uername_password = redfishConfig.get_value('username') + ':' + redfishConfig.get_value('password')
                 encoded = base64.b64encode(str.encode(uername_password))
+                encoded = encoded.decode('utf-8')
                 Trace.log(TraceLevel.DEBUG, '   -- uername_password is ({}) encoded is ({})'.format(uername_password, encoded))
                 request.add_header('Authorization', 'Basic ' + str(encoded))
 
@@ -172,6 +173,7 @@ class UrlAccess():
             Trace.log(TraceLevel.TRACE, '   >> startTime={}'.format(startTime))
 
             if (data):
+                request.add_header('If-None-Match', '""')
                 request.add_header('Content-Type', 'application/json; charset=utf-8')
                 jsondataasbytes = data.encode('utf-8')                
                 request.add_header('Content-Length', len(jsondataasbytes))
