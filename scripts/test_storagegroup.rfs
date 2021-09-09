@@ -1,0 +1,19 @@
+#
+# Redfish API Script to Test StorageGroups
+#
+# Requires updates to: disks, initiators, and StorageGroups URI
+#
+
+# create session
+
+create diskgroup name=dgA01 disks=0.0,0.1,0.2,0.3 pool=A level=raid6
+create volume name=AVolume01 size=100000000000 pool=A
+create storagegroup lun='1' volume=AVolume01 access=read-write ports=A0,A1,B0,B1 initiators=500605b00db9a070
+
+#
+# Display Configuration
+#
+show storagegroups
+http get /redfish/v1/Systems/DHSIFTJ-1852437ED5/Storage/controller_a/StorageGroups
+
+# delete sessions $sessionid

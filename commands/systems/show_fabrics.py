@@ -24,19 +24,20 @@
 #
 # (redfish) show fabrics
 # 
-#  [] Fabrics   : 1
+# Fabric     State    Health                                       Endpoint     State    Health                      Name  Description
+# -----------------------------------------------------------------------------------------------------------------------------------------------------
+#    SAS   Enabled        OK                                                                                                                                     
+#                                                                        A0   Enabled        OK                        A0  This instance represents a port       
+#                                                                        A1   Enabled        OK                        A1  This instance represents a port       
+#                                                                        B0   Enabled        OK                        B0  This instance represents a port       
+#                                                                        B1   Enabled        OK                        B1  This instance represents a port       
+#                                                          500605b00db9a071   Enabled        OK              I0-SAS-port2  This instance represents an initiator 
+#                                     iqn.1993-08.org.debian:01:112233abcde   Enabled        OK         I1-01:112233abcde  This instance represents an initiator 
+#                             iqn.1992-09.com.seagate:01.array.00c0ff4ba191   Enabled        OK  I2-01-array-00c0ff4ba191  This instance represents an initiator 
+#                                                          0000111122223333   Enabled        OK              I3-fakeInit1  This instance represents an initiator 
+#                                                          4444555566667777   Enabled        OK              I4-fakeInit2  This instance represents an initiator 
+#                                                          500605b00db9a070   Enabled        OK              I5-SAS-port1  This instance represents an initiator 
 # 
-#   Fabric        State    Health            Endpoint        State    Health            Name  Description
-#  -----------------------------------------------------------------------------------------------------------------
-#      SAS      Enabled
-#                                                  A0      Enabled        OK              A0  This instance represents a port
-#                                                  A1      Enabled        OK              A1  This instance represents a port
-#                                                  B0      Enabled        OK              B0  This instance represents a port
-#                                                  B1      Enabled        OK              B1  This instance represents a port
-#                                    500605b00db9a071      Enabled        OK    I0-SAS-port2  This instance represents an initiator
-#                                    0000111122223333      Enabled        OK    I1-fakeInit1  This instance represents an initiator
-#                                    4444555566667777      Enabled        OK    I2-fakeInit2  This instance represents an initiator
-#                                    500605b00db9a070      Enabled        OK    I3-SAS-port1  This instance represents an initiator
 #
 # @description-end
 #
@@ -60,6 +61,7 @@ class Endpoint:
     valid = False
 
     def init_from_url(self, redfishConfig, url):
+        valid = False
         Trace.log(TraceLevel.DEBUG, '   ++ Init from URL {}'.format(url))
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url))
 
@@ -131,6 +133,8 @@ class Fabric:
                     self.State = healthDict['State']
                 if ('Health' in healthDict):
                     self.Health = healthDict['Health']
+                if ('HealthRollup' in healthDict):
+                    self.Health = healthDict['HealthRollup']
 
             # Identifiers
             if ('Identifiers' in link.jsonData):
@@ -225,27 +229,37 @@ class CommandHandler(CommandHandlerBase):
     def display_results(self, redfishConfig):
 
         if (self.link.valid == False):
-            print('')
-            print(' [] URL        : {}'.format(self.link.url))
-            print(' [] Status     : {}'.format(self.link.urlStatus))
-            print(' [] Reason     : {}'.format(self.link.urlReason))
+            self.link.print_status()
 
         else:
+            # Fabric     State    Health                                       Endpoint     State    Health                      Name  Description
+            # -----------------------------------------------------------------------------------------------------------------------------------------------------
+            data_format = '{fabric: >6}  {state1: >8}  {health1: >8}  {endpoint: >45}  {state2: >8}  {health2: >8}  {name: >24}  {description: <38}'
             print('')
-            print(' [] Fabrics   : {}'.format(len(self.items)))
-            print('')
-            print('  Fabric        State    Health            Endpoint        State    Health            Name  Description')
-            print(' -----------------------------------------------------------------------------------------------------------------')
-            #           SAS   DisEnabled  12345678    500605b00db9a070   DisEnabled  12345678    I0-SAS-port2  This instance represents a port    
+            print(data_format.format(fabric='Fabric', state1='State', health1='Health', endpoint='Endpoint', state2='State', health2='Health', name='Name', description='Description'))
+            print('-'*(149))
 
+            # Print Fabric information, then iterate over endpoints
             for i in range(len(self.items)):
-                # Print Fabric information, then iterate over endpoints
-                print(' {0: >7}  {1: >11}  {2: >8}'.format(self.items[i].Id, self.items[i].State, self.items[i].Health))
+                print(data_format.format(
+                    fabric=self.items[i].Id,
+                    state1=self.items[i].State,
+                    health1=self.items[i].Health,
+                    endpoint='',
+                    state2='',
+                    health2='',
+                    name='',
+                    description=''))
+
                 fabric = self.items[i]
                 for i in range(len(fabric.endpoints)):
-                    print('                                 {0: >18}  {1: >11}  {2: >8}  {3: >14}  {4}'.format(
-                        fabric.endpoints[i].Id,
-                        fabric.endpoints[i].State,
-                        fabric.endpoints[i].Health,
-                        fabric.endpoints[i].Name,
-                        fabric.endpoints[i].Description))
+                    print(data_format.format(
+                        fabric='',
+                        state1='',
+                        health1='',
+                        endpoint=fabric.endpoints[i].Id,
+                        state2=fabric.endpoints[i].State,
+                        health2=fabric.endpoints[i].Health,
+                        name=fabric.endpoints[i].Name,
+                        description=fabric.endpoints[i].Description))
+

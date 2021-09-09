@@ -120,10 +120,9 @@ class CommandHandler(CommandHandlerBase):
 
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))
 
-        print('')
-        print('[] URL        : {}'.format(link.url))
-        print('[] Status     : {}'.format(link.urlStatus))
-        print('[] Reason     : {}'.format(link.urlReason))
+        if link != None:
+            link.print_status()
+
         print('')
 
         if (link.jsonData != None):

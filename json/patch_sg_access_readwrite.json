@@ -1,0 +1,16 @@
+{
+    "AccessCapabilities": [
+        "Read",
+        "Write"
+    ],
+    "ClientEndpointGroups": [
+        {
+            "@odata.id": "/redfish/v1/Systems/DHSIFTJ-1852437ED5/Storage/controller_a/EndpointGroups/500605b00db9a070"
+        }
+    ],
+    "MappedVolumes": [
+        {
+            "LogicalUnitNumber": "1"
+        }
+    ]
+}

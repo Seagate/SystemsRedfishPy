@@ -44,6 +44,7 @@ class UrlStatus():
     valid = False
     elapsedMicroseconds = 0
     parent = ''
+    context = ''
 
     def __init__(self, url):
         self.url = url
@@ -63,6 +64,14 @@ class UrlStatus():
             self.valid = True
 
         Trace.log(TraceLevel.TRACE, '   ++ UrlStatus(update_status): status={} reason={} valid={}'.format(status, reason, self.valid))
+
+    def print_status(self):
+        print('')
+        print(' [] URL        : {}'.format(self.url))
+        print(' [] Status     : {}'.format(self.urlStatus))
+        print(' [] Reason     : {}'.format(self.urlReason))
+        if self.urlStatus > 200 and self.context != '':
+            print(' [] Context    : {}'.format(self.context))
 
 ################################################################################
 # UrlAccess
@@ -262,7 +271,9 @@ class UrlAccess():
             Trace.log(TraceLevel.TRACE, '{}'.format(err.headers))
             Trace.log(TraceLevel.TRACE, '[[ headers DATA END ]]')
 
-            Trace.log(TraceLevel.INFO, '   -- command-status: {}'.format(err.headers.get('command-status')))
+            link.context = err.headers.get('command-status')
+            Trace.log(TraceLevel.DEBUG, '   -- command-status: {}'.format(link.context))
+
             pass
 
         except urllib.error.URLError as err:

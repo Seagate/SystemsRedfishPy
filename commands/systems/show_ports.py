@@ -24,12 +24,12 @@
 #
 # (redfish) show ports
 # 
-#                  Id       DurableName     State  Health
-#   -----------------------------------------------------
-#                  A0                A0   Enabled      OK
-#                  A1                A1   Enabled      OK
-#                  B0                B0   Enabled      OK
-#                  B1                B1   Enabled      OK
+#                                            Id                                    DurableName     State    Health
+# ----------------------------------------------------------------------------------------------------------------
+#                                            A0                                    hostport_A0   Enabled        OK
+#                                            A1                                    hostport_A1   Enabled        OK
+#                                            B0                                    hostport_B0   Enabled        OK
+#                                            B1                                    hostport_B1   Enabled        OK
 #
 # @description-end
 #
@@ -138,19 +138,18 @@ class CommandHandler(CommandHandlerBase):
     def display_results(self, redfishConfig):
 
         if (self.link.valid == False):
-            print('')
-            print(' [] URL        : {}'.format(self.link.url))
-            print(' [] Status     : {}'.format(self.link.urlStatus))
-            print(' [] Reason     : {}'.format(self.link.urlReason))
+            self.link.print_status()
 
         else:
+            #                                           Id                                    DurableName     State    Health
+            # ---------------------------------------------------------------------------------------------------------------
+            data_format = '{id: >45}  {name: >45}  {state: >8}  {health: >8}'
             print('')
-            print('                 Id       DurableName     State  Health')
-            print('  -----------------------------------------------------')
-            #         500605b00ab61310  500605b00ab61310   Enabled      OK
+            print(data_format.format(id='Id', name='DurableName', state='State', health='Health'))
+            print('-'*(112))
             for i in range(len(self.items)):
-                print('  {0: >17}  {1: >16}  {2: >8}  {3: >6}'.format(
-                    self.items[i].Id,
-                    self.items[i].DurableName,
-                    self.items[i].State,
-                    self.items[i].Health))
+                print(data_format.format(
+                    id=self.items[i].Id,
+                    name=self.items[i].DurableName,
+                    state=self.items[i].State,
+                    health=self.items[i].Health))

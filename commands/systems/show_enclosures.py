@@ -171,10 +171,7 @@ class CommandHandler(CommandHandlerBase):
             return 
 
         if (self.link.valid == False):
-            print('')
-            print(' [] URL        : {}'.format(self.link.url))
-            print(' [] Status     : {}'.format(self.link.urlStatus))
-            print(' [] Reason     : {}'.format(self.link.urlReason))
+            self.link.print_status()
 
         else:
             print('')

@@ -24,9 +24,9 @@
 #
 # (redfish) show storagegroups
 #
-#                                       Name                                                       SerialNumber    State  Health  Exposed  LUN                          Initiators                    Ports
-# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#  AVolume01_00c0ff51124900007db6945e01010000  00c0ff511249000066fa9f5e01000000_00c0ff51124900007db6945e01010000  Enabled      OK        1    1    00c0ff51124900007db6945e01010000              A0,B0,A1,B1
+#                                                              Name     State    Health   Exposed   LUN        Initiators                     Ports
+# -------------------------------------------------------------------------------------------------------------------------------------------------
+# 00c0ff511249000064f7386101000000_00c0ff51124900007db6945e01010000   Enabled        OK         1     1  500605b00db9a070               A0,B0,A1,B1
 #
 # @description-end
 #
@@ -203,25 +203,23 @@ class CommandHandler(CommandHandlerBase):
     def display_results(self, redfishConfig):
 
         if (self.link.valid == False):
-            print('')
-            print(' [] URL        : {}'.format(self.link.url))
-            print(' [] Status     : {}'.format(self.link.urlStatus))
-            print(' [] Reason     : {}'.format(self.link.urlReason))
+            self.link.print_status()
 
         else:
+            #                                                              Name     State    Health   Exposed   LUN        Initiators                     Ports
+            # -------------------------------------------------------------------------------------------------------------------------------------------------
+            # 00c0ff511249000064f7386101000000_00c0ff51124900007db6945e01010000   Enabled        OK         1     1  500605b00db9a070               A0,B0,A1,B1
+            data_format = '{name: >65}  {state: >8}  {health: >8}  {exposed: >8}  {lun: >4}  {initiators: >16}  {ports: >24}'
             print('')
-            print('                                       Name                                                       SerialNumber    State  Health  Exposed  LUN                          Initiators                    Ports')
-            print(' ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
-            #       AVolume01_00c0ff51124900007db6945e01010000  00c0ff511249000066fa9f5e01000000_00c0ff51124900007db6945e01010000  Enabled      OK        1    1    00c0ff51124900007db6945e01010000              A0,B0,A1,B1
+            print(data_format.format(name='Name', state='State', health='Health', exposed='Exposed', lun='LUN', initiators='Initiators', ports='Ports'))
+            print('-'*(145))
             if (self.groups != None):
                 for i in range(len(self.groups)):
-                    print(' {0: >42}  {1: >49}  {2: >7}  {3: >6}  {4: >7}  {5: >3}  {6: >34}  {7: >23}'.format(
-                        self.groups[i].Name,
-                        self.groups[i].SerialNumber,
-                        self.groups[i].State,
-                        self.groups[i].Health,
-                        self.groups[i].VolumesAreExposed,
-                        self.groups[i].LogicalUnitNumber,
-                        ",".join(self.groups[i].ClientEndpointGroups),
-                        ",".join(self.groups[i].ServerEndpointGroups),
-                        ))
+                    print(data_format.format(
+                        name=self.groups[i].Name,
+                        state=self.groups[i].State,
+                        health=self.groups[i].Health,
+                        exposed=self.groups[i].VolumesAreExposed,
+                        lun=self.groups[i].LogicalUnitNumber,
+                        initiators=",".join(self.groups[i].ClientEndpointGroups),
+                        ports=",".join(self.groups[i].ServerEndpointGroups)))

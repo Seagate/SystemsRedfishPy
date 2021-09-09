@@ -1,0 +1,10 @@
+{
+    "AccessCapabilities": [
+        "Read"
+    ],
+    "MappedVolumes": [
+        {
+            "LogicalUnitNumber": "1"
+        }
+    ]
+}

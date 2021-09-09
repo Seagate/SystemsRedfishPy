@@ -66,11 +66,8 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-
-        print('')
-        print('[] URL        : {}'.format(self.startingurl))
-        print('[] Status     : {}'.format(self.link.urlStatus))
-        print('[] Reason     : {}'.format(self.link.urlReason))
+        if self.link != None:
+            self.link.print_status()
         print('[] JSON Data  :')
         if (self.link != None and self.link.jsonData != None):
             print(json.dumps(self.link.jsonData, indent=4))

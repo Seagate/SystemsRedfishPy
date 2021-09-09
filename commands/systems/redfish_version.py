@@ -14,18 +14,24 @@
 #
 # @command redfish version
 #
-# @synopsis Display the current version of the Redfish Service.
+# @synopsis Display the current versions of the Redfish Service.
 #
 # @description-start
 #
-# This command will read '/redfish' and display the version information returned.
+# This command reads '/redfish' and display the version information returned. It also
+# reads '/redfish/v1' and displays the value of RedfishVersion and RedfishServiceVersion.
+# 'RedfishVersion' is the current DMTF Redfish specification supported.
+# 'RedfishServiceVersion' is the current version of the specific OEM Redfish Service, if supported.
 #
 # Example:
 # 
 # (redfish) redfish version
-#   Version    VersionURL
-#   ---------------------
-#        v1  /redfish/v1/
+#
+#   Property                Version
+#   --------------------------------
+#   /redfish/v1             v1
+#   RedfishVersion          1.12.0
+#   RedfishServiceVersion   2.4.10
 # 
 # @description-end
 #
@@ -41,9 +47,6 @@ from core.urlAccess import UrlAccess, UrlStatus
 class CommandHandler(CommandHandlerBase):
     """Command - redfish version """
     name = 'redfish version'
-    valid = False
-    version = ''
-    versionUrl = ''
 
     def prepare_url(self, redfishConfig, command):
         return (config.redfish)
@@ -53,12 +56,21 @@ class CommandHandler(CommandHandlerBase):
 
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', False, None)
 
-        self.valid = link.valid
+        if link.valid:
+            print('')
+            print('{0:<24}  {1:<8}'.format("Property", "Version"))
+            print('-' * (24+2+8))
 
-        if (link.valid):
             for key in link.jsonData:
-                self.version = key
-                self.versionUrl = link.jsonData[key]
+                print('{0:<24}  {1:<8}'.format(link.jsonData[key], key))
+
+                linkv1 = UrlAccess.process_request(redfishConfig, UrlStatus(url+key), 'GET', False, None)
+
+                if linkv1.valid:
+                    if "RedfishVersion" in linkv1.jsonData:
+                        print('{0:<24}  {1:<8}'.format("RedfishVersion", linkv1.jsonData["RedfishVersion"]))
+                    if "Oem" in linkv1.jsonData and "Seagate" in linkv1.jsonData["Oem"] and "RedfishServiceVersion" in linkv1.jsonData["Oem"]["Seagate"]:
+                        print('{0:<24}  {1:<8}'.format("RedfishServiceVersion", linkv1.jsonData["Oem"]["Seagate"]["RedfishServiceVersion"]))
 
         else:
             Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: redfish version // ERROR receiving data from ({}): Error {}: {}'.format(url, link.urlStatus, link.urlReason))
@@ -66,9 +78,4 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-
-        if (self.valid):
-            print('  Version    VersionURL')
-            print('  ---------------------')
-            #             v1  /redfish/v1/
-            print('{0: >9}  {1: >12}'.format(self.version, self.versionUrl))
+        print('')

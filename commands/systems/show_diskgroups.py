@@ -24,14 +24,9 @@
 #
 # (redfish) show diskgroups
 #
-#          Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes   ConsumedBytes      Health   ClasOfService
-#  -------------------------------------------------------------------------------------------------------------------------------
-#         dgA01  00c0ff5112490000d9d69d5e00000000        512        99   1780997947392           16384          OK           RAID5
-#         dgA02  00c0ff5112490000dbd69d5e00000000        512       100   1181602545664               0          OK           RAID6
-#         dgA03  00c0ff5112490000e0d69d5e00000000        512       100    582211338240               0          OK           RAID1
-#         dgB01  00c0ff511254000024d79d5e00000000        512        99   1780997947392           16384          OK           RAID5
-#         dgB02  00c0ff511254000028d79d5e00000000        512       100   1181602545664               0          OK           RAID6
-#         dgB03  00c0ff51125400002ed79d5e00000000        512       100    582211338240               0          OK           RAID1 
+#                           Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes   ConsumedBytes       Ports    RAID Drives                                          
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#                          dgA01  00c0ff51124900005ef7386100000000        512        99   1181602545664           16384          OK   RAID6 0.0,0.1,0.2,0.3   
 #
 # @description-end
 #
@@ -52,13 +47,13 @@ class StorageGroupInformation:
     Description = ''
     MaxBlockSizeBytes = 0
     PoolType = ''
-    AllocatedVolumes = []
+    Drives = []
     RemainingCapacityPercent = 0
     AllocatedBytes = ''
     ConsumedBytes = ''
     State = ''
     Health = ''
-    ClassofService = ''
+    RAID = ''
 
     def init_from_url(self, redfishConfig, url, cos):
 
@@ -91,20 +86,6 @@ class StorageGroupInformation:
                 if ('MaxBlockSizeBytes' in link.jsonData):
                     self.MaxBlockSizeBytes = link.jsonData['MaxBlockSizeBytes']
     
-                if ('AllocatedVolumes' in link.jsonData):
-                    try:
-                        self.AllocatedVolumes = []
-                        avs = link.jsonData['AllocatedVolumes']
-                        for i in range(len(avs)):
-                            # Example: '/redfish/v1/StorageServices/S1/StoragePools/00c0ff5112460000f55a925d00000000/Volumes/00c0ff5112460000f75a925d02000000'
-                            words = avs[i].split('/')
-                            if (len(words) >= 7):
-                                Trace.log(TraceLevel.TRACE, '   ++ Adding allocated volume ({}) from ({})'.format(words[7], avs[i]))
-                                self.AllocatedVolumes.append(words[7])
-                    except:
-                        self.AllocatedVolumes = []
-                        pass
-    
                 if ('RemainingCapacityPercent' in link.jsonData):
                     self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
     
@@ -127,7 +108,21 @@ class StorageGroupInformation:
                 if ('DefaultClassOfService' in link.jsonData):
                     dcos = link.jsonData['DefaultClassOfService']
                     if ('@odata.id' in dcos):
-                        self.ClassofService = dcos['@odata.id'].replace(cos, '')
+                        self.RAID = dcos['@odata.id'].replace(cos, '')
+
+                if ('SupportedRAIDTypes' in link.jsonData):
+                    self.RAID = link.jsonData['SupportedRAIDTypes'][0]
+
+                self.Drives = []
+                if ('CapacitySources' in link.jsonData):
+                    cs = link.jsonData['CapacitySources'][0]
+                    if ('ProvidingDrives' in cs and 'Members' in cs['ProvidingDrives']):
+                        members = cs['ProvidingDrives']['Members']
+                        for i in range(len(members)):
+                            if ('@odata.id' in members[i]):
+                                # Example: "@odata.id": "/redfish/v1/Systems/1852437ED5/Storage/controller_a/Drives/0.0"
+                                words = members[i]['@odata.id'].split('/')
+                                self.Drives.append(words[len(words)-1])
                 
         return (isDiskGroup)
 
@@ -196,29 +191,25 @@ class CommandHandler(CommandHandlerBase):
             return 
 
         if (self.link.valid == False):
-            print('')
-            print(' [] URL        : {}'.format(self.link.url))
-            print(' [] Status     : {}'.format(self.link.urlStatus))
-            print(' [] Reason     : {}'.format(self.link.urlReason))
+            self.link.print_status()
 
         else:
+            #                           Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes   ConsumedBytes      Health    RAID  Drives
+            # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            #                          dgA01  00c0ff51124900005ef7386100000000        512        99   1181602545664           16384          OK   RAID6  0.0,0.1,0.2,0.3
+            data_format = '{name: >30}  {sn: >32}  {blocksize: >9}  {capacity: >8}  {allocated: >14}  {consumed: >14}  {health: >10}  {raid: >6}  {drives: <48}'
             print('')
-            #                                    0                                 1          2         3               4               5           6               7
-            print('                           Name                      SerialNumber  BlockSize  Capacity  AllocatedBytes   ConsumedBytes      Health   ClasOfService')
-            print(' -------------------------------------------------------------------------------------------------------------------------------------------------')
-
+            print(data_format.format(name='Name', sn='SerialNumber', blocksize='BlockSize', capacity='Capacity', allocated='AllocatedBytes', consumed='ConsumedBytes', health='Ports', raid='RAID', drives='Drives'))
+            print('-'*(186))
             if (self.groups != None):
                 for i in range(len(self.groups)):
-                    print(' {0: >30}  {1: >32}  {2: >9}  {3: >8}  {4: >14}  {5: >14}  {6: >10}  {7: >14}'.format(
-                        self.groups[i].Name,
-                        self.groups[i].SerialNumber,
-                        self.groups[i].MaxBlockSizeBytes,
-                        self.groups[i].RemainingCapacityPercent,
-                        self.groups[i].AllocatedBytes,
-                        self.groups[i].ConsumedBytes,
-                        self.groups[i].Health,
-                        self.groups[i].ClassofService
-                        ))
-                    
-                    for volume in range(len(self.groups[i].AllocatedVolumes)):
-                        print(' -- Allocated Volume: {}'.format(self.groups.AllocatedVolumes[volume]))
+                    print(data_format.format(
+                        name=self.groups[i].Name,
+                        sn=self.groups[i].SerialNumber,
+                        blocksize=self.groups[i].MaxBlockSizeBytes,
+                        capacity=self.groups[i].RemainingCapacityPercent,
+                        allocated=self.groups[i].AllocatedBytes,
+                        consumed=self.groups[i].ConsumedBytes,
+                        health=self.groups[i].Health,
+                        raid=self.groups[i].RAID,
+                        drives=",".join(self.groups[i].Drives)))

@@ -187,10 +187,7 @@ class CommandHandler(CommandHandlerBase):
     def display_results(self, redfishConfig):
 
         if (self.link.valid == False):
-            print('')
-            print(' [] URL        : {}'.format(self.link.url))
-            print(' [] Status     : {}'.format(self.link.urlStatus))
-            print(' [] Reason     : {}'.format(self.link.urlReason))
+            self.link.print_status()
         else:
             print('')
                 #                0                                 1                             2            3            4          5          6       7                                                    8   

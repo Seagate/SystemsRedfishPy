@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.1.9] - 2021-9-7
+- Expanded `redfish version` to display Redfish Specification and Redfish Service versions.
+- New common urlAccess.print_status() to print HTTP status code, reason, and context
+- New json files for StorageGroup testing (that require modifications for each host)
+
 ## [2.1.8] - 2021-8-24
 - Corrections to HTTP Basic Auth handling
 - Corrections to markdown links and configuration text

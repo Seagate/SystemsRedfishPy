@@ -92,10 +92,8 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-        Trace.log(TraceLevel.INFO, '')
-        Trace.log(TraceLevel.INFO, '[] URL          : {}'.format(self.startingurl))
-        Trace.log(TraceLevel.INFO, '[] Status       : {}'.format(self.link.urlStatus))
-        Trace.log(TraceLevel.INFO, '[] Reason       : {}'.format(self.link.urlReason))
+        if self.link != None:
+            self.link.print_status()
 
         if (self.link != None and self.link.response != None):
             Trace.log(TraceLevel.INFO, '')
