@@ -1,0 +1,100 @@
+#
+# Redfish Service Script to test Invalid URIs
+#
+
+create session
+
+http get /redfish
+assert = $httpstatus 200
+
+http get /redfish/v1/aaa
+assert = $httpstatus 400
+
+http get /redfish/v2
+assert = $httpstatus 400
+
+http get /redfish/999999
+assert = $httpstatus 400
+
+http get /redfish/v1/Chassis/enclosure_99/Power
+assert = $httpstatus 400
+
+http get /redfish/v1/Chassis/enclosure_99/Thermal
+assert = $httpstatus 400
+
+http get /redfish/v1/Fabrics/UNKNOWN/Endpoints
+assert = $httpstatus 400
+
+http get /redfish/v1/Fabrics/FC (when the system only has iSCSI and SAS)
+assert = $httpstatus 400
+
+http get /redfish/v1/Managers/controller_c
+assert = $httpstatus 400
+
+http get /redfish/v1/Managers/controller_99/EthernetInterfaces
+assert = $httpstatus 400
+
+http get /redfish/v1/SessionService/Sessions/688
+assert = $httpstatus 400
+
+http get /redfish/v1/Storage/controller_99/Drives
+assert = $httpstatus 400
+
+http get /redfish/v1/Storage/controller_99/Drives/0.0
+assert = $httpstatus 400
+
+http get /redfish/v1/Storage/controller_99/EndpointGroups
+assert = $httpstatus 400
+
+http get /redfish/v1/Storage/controller_99/EndpointGroups/A0
+assert = $httpstatus 400
+
+http get /redfish/v1/Storage/controller_99/Endpoints
+assert = $httpstatus 400
+
+http get /redfish/v1/Storage/controller_99/Endpoints/A0
+assert = $httpstatus 400
+
+http get /redfish/v1/Storage/controller_99/StorageGroups
+assert = $httpstatus 400
+
+http get /redfish/v1/Storage/controller_99/StoragePools
+assert = $httpstatus 400
+
+http get /redfish/v1/Storage/controller_99/Volumes
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/LogServices
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/LogServices/controller_a
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/LogServices/controller_b
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/Storage
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/Storage/controller_b/Drives
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/Storage/controller_b/Drives/0.0
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/Storage/controller_b/EndpointGroups
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/Storage/controller_b/EndpointGroups/A0
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/Storage/controller_b/Endpoints/A0
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz123/Storage/controller_b/StorageGroups
+assert = $httpstatus 400
+
+http get /redfish/v1/Systems/xyz124/Storage/controller_b/StoragePools
+assert = $httpstatus 400
+
+delete sessions $sessionid

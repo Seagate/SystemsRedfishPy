@@ -66,17 +66,16 @@ class CommandHandler(CommandHandlerBase):
 
         self.link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', False)
 
+        Trace.log(TraceLevel.TRACE, '[[ urlData DATA ]]')
+        Trace.log(TraceLevel.TRACE, '{}'.format(self.link.urlData))
+        Trace.log(TraceLevel.TRACE, '[[ urlData DATA END ]]')
+
     @classmethod
     def display_results(self, redfishConfig):
 
         print('Redfish Metadata')
         print('---------------------------------------------------------------------------------------------------------')
-        
         if (self.link.valid):
-            dom = xml.dom.minidom.parseString(self.link.urlData)
-            pretty_xml_as_string = dom.toprettyxml(indent='    ', newl='\n')
-            for line in pretty_xml_as_string.splitlines():
-                if (len(line.strip()) > 0):
-                    print(line)              
+            Trace.log(TraceLevel.INFO, '{}'.format(self.link.urlData))
         else:
             Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: redfish metadata // ERROR receiving data from ({}): Error {}: {}'.format(self.link.url, self.link.urlStatus, self.link.urlReason))

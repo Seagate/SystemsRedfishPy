@@ -1,60 +1,64 @@
 #
 # Do NOT modify or remove this copyright and license
 #
-# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+# Copyright (c) 2021 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
 # This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
 #
-# delete_sessions.py 
+# delete_accounts.py 
 #
 # ******************************************************************************************
 #
-# @command delete sessions
+# @command delete accounts
 #
-# @synopsis Delete one or more comma-separated session ids
+# @synopsis Delete one or more comma-separated user accounts
 #
 # @description-start
 #
-# This command will delete one or more sessions. To delete the current session, use
-# use the special internal variable $sessionid
+# This command will delete one or more user accounts.
 #  
-# 'delete sessions $sessionid'   - delete the current active session
-# 'delete sessions Id1'          - delete session Id1
-# 'delete sessions Id1,Id2,Id3'  - delete sessions Id1, Id2, and Id3
+# Parameters:
+#     At least one user account is required and specifies the user account to delete.
 #
-# Example:
+# Examples:
 #
-# (redfish) delete sessions Id1,Id2
-# 
+# (redfish) delete accounts user1
+# Delete single user account user1
+#
+# (redfish) delete accounts user1,user2,user3
+# Delete multiple user accounts user1, user2, and user3
 #
 # @description-end
 #
 
+import json
 from commands.commandHandlerBase import CommandHandlerBase
+from core.jsonBuilder import JsonBuilder, JsonType
 from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
+from core.urlAccess import UrlAccess, UrlStatus
 
 ################################################################################
 # CommandHandler
 ################################################################################
 class CommandHandler(CommandHandlerBase):
-    """Command - delete sessions"""
-    name = 'delete sessions'
+    """Command - delete account"""
+    name = 'delete account'
     ids = []
 
     @classmethod
     def prepare_url(self, redfishConfig, command):
-        Trace.log(TraceLevel.DEBUG, '++ delete sessions: command={}'.format(command))
+        Trace.log(TraceLevel.DEBUG, '++ delete accounts: command={}'.format(command))
         self.ids = super().get_id_list(self, command, 2)
         return ('')
         
     @classmethod
     def process_json(self, redfishConfig, url):
-        Trace.log(TraceLevel.DEBUG, '++ delete sessions: ids={}'.format(self.ids))
-        super().delete_id_list(self, redfishConfig, RedfishSystem.get_uri(redfishConfig, 'Sessions'), self.ids)
+        Trace.log(TraceLevel.DEBUG, '++ delete accounts: ids={}'.format(self.ids))
+        super().delete_id_list(self, redfishConfig, RedfishSystem.get_uri(redfishConfig, 'Accounts'), self.ids)
 
     @classmethod
     def display_results(self, redfishConfig):

@@ -47,16 +47,16 @@ but the tool performs a HTTP operation on **https://10.230.220.100/redfish**. Th
 
 Quick Start 
 
-Create your own configuration file to store your desired settings. In this example, **myconfig.json** was chosen. The recomendation is to use
+Create your own configuration file to store your desired settings. In this example, **myconfig.cfg** was chosen. The recomendation is to use
 one config json file per storage array system so that you can quickly connect to multiple desired Redfish Services.
 
 ```
-cp redfishAPI.json myconfig.json
+cp redfishAPI.cfg myconfig.cfg
 
 SystemsRedfishPy> python --version
 Python 3.7.4
 
-SystemsRedfishPy> python redfishAPI.py -c myconfig.json
+SystemsRedfishPy> python redfishAPI.py -c myconfig.cfg
 
 --------------------------------------------------------------------------------
 [1.2.7] Redfish API

@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.2.0] - 2021-10-28
+- New `version` command to display the version of this tool
+- Renamed example configuration `redfishAPI.json` file to `redfishAPI.cfg`
+- Modified `.gitignore` to ignore all `*.cfg` files (suggest renaming `.json` config files to `.cfg`)
+- Added `show accounts` to use /redfish/v1/AccountService to display all Accounts
+- Added `create account` to use /redfish/v1/AccountService/Accounts to create a new user account
+- Added `update account` to use /redfish/v1/AccountService/Accounts to update a user account
+- Added `delete accounts` to use /redfish/v1/AccountService/Accounts to remove one or more user accounts
+- Added `create snapshot` to use {VolumeId}/Actions/Volume.CreateReplicaTarget to create a volume snapshot
+- New `assert [operator]` command to aide with http url validation testing (see `scripts\test_invalid_uris.rfs`)
+- Added new label `$httpstatus` which is used by the `assert` command
+
 ## [2.1.9] - 2021-9-7
 - Expanded `redfish version` to display Redfish Specification and Redfish Service versions.
 - New common urlAccess.print_status() to print HTTP status code, reason, and context
@@ -65,7 +77,7 @@
 
 ## [2.0.3] - 2020-09-08
 - Corrected 'purge system' to handle both linear and virtual storage systems
-- Corrected JSON errors in redfishAPI.json
+- Corrected JSON errors in redfishAPI.cfg
 - Removed the need for Python version 3.6 or greater. 3.x is sufficient.
 - Add 'show fabrics'
 

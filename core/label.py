@@ -43,16 +43,20 @@ class Label:
 
         labelValue = default
         labelString = None
+        Trace.log(TraceLevel.TRACE, '-- decode: label={} default={} index={}'.format(label, default, index))
 
         try:
             # Handle a string label, and a list of strings
             if isinstance(label, str): 
                 labelString = label
+                Trace.log(TraceLevel.TRACE, '-- decode: (string) label={} labelString={}'.format(label, labelString))
             elif isinstance(label, list): 
                 labelString = str(label[index])
+                Trace.log(TraceLevel.TRACE, '-- decode: (list) label={} labelString={}'.format(label, labelString))
 
             if labelString in cls.ldict.keys(): 
                 labelValue = cls.ldict[labelString]
+                Trace.log(TraceLevel.TRACE, '-- decode: label={} labelValue={}'.format(label, labelValue))
 
         except Exception as e:
             # Return the default value

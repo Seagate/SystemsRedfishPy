@@ -78,4 +78,4 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def display_results(self, redfishConfig):
-        print('')
+        pass

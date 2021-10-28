@@ -39,6 +39,7 @@ class UrlStatus():
     response = None
     urlData = None
     jsonData = None
+    xmlData = None
     sessionKey = ''
     checked = False
     valid = False
@@ -60,6 +61,8 @@ class UrlStatus():
         self.urlStatus = status
         self.urlReason = reason
         self.checked = True
+        Label.encode(config.httpStatusVariable, status)
+
         if (status == 200 or status == 201):
             self.valid = True
 
@@ -226,16 +229,22 @@ class UrlAccess():
                         if len(item) >= 2:
                             if 'json' in item[1]:
                                 if isinstance(link.urlData, str):
-                                    link.jsonData = json.loads(link.urlData)
+                                    try:
+                                        link.jsonData = json.loads(link.urlData)
+                                    except:
+                                        pass
                                 elif isinstance(link.urlData, bytes):
                                     link.jsonData = json.loads(str(link.urlData.decode("utf-8")))
                                 else:
                                     Trace.log(TraceLevel.WARN, '   ++ UrlAccess: unhandled link.urlData type = {}'.format(type(link.urlData)))
                                 contentTypeHandled = True
+                            elif 'application/xml' in item[1]:
+                                contentTypeHandled = True
+                                link.xmlData = link.urlData
                         itemCount += 1 
 
                     if not contentTypeHandled:
-                        Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: unhandled content type = {}'.format(headers))
+                        Trace.log(TraceLevel.WARN, '   ++ UrlAccess: unhandled content type = {}'.format(headers))
 
                 except Exception as inst:
                     Trace.log(TraceLevel.INFO, '   -- Exception: Trying to convert to JSON data, url={}'.format(fullUrl))

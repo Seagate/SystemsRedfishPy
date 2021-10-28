@@ -1,60 +1,48 @@
 #
 # Do NOT modify or remove this copyright and license
 #
-# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+# Copyright (c) 2021 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
 # This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
 #
-# delete_sessions.py 
+# version.py 
 #
 # ******************************************************************************************
 #
-# @command delete sessions
+# @command version
 #
-# @synopsis Delete one or more comma-separated session ids
+# @synopsis Display the current version of this tool
 #
 # @description-start
 #
-# This command will delete one or more sessions. To delete the current session, use
-# use the special internal variable $sessionid
-#  
-# 'delete sessions $sessionid'   - delete the current active session
-# 'delete sessions Id1'          - delete session Id1
-# 'delete sessions Id1,Id2,Id3'  - delete sessions Id1, Id2, and Id3
-#
-# Example:
-#
-# (redfish) delete sessions Id1,Id2
+# Use the 'version' command to display the version of this tool.
 # 
-#
 # @description-end
 #
 
 from commands.commandHandlerBase import CommandHandlerBase
-from core.redfishSystem import RedfishSystem
+from commands.help_common import Help
 from core.trace import TraceLevel, Trace
+from version import __version__
 
 ################################################################################
 # CommandHandler
 ################################################################################
 class CommandHandler(CommandHandlerBase):
-    """Command - delete sessions"""
-    name = 'delete sessions'
-    ids = []
+    """Command - version """
+    name = 'version'
 
     @classmethod
     def prepare_url(self, redfishConfig, command):
-        Trace.log(TraceLevel.DEBUG, '++ delete sessions: command={}'.format(command))
-        self.ids = super().get_id_list(self, command, 2)
+        Help.store_command(command)
         return ('')
-        
+
     @classmethod
     def process_json(self, redfishConfig, url):
-        Trace.log(TraceLevel.DEBUG, '++ delete sessions: ids={}'.format(self.ids))
-        super().delete_id_list(self, redfishConfig, RedfishSystem.get_uri(redfishConfig, 'Sessions'), self.ids)
+        Trace.log(TraceLevel.INFO, '[] SystemsRedfishPy v{}'.format(__version__))
 
     @classmethod
     def display_results(self, redfishConfig):

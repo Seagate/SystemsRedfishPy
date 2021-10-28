@@ -66,7 +66,7 @@ class RedfishCommand:
         if (len(words) == 1):
             handlerName = 'commands.' + brand + '.' + words[0]
         elif (len(words) >= 2):
-            if (words[0] == 'help'):
+            if (words[0] == 'help' or words[0] == 'assert' or words[0] == 'version'):
                 handlerName = 'commands.' + brand + '.' + words[0]
             else:
                 handlerName = 'commands.' + brand + '.' + words[0] + '_' + words[1]

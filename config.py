@@ -18,11 +18,12 @@
 ################################################################################
 sessionConfig = '$config'
 sessionIdVariable = '$sessionid'
+httpStatusVariable = '$httpstatus'
 
 ################################################################################
 # Redfish 
 ################################################################################
-defaultConfigFile = 'redfishAPI.json'
+defaultConfigFile = 'redfishAPI.cfg'
 
 ################################################################################
 # Storage Services URIs

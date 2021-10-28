@@ -152,7 +152,7 @@ class CommandHandler(CommandHandlerBase):
         Trace.log(TraceLevel.TRACE, '   ++ redfish urls // process_json url ({})'.format(url))
         sleepTime = redfishConfig.get_int('linktestdelay')
 
-        Trace.log(TraceLevel.VERBOSE, '.. process_url START ({})'.format(url))
+        Trace.log(TraceLevel.VERBOSE, '.. process_url START ({}) delay({})'.format(url, sleepTime))
         link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'GET', True)
         self.allLinks[url] = link
         self.dump_links(self)

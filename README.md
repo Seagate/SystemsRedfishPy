@@ -89,7 +89,7 @@ interactive mode. All commands entered at the prompt can also be pasted into a t
 Open a terminal window and change directories to the SystemsRedfishPy folder. Run the command 'python redfishAPI.py'
 and you will be presented with a '(redfish)' prompt.
 
-As a best practice, it is suggested that you copy redfishAPI.json to myconfig.json or any name of your choice. Then edit the following properties in that file:
+As a best practice, it is suggested that you copy redfishAPI.cfg to myconfig.cfg or any name of your choice. Then edit the following properties in that file:
 * "dumphttpdata": "True",
 * "mcip": "[your-service-ip]",
 * "password": "[service-password]",

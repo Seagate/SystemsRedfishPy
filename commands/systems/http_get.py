@@ -70,8 +70,16 @@ class CommandHandler(CommandHandlerBase):
         if self.link != None:
             self.link.print_status()
 
-        if (self.link != None and self.link.jsonData != None):
-            Trace.log(TraceLevel.VERBOSE, '[] HTTP Data  : {}'.format(self.link.jsonData))
-
-        if (self.link != None and self.link.jsonData != None):
-            Trace.log(TraceLevel.INFO, '[] JSON Data  : {}'.format(json.dumps(self.link.jsonData, indent=4)))
+        if (self.link != None and self.link.xmlData != None):
+            Trace.log(TraceLevel.INFO, ' [] XML Data   :')
+            Trace.log(TraceLevel.INFO, '{}'.format(self.link.xmlData))
+        elif (self.link != None and self.link.jsonData != None):
+            Trace.log(TraceLevel.INFO, ' [] JSON Data  :')
+            Trace.log(TraceLevel.INFO, '{}'.format(json.dumps(self.link.jsonData, indent=4)))
+        elif (self.link != None and self.link.urlData != None):
+            if isinstance(self.link.urlData, str):
+                Trace.log(TraceLevel.INFO, ' [] Data       :')
+                Trace.log(TraceLevel.INFO, '{}'.format(self.link.urlData))
+            elif isinstance(self.link.urlData, bytes):
+                Trace.log(TraceLevel.INFO, ' [] Data       :')
+                Trace.log(TraceLevel.INFO, '{}'.format(str(self.link.urlData.decode("utf-8"))))

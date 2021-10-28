@@ -17,10 +17,18 @@ import json
 from core.trace import TraceLevel, Trace
 
 ################################################################################
-# JsonExtract
+# ArgExtract
 ################################################################################
 class ArgExtract:
 
+    #
+    # get_value - retrieve a value from a space separated string of arguments.
+    #             Argument count from 0 to max words in list of words.
+    #
+    # Example:
+    #     get_value('assert = $httpStatus 200', 0) returns 'assert'
+    #     get_value('assert = $httpStatus 200', 3) returns '200'
+    #
     @classmethod
     def get_value(cls, command, position):
         """Extract the specified argument from the comamnd line string."""
@@ -31,7 +39,7 @@ class ArgExtract:
         words = command.split(' ')
         Trace.log(TraceLevel.TRACE, '   ++ get_value: len ({}), words ({})'.format(len(words), words))
 
-        if (len(words) >= position):
+        if (len(words) > position):
             argument = words[position]
             success = True
         else:

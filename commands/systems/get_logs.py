@@ -197,7 +197,7 @@ class CommandHandler(CommandHandlerBase):
     @classmethod
     def process_json(self, redfishConfig, url):
         Trace.log(TraceLevel.INFO, "")
-        Trace.log(TraceLevel.INFO, "++ get logs: {}".format(url))
+        Trace.log(TraceLevel.VERBOSE, "++ get logs: {}".format(url))
 
         if (redfishConfig.get_version() < 2):
             Trace.log(TraceLevel.ERROR, "get logs is only supported in service version 2: (ServiceVersion={})".format(redfishConfig.get_version()))
@@ -237,7 +237,7 @@ class CommandHandler(CommandHandlerBase):
                 return
         else:
             # verify that the file can be created
-            print("@@ testing 2 ({})".format(log_filename))
+            Trace.log(TraceLevel.DEBUG, "@@ testing 2 ({})".format(log_filename))
             with open(log_filename, 'wb') as f:
                 f.write(b"0x74x65x73x74") # 'test'
                 f.close()

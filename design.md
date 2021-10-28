@@ -9,7 +9,7 @@ very quick overview of the design intent and provides a guideline for making cha
 
 The redfishAPI.py module is the main function entry point. The client runs in a script mode or an interactive mode. Both
 handlers, script and interactive, rely on redfishConfig and redfishCommand. Configuration data is stored in the JSON file
-redfishAPI.json.
+redfishAPI.cfg.
 
 All modules rely heavily on a Trace facility and a common UrlAccess class.
 
