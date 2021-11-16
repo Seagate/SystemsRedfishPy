@@ -1,10 +1,10 @@
 {
     "ServerEndpointGroups": [
         {
-            "@odata.id": "/redfish/v1/Systems/DHSIFTJ-1852437ED5/Storage/controller_a/EndpointGroups/A0"
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/A0"
         },
         {
-            "@odata.id": "/redfish/v1/Systems/DHSIFTJ-1852437ED5/Storage/controller_a/EndpointGroups/B0"
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/B0"
         }
     ],
     "MappedVolumes": [

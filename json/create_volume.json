@@ -3,7 +3,7 @@
     "CapacityBytes": 100000000000,
     "CapacitySources": [
         {
-            "@odata.id": "/redfish/v1/StorageServices/S1/StoragePools/A"
+            "@odata.id": "/redfish/v1/Storage/controller_a/StoragePools/A"
         }
     ]
 }

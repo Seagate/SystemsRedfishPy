@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.2.1] - 2021-11-15
+- Updates to JSON files used to patch StorageGroups since parameter AccessCapabilities is now AccessCapability
+
 ## [2.2.0] - 2021-10-28
 - New `version` command to display the version of this tool
 - Renamed example configuration `redfishAPI.json` file to `redfishAPI.cfg`
