@@ -1,0 +1,48 @@
+{
+    "Name": "ComposedVolumeA01",
+    "Description": "Composed Volume A01",
+    "RAIDType": "RAID6",
+    "CapacityBytes": 2000000000,
+    "LogicalUnitNumber": 0,
+
+    "AccessCapabilities": [
+        "Read",
+        "Write"
+    ],
+
+    "Links": {
+        "ClientEndpointGroups": [
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/500605b00db9a070"
+            }
+        ],
+        "ResourceBlocks": [
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.0"
+            },
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.1"
+            },
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.2"
+            },
+            {
+                "@odata.id": "/redfish/v1/CompositionService/ResourceBlocks/DriveBlock-0.3"
+            }
+        ],
+        "ServerEndpointGroups": [
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/A0"
+            },
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/A1"
+            },
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/B0"
+            },
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/B1"
+            }
+        ]
+    }
+}

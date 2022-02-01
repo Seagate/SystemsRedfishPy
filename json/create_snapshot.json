@@ -1,0 +1,6 @@
+{
+    "ReplicaType": "Snapshot",
+    "ReplicaUpdateMode": "Asynchronous",
+    "TargetStoragePool": "AVolume01",
+    "VolumeName": "Snapshot01"
+}

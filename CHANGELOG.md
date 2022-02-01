@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.2.2] - 2022-01-31
+- New [Tutorial for Redfish Service v2.4.20](tutorial-redfish-service-v2.md).
+- Several changes to json/* example files to update them to the Redfish Service v2.x.x format.
+- Correction to handling JSON data on the command line.
+
 ## [2.2.1] - 2021-11-15
 - Updates to JSON files used to patch StorageGroups since parameter AccessCapabilities is now AccessCapability
 

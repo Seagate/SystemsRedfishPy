@@ -1,0 +1,29 @@
+{
+    "Name": "dgA01",
+    "CapacitySources": {
+        "ProvidingDrives": [
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/Drives/0.0"
+            },
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/Drives/0.1"
+            },
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/Drives/0.2"
+            },
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/Drives/0.3"
+            }
+        ]
+    },
+    "AllocatedPools": {
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Storage/controller_a/StoragePools/A"
+            }
+        ]
+    },
+    "SupportedRAIDTypes": [
+        "RAID5"
+    ]
+}

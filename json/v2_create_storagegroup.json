@@ -1,0 +1,30 @@
+{
+    "ServerEndpointGroups": [
+        {
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/A0"
+        },
+        {
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/A1"
+        },
+        {
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/B0"
+        },
+        {
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/B1"
+        }
+    ],
+    "ClientEndpointGroups": [
+        {
+            "@odata.id": "/redfish/v1/Storage/controller_a/Endpoints/iqn.1994-05.com.redhat:csi-lab-51"
+        }
+    ],
+    "MappedVolumes": [
+        {
+            "AccessCapability": "ReadWrite",
+            "LogicalUnitNumber": "1",
+            "Volume": {
+                "@odata.id": "/redfish/v1/Storage/controller_a/Volumes/AVolume01"
+            }
+        }
+    ]
+}

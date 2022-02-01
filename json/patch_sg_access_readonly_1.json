@@ -2,7 +2,7 @@
     "MappedVolumes": [
         {
             "AccessCapability": "Read",
-            "LogicalUnitNumber": "1"
+            "LogicalUnitNumber": "111"
         }
     ]
 }
