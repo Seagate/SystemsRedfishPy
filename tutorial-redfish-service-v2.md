@@ -3481,14 +3481,14 @@ Here is the JSON data for these operation, please note that LocationIndicatorAct
 ## <a name="section17">(17) Enable|Disable Background Scrub</a>
 [//]: <> (================================================================================================================================================================)
 
-The **Storage** resource and an HTTP PATCH operation is used to update the **DiskAdvancedSettings** settings for background disk scrub and backgroun disk group scrub.
+The **Storage** resource and an HTTP PATCH operation is used to update the **DiskAdvancedSettings** settings for background disk scrub and background disk group scrub.
 This operation can update two parameters:
 - BackgroundDiskGroupScrub can be "Enabled" or "Disabled"
 - BackgroundDiskScrub can be "Enabled" or "Disabled"
 
 Here is the JSON data for these operation:
 - `{ "Oem": { "Seagate": { "DiskAdvancedSettings": { "BackgroundDiskGroupScrub": "Enabled", "BackgroundDiskScrub": "Enabled" } } } }`
-- `{ "Oem": { "DiskAdvancedSettings": { "BackgroundDiskGroupScrub": "Disabled", "BackgroundDiskScrub": "Disabled" } } }`
+- `{ "Oem": { "Seagate": {"DiskAdvancedSettings": { "BackgroundDiskGroupScrub": "Disabled", "BackgroundDiskScrub": "Disabled" } } } }`
 
 The following example turns on these services and then turns them off.
 
