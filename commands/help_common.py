@@ -74,7 +74,7 @@ class Help():
                     if (len(words) > 1):
                         atcommand = words[0] + ' ' + words[1]
                         cls.valid = True
-                    Trace.log(TraceLevel.DEBUG, '   @command: [{}]'.format(atcommand))
+                    Trace.log(TraceLevel.DEBUG, '   @command: {}'.format(atcommand))
 
                     if (atcommand != None):
                         cls.commands[atcommand] = commandFromFile

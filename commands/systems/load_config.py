@@ -1,28 +1,28 @@
 #
 # Do NOT modify or remove this copyright and license
 #
-# Copyright (c) 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+# Copyright (c) 2022 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 #
 # This software is subject to the terms of the MIT License. If a copy of the license was
 # not distributed with this file, you can obtain one at https://opensource.org/licenses/MIT.
 #
 # ******************************************************************************************
 #
-# reset_discovered.py 
+# load_config.py 
 #
 # ******************************************************************************************
 #
-# @command reset discovered
+# @command load config
 #
-# @synopsis Clear and rediscover URLs presented by the Redfish Service
+# @synopsis Load a new configuration file and reset discovered items.
 #
 # @description-start
 #
-# 'reset discovered' Clear all discovered URLs and then rescan URLs presented by the service
+# 'load config <filename>' Read and use configuration settings from a new file.
 #
 # Example:
 #
-# (redfish) reset discovered
+# (redfish) load config myconfig.cfg
 # -- Reseting discovered URLs...
 #    -- Discovered: Root               >> /redfish/v1
 #    -- Discovered: Chassis            >> /redfish/v1/Chassis/
@@ -41,23 +41,33 @@
 #
 
 from commands.commandHandlerBase import CommandHandlerBase
+from core.label import Label
+from core.redfishCommand import RedfishCommand
 from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
+import config
 
 ################################################################################
 # CommandHandler
 ################################################################################
 class CommandHandler(CommandHandlerBase):
-    """Command - reset discovered"""
-    name = 'reset discovered'
+    """Command - load config"""
+    name = 'load config'
 
     @classmethod
     def prepare_url(self, redfishConfig, command):
-        return None
+        self.commandFull = command
+        filename = command.strip().replace('load config ', '')
+        Trace.log(TraceLevel.DEBUG, '-- load settings from ({})'.format(filename))
+        return (filename)
 
     @classmethod
     def process_json(self, redfishConfig, url):
-        RedfishSystem.reset_discovered(redfishConfig, True)
+        sessionId = Label.decode(config.sessionIdVariable)
+        if sessionId is not None:
+            RedfishCommand.execute(redfishConfig, 'delete sessions ' + sessionId)
+        RedfishSystem.reset_discovered(redfishConfig, False)
+        redfishConfig.load_config(url)
 
     @classmethod
     def display_results(self, redfishConfig):

@@ -16,7 +16,7 @@
 from enum import IntEnum
 
 class TraceLevel(IntEnum):
-    NONE    = 0
+    ALWAYS  = 0
     FATAL   = 1
     ERROR   = 2
     WARN    = 3
@@ -30,18 +30,18 @@ class TraceLevel(IntEnum):
 ################################################################################
 class Trace:
 
-    tracelevel = TraceLevel.NONE
-    tracelabels = ["NONE", "FATAL", "ERROR", "WARN", "INFO", "VERBOSE", "DEBUG", "TRACE"]
+    tracelevel = TraceLevel.ALWAYS
+    tracelabels = ["ALWAYS", "FATAL", "ERROR", "WARN", "INFO", "VERBOSE", "DEBUG", "TRACE"]
 
     preface = {
-        TraceLevel.NONE  : '',
-        TraceLevel.FATAL : 'FATAL: ',
-        TraceLevel.ERROR : 'ERROR: ',
-        TraceLevel.WARN  : 'WARNING: ',
-        TraceLevel.INFO  : '',
+        TraceLevel.ALWAYS  : '',
+        TraceLevel.FATAL   : 'FATAL: ',
+        TraceLevel.ERROR   : 'ERROR: ',
+        TraceLevel.WARN    : 'WARNING: ',
+        TraceLevel.INFO    : '',
         TraceLevel.VERBOSE : '',
-        TraceLevel.DEBUG  : '',
-        TraceLevel.TRACE  : ''
+        TraceLevel.DEBUG   : '',
+        TraceLevel.TRACE   : ''
     }
 
     @classmethod
@@ -49,8 +49,8 @@ class Trace:
 
         newlevel = int(level)
         try:
-            if (newlevel < TraceLevel.NONE):
-                cls.tracelevel = TraceLevel.NONE
+            if (newlevel < TraceLevel.ALWAYS):
+                cls.tracelevel = TraceLevel.ALWAYS
             elif (newlevel > TraceLevel.TRACE):
                 cls.tracelevel = TraceLevel.TRACE
             else:
@@ -67,5 +67,5 @@ class Trace:
     @classmethod
     def log(cls, level, entry):
 
-        if (cls.tracelevel >= level):
+        if (level == TraceLevel.ALWAYS or cls.tracelevel >= level):
             print("{}{}".format(cls.preface[level], entry))

@@ -142,7 +142,7 @@ When running commands, you have several options to help debug issues, and to con
 | Command                         | Description |
 | ------------------------------- | ----------- |
 | !annotate [True,False]          | Provides a banner for every line of script file processed. Default is `True`. |
-| !brand [product]                | Specifies the folder to retrieve commands from. Default is `systems`, but `example` is also provided. This is a subfolder of `commands`. |
+| !brand [product]                | Specifies the subfolder of commands to use. Default is `systems`, but `example` is provided. |
 | !certificatecheck [True,False]  | When False, the URL will be opened using context=ssl._create_unverified_context. Default is `False`. |
 | !dump                           | Print out all configuration options. This is useful to learn what settings are available. |
 | !dumphttpdata [True,False]      | Display all HTTP data read from the Redfish Service. Useful for additional info. Default is `False`. |

@@ -71,11 +71,12 @@ class RedfishSystem:
     # Display all discovered URIs
     #
     @classmethod
-    def reset_discovered(cls, redfishConfig):
+    def reset_discovered(cls, redfishConfig, rescan):
         Trace.log(TraceLevel.INFO, '-- Reseting discovered URLs...')
         cls.systemDict = {}
         cls.successfulRootInit = False
-        cls.initialize_service_root_uris(redfishConfig)
+        if rescan:
+            cls.initialize_service_root_uris(redfishConfig)
 
     #
     # Store a new URI

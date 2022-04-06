@@ -2397,11 +2397,11 @@ can also be tied to a StorageGroup where applicable. Create and manage StorageGr
 
 | Property              | Mandatory | Description |
 | --------------------- | --------- | ----------- |
-| LogicalUnitNumber     | Yes       | Specify the LUN to be used for mapping the volume. This property is part of the **MappedVolumes** JSON array. **Note:** This revision requires that this value be a string. |
+| AccessCapability      | No        | This is a string. Valid choices are **Read** or **ReadWrite**. This property is part of the **MappedVolumes** JSON array. Default is ReadWrite. |
+| LogicalUnitNumber     | Yes       | Specify the LUN used for mapping the volume. This property is part of the **MappedVolumes** JSON array. **Note:** This value must be a string. |
 | Volume                | Yes       | This specifies the Volume URI to be used for the mapping. This property is part of the **MappedVolumes** JSON array. |
 | ClientEndpointGroups  | Yes       | A host initiator must be specified. Provide a list of one initiator group to use in the volume mapping. |
 | ServerEndpointGroups  | No        | Provide a list of one or more storage port groups to use in the volume mapping. If no port is provided, the volume will be mapped to all available ports. |
-| AccessCapabilities    | No        | This is a JSON array of strings to specify read only or read-write access to the volume. Valid choices are **Read** and **Write**. If this parameter is omitted, the volume will default to Read,Write accessibility. |
 
 For this example operation, the JSON data needed for the operation is stored in a text file called **v2_create_storagegroup.json**. This file **MUST** change for each storage system. See below.
 
@@ -2409,32 +2409,29 @@ For this example operation, the JSON data needed for the operation is stored in 
 {
     "ServerEndpointGroups": [
         {
-            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/A0"
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/A0"
         },
         {
-            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/A1"
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/A1"
         },
         {
-            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/B0"
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/B0"
         },
         {
-            "@odata.id": "/redfish/v1/StorageServices/S1/EndpointGroups/B1"
+            "@odata.id": "/redfish/v1/Storage/controller_a/EndpointGroups/B1"
         }
     ],
     "ClientEndpointGroups": [
         {
-            "@odata.id": "/redfish/v1/StorageServices/S1/Endpoints/500605b00db9a070"
+            "@odata.id": "/redfish/v1/Storage/controller_a/Endpoints/iqn.1994-05.com.redhat:csi-lab-51"
         }
-    ],
-    "AccessCapabilities": [
-        "Read",
-        "Write"
     ],
     "MappedVolumes": [
         {
+            "AccessCapability": "ReadWrite",
             "LogicalUnitNumber": "1",
             "Volume": {
-                "@odata.id": "/redfish/v1/StorageServices/S1/Volumes/AVolume01"
+                "@odata.id": "/redfish/v1/Storage/controller_a/Volumes/AVolume01"
             }
         }
     ]

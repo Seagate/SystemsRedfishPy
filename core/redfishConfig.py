@@ -41,8 +41,6 @@ class RedfishConfig:
     @classmethod
     def __init__(self, filename):
 
-        self.configurationfile = filename
-
         #
         # Add new configuration settings here, they will be automatically written to the JSON file.
         # The configuration data is stored in a dictionary, with each entry being a tuple of (value, description)
@@ -50,7 +48,7 @@ class RedfishConfig:
         # self.dictionary['key'][1] = description
         #
         self.dictionary['annotate']         = [True, 'True|False  Provides a banner for every line of script file processed. Default is True.']
-        self.dictionary['brand']            = ['systems', '<string>    Specifies the folder to retrieve commands from. Default is systems, but example is also provided. This is a subfolder of commands.']
+        self.dictionary['brand']            = ['systems', '<string>    Specifies the subfolder of commands to use. Default is systems, but example is provided.']
         self.dictionary['certificatecheck'] = [False, 'True|False  When False, the URL will be opened using context=ssl._create_unverified_context. Default is False.']
         self.dictionary['dumphttpdata']     = [False, 'True|False  Display all HTTP data read from the Redfish Service. Useful for additional info. Default is False.']
         self.dictionary['dumpjsondata']     = [False, 'True|False  Display all JSON data read from the Redfish Service. Default is False.']
@@ -68,7 +66,15 @@ class RedfishConfig:
         self.dictionary['usefinalslash']    = [True, 'True|False  When True, all Redfish URIs will have a slash as the final character in the URL. Default is True.']
         self.dictionary['username']         = ['', '<string>    Change the username to [name] that is used to log in to the Redfish Service.']
 
-        Trace.log(TraceLevel.DEBUG, '++ Initialize Redfish API configuration from ({})...'.format(filename))
+        self.load_config(filename)
+
+
+    @classmethod
+    def load_config(self, filename):
+
+        self.configurationfile = filename
+
+        Trace.log(TraceLevel.ALWAYS, '-- Using settings from ({})'.format(filename))
 
         currentvalue = 0
         
@@ -87,7 +93,6 @@ class RedfishConfig:
                 self.save()
             except:
                 Trace.log(TraceLevel.ERROR, 'Cannot parse JSON configuration file {}'.format(read_file))
-
 
     @classmethod
     def get_value(self, key):

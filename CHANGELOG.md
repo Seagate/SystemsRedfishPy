@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.2.4] - 2022-04-06
+- New `load config` command making it easier to switch from one config to another.
+- Correction to the StorageGroup steps [Tutorial for Redfish Service v2.4.20](tutorial-redfish-service-v2.md).
+- Changed Trace.NONE to Trace.ALWAYS which will always print the trace entry.
+
 ## [2.2.3] - 2022-02-03
 - Small correction to [Tutorial for Redfish Service v2.4.20](tutorial-redfish-service-v2.md).
 
