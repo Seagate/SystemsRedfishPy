@@ -14,11 +14,11 @@
 #
 # @command reset system [<json | file>]
 #
-# @synopsis Reset the active storage controller based on the 'mcip' configuration value.
+# @synopsis Reset the active storage controller based on the 'ipaddress' configuration value.
 #
 # @description-start
 #
-# 'reset system' will reset the storage controller associated with the 'mcip' configuration
+# 'reset system' will reset the storage controller associated with the 'ipaddress' configuration
 # value. The 'SystemId' discovery value is used for this purpose. This command uses the
 # following Redfish operation:
 #

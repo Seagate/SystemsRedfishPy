@@ -14,12 +14,12 @@
 #
 # @command create session
 #
-# @synopsis Establish a session with the Redfish Service (using mcip, username, and password)
+# @synopsis Establish a session with the Redfish Service (using ipaddress, username, and password)
 #
 # @description-start
 #
 # This command attempts to establish a session with the Redfish Service. It will use the
-# mcip, username, and password that are defined in the configuration settings. Use '!dump' to
+# ipaddress, username, and password that are defined in the configuration settings. Use '!dump' to
 # view all configuration settings. Use '!setting value' to update the setting and value.
 #
 # Example:
@@ -50,7 +50,7 @@ class CommandHandler(CommandHandlerBase):
 
     def prepare_url(self, redfishConfig, command):
         Trace.log(TraceLevel.INFO, '   -- ServiceVersion: {}'.format(redfishConfig.get_version()))
-        Trace.log(TraceLevel.INFO, '   -- IP Address    : {}://{}'.format(redfishConfig.get_value('http'), redfishConfig.get_mcip()))
+        Trace.log(TraceLevel.INFO, '   -- IP Address    : {}://{}:{}'.format(redfishConfig.get_value('http'), redfishConfig.get_ipaddress(), redfishConfig.get_port()))
         return (RedfishSystem.get_uri(redfishConfig, 'Sessions'))
 
     @classmethod

@@ -42,7 +42,7 @@ The root URI for Redfish is `/redfish`. An HTTP GET of this URI returns JSON dat
 supported by the service. 
 
 **Note:** The SystemRedfishPy tool does not require the full URL. When a URI of **/redfish** is entered by the user, the tool uses a full URL
-using tool configuration variables: **http** and **mcip**, From the (redfish) prompt enter `!dump` to see current settings . The protocol is determined by **http** and that value is used with **mcip** to form a full URL. For example, the user enters **/redfish**
+using tool configuration variables: **http** and **ipaddress**, From the (redfish) prompt enter `!dump` to see current settings . The protocol is determined by **http** and that value is used with **ipaddress** to form a full URL. For example, the user enters **/redfish**
 but the tool performs a HTTP operation on **https://10.230.220.100/redfish**. This tutorial uses this shortened URI syntax.
 
 Quick Start 
@@ -65,7 +65,7 @@ SystemsRedfishPy> python redfishAPI.py -c myconfig.cfg
 
 (redfish) !certificatecheck False
 (redfish) !http https
-(redfish) !mcip <ipaddress>
+(redfish) !ipaddress <ipaddress>
 (redfish) !password <password>
 (redfish) !username <username>
 
@@ -73,7 +73,7 @@ SystemsRedfishPy> python redfishAPI.py -c myconfig.cfg
    >> configuration values:
       -- certificatecheck     : False
       -- http                 : https
-      -- mcip                 : <ipaddress>
+      -- ipaddress            : <ipaddress>
       -- password             : <password>
       -- username             : <username>
 

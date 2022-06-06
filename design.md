@@ -139,12 +139,12 @@ Example:
 #
 # @command create session
 #
-# @synopsis Establish a session with the Redfish Service (using mcip, username, and password)
+# @synopsis Establish a session with the Redfish Service (using ipaddress, username, and password)
 #
 # @description-start
 #
 # This command attempts to establish a session with the Redfish Service. It will use the
-# mcip, username, and password that are defined in the configuration settings. Use '!dump' to
+# ipaddress, username, and password that are defined in the configuration settings. Use '!dump' to
 # view all configuration settings. Use '!setting value' to update the setting and value.
 #
 # Example:

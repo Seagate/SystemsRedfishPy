@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.2.5] - 2022-06-06
+- Replaced `mcip` configuration setting with `ipaddress` to allow clearer integration with other Redfish services.
+- Add `port` as a new configuration setting. By default, this is set to 80 but any valid Redfish service port will work.
+- Changed config option 'httpbasicauth' to 'basicauth' to reduce typing and make the setting more visible.
+
 ## [2.2.4] - 2022-04-06
 - New `load config` command making it easier to switch from one config to another.
 - Correction to the StorageGroup steps [Tutorial for Redfish Service v2.4.20](tutorial-redfish-service-v2.md).

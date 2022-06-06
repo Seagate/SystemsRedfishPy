@@ -97,7 +97,7 @@ class UrlAccess():
 
         s = requests.Session()
 
-        fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_mcip() + link.url
+        fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_ipaddress() + ":" + redfishConfig.get_port() + link.url
         Trace.log(TraceLevel.INFO, '   -- fullUrl: {}'.format(fullUrl))
         Trace.log(TraceLevel.INFO, '   -- filename ({})'.format(filename))
 
@@ -105,7 +105,7 @@ class UrlAccess():
         JsonBuilder.newElement('jsonpayload', JsonType.DICT)
 
         # Add authentication
-        if redfishConfig.get_bool('httpbasicauth'):
+        if redfishConfig.get_basicauth():
             encoded = base64.b64encode(str.encode(redfishConfig.get_value('username') + ':' + redfishConfig.get_value('password')))
             Trace.log(TraceLevel.DEBUG, '   -- HTTP Basic Authorization: {}'.format(encoded))
             s.headers.update({'Authorization': 'Basic ' + str(encoded), })
@@ -165,11 +165,12 @@ class UrlAccess():
 
         try:
             Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request - {} ({}) session ({}:{})'.format(method, link.url, Label.decode(config.sessionIdVariable), redfishConfig.sessionKey))
-            fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_mcip() + link.url
+            fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_ipaddress() + ":" + redfishConfig.get_port() + link.url
+            Trace.log(TraceLevel.TRACE, '   -- fullUrl: {}'.format(fullUrl))
 
             request = urllib.request.Request(fullUrl, method = method)
 
-            if redfishConfig.get_bool('httpbasicauth'):
+            if redfishConfig.get_basicauth():
                 Trace.log(TraceLevel.DEBUG, '   -- Using HTTP Basic Auth')
                 uername_password = redfishConfig.get_value('username') + ':' + redfishConfig.get_value('password')
                 encoded = base64.b64encode(str.encode(uername_password))

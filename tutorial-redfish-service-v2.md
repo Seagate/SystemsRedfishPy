@@ -127,8 +127,8 @@ The root URI for Redfish is `/redfish`. An HTTP GET of this URI returns JSON dat
 supported by the service. 
 
 **Note:** The SystemRedfishPy tool does not require the full URL. When a URI of **/redfish** is entered by the user, the tool uses a full URL
-using tool configuration variables: **http** and **mcip**, From the (redfish) prompt enter `!dump` to see current settings . The protocol (http|https)
-is determined by **http** and that value is used with **mcip** to form a full URL. For example, the user enters **/redfish**
+using tool configuration variables: **http** and **ipaddress**, From the (redfish) prompt enter `!dump` to see current settings . The protocol (http|https)
+is determined by **http** and that value is used with **ipaddress** to form a full URL. For example, the user enters **/redfish**
 but the tool performs a HTTP operation on **https://10.230.220.100/redfish**. This tutorial uses this shortened URI syntax.
 
 **Quick Start**
@@ -156,7 +156,7 @@ SystemsRedfishPy> python3 redfishAPI.py -c myconfig.cfg
 
 (redfish) !certificatecheck False
 (redfish) !http https
-(redfish) !mcip <ipaddress>
+(redfish) !ipaddress <ipaddress>
 (redfish) !password <password>
 (redfish) !username <username>
 
@@ -165,7 +165,7 @@ SystemsRedfishPy> python3 redfishAPI.py -c myconfig.cfg
    ...
    -- certificatecheck     : False              True|False  When False, the URL will be opened using context=ssl._create_unverified_context. Default is False.
    -- http                 : https              http|https  Switch between use http:// and https://. Default is https.
-   -- mcip                 : 10.230.220.100     <string>    Change all HTTP communications to use this new IP address.
+   -- ipaddress            : 10.230.220.100     <string>    Change all HTTP communications to use this new IP address.
    -- password             : <password>         <string>    Change the password to [password] that is used to log in to the Redfish Service.
    -- username             : <username>         <string>    Change the username to [name] that is used to log in to the Redfish Service.
 

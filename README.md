@@ -91,9 +91,10 @@ and you will be presented with a '(redfish)' prompt.
 
 As a best practice, it is suggested that you copy redfishAPI.cfg to myconfig.cfg or any name of your choice. Then edit the following properties in that file:
 * "dumphttpdata": "True",
-* "mcip": "[your-service-ip]",
+* "ipaddress": "[your-service-ip]",
 * "password": "[service-password]",
 * "username": "[service-username]",
+* "http": "http or https",
 
 Additional Properties Note:
 * Set `!serviceversion 1` - to work with the earlier version of the Redfish Service that supported ClassesOfService
@@ -133,7 +134,7 @@ To configure which controller to talk to:
 
 | Command              | Description |
 | -------------------- | ----------- |
-| !mcip 10.235.221.120 | Change all HTTP communications to use this new ip address. |
+| !ipaddress 10.235.221.120 | Change all HTTP communications to use this new ip address. |
 | !username [name]     | Change the username to `[name]` that is used to log in to the Redfish Service. |
 | !password [password] | Change the password to `[password]` that is used to log in to the Redfish Service. |
 
@@ -151,7 +152,8 @@ When running commands, you have several options to help debug issues, and to con
 | !entertoexit [True,False]       | When True, pressing Enter in interactive mode will exit the tool. Default is `False`. |
 | !http [https,https]             | Switch between use http:// and https://. Default is `https`. |
 | !linktestdelay [seconds]        | How long to delay between URLs when running the 'redfish urls' command. Default is `0`. |
-| !mcip [ip]                      | Change all HTTP communications to use this new ip address. |
+| !ipaddress [ip]                 | Change all HTTP communications to use this new ip address. |
+| !port [port]                    | Change all HTTP communications to use this new port value, default is 80. |
 | !password [password]            | Change the password to `[password]` that is used to log in to the Redfish Service. |
 | !serviceversion [1,2]           | Specify the Redfish Service version. This changes command behavior based on supported schemas. Default is `2`. |
 | !showelapsed [True,False]       | Display how long each command took. Default is `False`. |
@@ -164,7 +166,7 @@ When running commands, you have several options to help debug issues, and to con
 ### Redfish Commands
 
 Most commands require that you establish a session with the target Redfish Service. To do so, use 'create session'.
-This command will use the configuration settings, listed above, such as mcip, username, and password and attempt to
+This command will use the configuration settings, listed above, such as ipaddress, username, and password and attempt to
 establish a session.
 
 ```bash

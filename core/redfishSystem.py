@@ -201,12 +201,12 @@ class RedfishSystem:
                     cls.store_uri_value(controller_id_str, controller_name)
                     controller_id += 1
 
-                    # Use EthernetInterfaces to compare to 'mcip' to determine active controller
+                    # Use EthernetInterfaces to compare to 'ipaddress' to determine active controller
                     neweth = '/redfish/v1/Managers/' + controller_name + '/EthernetInterfaces/A'
                     link = UrlAccess.process_request(redfishConfig, UrlStatus(neweth), 'GET', True, None)
                     if (link.valid and link.jsonData is not None and 'IPv4Addresses' in link.jsonData):
                         for ipv4 in link.jsonData['IPv4Addresses']:
-                            if ('Address' in ipv4 and ipv4['Address'] == redfishConfig.get_mcip()):
+                            if ('Address' in ipv4 and ipv4['Address'] == redfishConfig.get_ipaddress()):
                                 cls.store_uri_value('ActiveControllerId', controller_name)
                                 cls.store_uri_value('StorageActiveController', cls.get_uri_simple('Storage') + controller_name + '/')
 

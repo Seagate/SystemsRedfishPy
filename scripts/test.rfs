@@ -8,7 +8,7 @@
 
 #
 # !version
-# !mcip <ipaddress>
+# !ipaddress <ipaddress>
 # !username <username>
 # !password <password>
 # !annotate yes

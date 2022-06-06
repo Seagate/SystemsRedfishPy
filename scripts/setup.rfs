@@ -7,13 +7,13 @@
 #
 # Replace <ipaddress>, <username>, and <password> with proper values.
 # For example:
-#     !mcip 10.235.221.119
+#     !ipaddress 10.235.221.119
 #
 # Use: python redfishAPI.py -s scripts\setup.rfs
 #
 
 !http https
-!mcip <ipaddress>
+!ipaddress <ipaddress>
 !username <username>
 !password <password>
 !CertificateCheck False

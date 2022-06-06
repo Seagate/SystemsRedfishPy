@@ -20,9 +20,9 @@
 #
 # Usage:
 #     !dump - to see current settings
-#     !mcip <ipaddress> - to set the setting `mcip` to a new <ipaddress> value
-#     !username <username> - to set the setting `mcip` to a new <ipaddress> value
-#     !password <ipaddress> - to set the setting `mcip` to a new <ipaddress> value
+#     !ipaddress <ipaddress> - to set the setting `ipaddress` to a new <ipaddress> value
+#     !username <username> - to set the setting `username` to a new <username> value
+#     !password <ipaddress> - to set the setting `password` to a new <password> value
 # 
 # @description-end
 #
