@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.3.0] - 2022-08-01
+- Created new 'common' command folder. Brand is searched first, then common.
+- Added new 'show brands' command which displays all brands and a command count.
+- Moved many commands from 'systems' and 'example' to 'common'
+- Minor bug correction in 'create session'
+- Created a new Open BMC brand (obmc) as a starting point
+
 ## [2.2.5] - 2022-06-06
 - Replaced `mcip` configuration setting with `ipaddress` to allow clearer integration with other Redfish services.
 - Add `port` as a new configuration setting. By default, this is set to 80 but any valid Redfish service port will work.

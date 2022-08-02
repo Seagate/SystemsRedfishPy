@@ -120,6 +120,7 @@ There are five main categories of commands that can be entered.
 
 help - provides a list of available commands
 help [command name] - provides details on a command
+show brands - provides a list of all available brands
 
 ### Configuration Commands
 
@@ -293,7 +294,7 @@ An example of retrieving disk drive logs.
 
 ## Design
 
-If you want to make changes to this reference client, there is a [design document](design.md) that provides an overview
+If you want to make changes to this reference client, there is a [design document](DESIGN.md) that provides an overview
 of how to make changes and add new commands. The main system design allows you to add commands, and help for
 commands, without having to change any of the underlying core files. The only step needed is to add your new
 command to the 'commands' folder using the prescribed template.
@@ -301,5 +302,5 @@ command to the 'commands' folder using the prescribed template.
 
 ## Unit Testing
 
-If you want to run unit testing, the [unit test document](unittest.md) provides an overview of how to install
+If you want to run unit testing, the [unit test document](UNITTEST.md) provides an overview of how to install
 the reporting packages, run unit tests, and also add new unit tests.

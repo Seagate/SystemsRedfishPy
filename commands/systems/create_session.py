@@ -88,8 +88,8 @@ class CommandHandler(CommandHandlerBase):
                 redfishConfig.sessionValid = True
 
         else:
-            if self.link != None:
-                self.link.print_status()
+            if link != None:
+                link.print_status()
 
     @classmethod
     def display_results(self, redfishConfig):
