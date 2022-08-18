@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.2.6] - 2022-08-16
+- Skipped warning message for zip content type when using "get logs component=controller".
+- Removed use of the undefined "context" variable, this ensures "http push <firmware_file>" does not exit with an error.
+
 ## [2.2.5] - 2022-06-06
 - Replaced `mcip` configuration setting with `ipaddress` to allow clearer integration with other Redfish services.
 - Add `port` as a new configuration setting. By default, this is set to 80 but any valid Redfish service port will work.
