@@ -39,7 +39,7 @@ from commands.commandHandlerBase import CommandHandlerBase
 from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 import os
-
+from core.display import *
 
 ################################################################################
 # CommandHandler
@@ -58,11 +58,11 @@ class CommandHandler(CommandHandlerBase):
 
         Trace.log(TraceLevel.VERBOSE, '++ show all brands ({}) folder'.format(url))
 
-        # -----------------------------------------------------------------------------------------------------------------------------------------------------
         data_format = '{brand: >16}  {location: >24}  {count: >8}'
+        width=max_width(data_format)
         print('')
         print(data_format.format(brand='Brand', location='Location', count='Count'))
-        print('-'*(16+2+24+8+2))
+        print('-'*width)
 
         rootdir = 'commands'
         for folder in os.listdir(rootdir):
