@@ -86,8 +86,6 @@ class CommandHandler(CommandHandlerBase):
             Trace.log(TraceLevel.INFO, '[] Status       : {}'.format(self.link.urlStatus))
             Trace.log(TraceLevel.INFO, '[] Reason       : {}'.format(self.link.urlReason))
 
-        if self.context != '':
-            print(' [] Context    : {}'.format(self.context))
 
         if (self.link != None and self.link.response != None):
             Trace.log(TraceLevel.INFO, '')

@@ -34,8 +34,8 @@ from commands.commandHandlerBase import CommandHandlerBase
 from core.redfishSystem import RedfishSystem
 from core.trace import TraceLevel, Trace
 from core.urlAccess import UrlAccess, UrlStatus
+from core.display import *
 
-################################################################################
 # PoolInformation
 ################################################################################
 class AccountInformation:
@@ -64,33 +64,10 @@ class AccountInformation:
                 except:
                     self.AccountTypes = 'Unknown'
 
-            # Description
-            if ('Description' in link.jsonData):
-                self.Description = link.jsonData['Description']
-
-            # Enabled
-            if ('Enabled' in link.jsonData):
-                self.Enabled = link.jsonData['Enabled']
-
-            # Id
-            if ('Id' in link.jsonData):
-                self.Id = link.jsonData['Id']
-
-            # Locked
-            if ('Locked' in link.jsonData):
-                self.Locked = link.jsonData['Locked']
-
-            # Name
-            if ('Name' in link.jsonData):
-                self.Name = link.jsonData['Name']
-
-            # RoleId
-            if ('RoleId' in link.jsonData):
-                self.RoleId = link.jsonData['RoleId']
-
-            # UserName
-            if ('UserName' in link.jsonData):
-                self.UserName = link.jsonData['UserName']
+            attributes = ['Description', 'Enabled', 'Id', 'Locked', 'Name', 'RoleId', 'UserName']
+            for attribute in attributes:
+                if attribute in link.jsonData:
+                    setattr(self, attribute, link.jsonData[attribute])            
 
 ################################################################################
 # CommandHandler
@@ -167,8 +144,8 @@ class CommandHandler(CommandHandlerBase):
             self.link.print_status()
 
         else:
-            data_format = '{username: >16}  {roles: >36}  {enabled: >7}  {locked: >7}  {types: >16}  {description}'
-            width=16+2+36+2+7+2+7+2+16+2+20
+            data_format = '{username: >16}  {roles: >36}  {enabled: >7}  {locked: >7}  {types: >16}  {description: >20}'
+            width=max_width(data_format)
             print('')
             print(data_format.format(username='UserName', roles='Roles', enabled='Enabled', locked='Locked', types='Types', description='Description'))
             print('-'*(width))

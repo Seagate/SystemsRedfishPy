@@ -242,6 +242,8 @@ class UrlAccess():
                             elif 'application/xml' in item[1]:
                                 contentTypeHandled = True
                                 link.xmlData = link.urlData
+                            elif 'application/zip' in item[1]:
+                                contentTypeHandled = True
                         itemCount += 1 
 
                     if not contentTypeHandled:
