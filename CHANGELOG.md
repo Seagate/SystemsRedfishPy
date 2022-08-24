@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.3.0] - 2022-08-01
+- Created new 'common' command folder. Brand is searched first, then common.
+- Added new 'show brands' command which displays all brands and a command count.
+- Moved many commands from 'systems' and 'example' to 'common'
+- Minor bug correction in 'create session'
+- Created a new Open BMC brand (obmc) as a starting point
+- Added new core/display.py with max_width() function
+
 ## [2.2.6] - 2022-08-16
 - Skipped warning message for zip content type when using "get logs component=controller".
 - Removed use of the undefined "context" variable, this ensures "http push <firmware_file>" does not exit with an error.

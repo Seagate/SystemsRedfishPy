@@ -19,6 +19,7 @@ import sys
 import time
 import traceback
 from core.trace import TraceLevel, Trace
+from os import path
 
 ################################################################################
 # dynamic_import
@@ -63,13 +64,42 @@ class RedfishCommand:
         brand = redfishConfig.get_value('brand')
         words = command.split(' ')
         Trace.log(TraceLevel.TRACE, '++ words ({}): {}'.format(len(words), words))
+
+        #
+        # Determine if the command exists if the brand folder, if not check the common folder.
+        # Otherwise, throw an error
+        #
         if (len(words) == 1):
+            handlerFile = 'commands/' + brand + '/' + words[0] + '.py'
             handlerName = 'commands.' + brand + '.' + words[0]
         elif (len(words) >= 2):
             if (words[0] == 'help' or words[0] == 'assert' or words[0] == 'version'):
+                handlerFile = 'commands/' + brand + '/' + words[0] + '.py'
                 handlerName = 'commands.' + brand + '.' + words[0]
             else:
+                handlerFile = 'commands/' + brand + '/' + words[0] + '_' + words[1] + '.py'
                 handlerName = 'commands.' + brand + '.' + words[0] + '_' + words[1]
+
+        # Check brand version of command
+        if (path.exists(handlerFile) == False):
+            Trace.log(TraceLevel.TRACE, '++ file ({}) does not exist, check common folder'.format(handlerFile))
+            brand = 'common'
+            if (len(words) == 1):
+                handlerFile = 'commands/' + brand + '/' + words[0] + '.py'
+                handlerName = 'commands.' + brand + '.' + words[0]
+            elif (len(words) >= 2):
+                if (words[0] == 'help' or words[0] == 'assert' or words[0] == 'version'):
+                    handlerFile = 'commands/' + brand + '/' + words[0] + '.py'
+                    handlerName = 'commands.' + brand + '.' + words[0]
+                else:
+                    handlerFile = 'commands/' + brand + '/' + words[0] + '_' + words[1] + '.py'
+                    handlerName = 'commands.' + brand + '.' + words[0] + '_' + words[1]
+
+            # Check common version of command
+            if (path.exists(handlerFile) == False):
+                Trace.log(TraceLevel.TRACE, '++ file ({}) does not exist, check common folder'.format(handlerFile))
+                Trace.log(TraceLevel.ERROR, 'Command file ({}) does not exist!'.format(handlerFile))
+                return None
 
         try:
             Trace.log(TraceLevel.DEBUG, '++ input command handler ({})'.format(handlerName))
