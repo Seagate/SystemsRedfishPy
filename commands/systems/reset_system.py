@@ -73,11 +73,11 @@ class CommandHandler(CommandHandlerBase):
         if not jsonData:
             jsonData = { "ResetType": "GracefulRestart" }
 
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(jsonData, indent=4))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, jsonData)
 
         # Execute: http POST /redfish/v1/Systems/{SystemId}/Actions/ComputerSystem.Reset
         Trace.log(TraceLevel.INFO, '-- http post {} {}'.format(url, jsonData))
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(jsonData, indent=4))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, jsonData)
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Status', link.urlStatus))
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))
 

@@ -89,7 +89,7 @@ class CommandHandler(CommandHandlerBase):
     def process_json(self, redfishConfig, url):
         Trace.log(TraceLevel.INFO, '[] http post: url ({})'.format(url))
         _, jsonData = ArgExtract.get_json(self.command, 3)
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(jsonData, indent=4), decode=False)
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, jsonData, decode=False)
         self.link = link
 
     @classmethod
@@ -99,11 +99,11 @@ class CommandHandler(CommandHandlerBase):
 
         if (self.link != None and self.link.response != None):
             Trace.log(TraceLevel.INFO, '')
-            Trace.log(TraceLevel.INFO, '[] HTTP Headers : {}'.format(self.link.response.getheaders()))
+            Trace.log(TraceLevel.INFO, '[] HTTP Headers : {}'.format(self.link.response.headers))
 
-        if (self.link != None and self.link.jsonData != None):
+        if (self.link != None and self.link.response != None):
             Trace.log(TraceLevel.VERBOSE, '')
-            Trace.log(TraceLevel.VERBOSE, '[] HTTP Data    : {}'.format(self.link.jsonData))
+            Trace.log(TraceLevel.VERBOSE, '[] HTTP Data    : {}'.format(self.link.response.text))
 
         if (self.link != None and self.link.jsonData != None):
             Trace.log(TraceLevel.INFO, '')

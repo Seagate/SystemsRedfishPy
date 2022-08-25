@@ -118,7 +118,7 @@ class CommandHandler(CommandHandlerBase):
         JsonBuilder.newElement('main', JsonType.DICT)
         JsonBuilder.addElement('main', JsonType.STRING, 'Command', self.commandFull)
 
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, JsonBuilder.getElement('main'))
 
         if link != None:
             link.print_status()

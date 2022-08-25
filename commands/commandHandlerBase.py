@@ -105,7 +105,6 @@ class CommandHandlerBase():
                     successes += 1
                 else:
                     Trace.log(TraceLevel.DEBUG, '   -- response {}'.format(link.response))
-                    Trace.log(TraceLevel.DEBUG, '   -- urlData {}'.format(link.urlData))
                     Trace.log(TraceLevel.DEBUG, '   -- jsonData {}'.format(link.jsonData))
 
         if (successes > 1):

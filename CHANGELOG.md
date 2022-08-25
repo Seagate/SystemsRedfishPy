@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.4.0] - 2022-08-24
+- Switched to using requests library for all http operations
+- UrlAccess.process_request() does not work with formatted JSON data using json.dumps()
+- Adjustments were required for working with the request response.headers
+
 ## [2.3.0] - 2022-08-01
 - Created new 'common' command folder. Brand is searched first, then common.
 - Added new 'show brands' command which displays all brands and a command count.

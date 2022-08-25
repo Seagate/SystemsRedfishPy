@@ -132,4 +132,4 @@ class RedfishCommand:
             Trace.log(TraceLevel.INFO, '-'*100)
             traceback.print_exc(file=sys.stdout)
             Trace.log(TraceLevel.INFO, '-'*100)
-            pass
+            

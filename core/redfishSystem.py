@@ -139,8 +139,8 @@ class RedfishSystem:
         
                 cls.store_uri_value("Accounts", cls.get_uri_simple("AccountService") + 'Accounts/')
                 cls.store_uri_value("Sessions", cls.get_uri_simple("SessionService") + 'Sessions/')
-                cls.store_uri_value("metadata", cls.get_uri_simple("Root") + '/$metadata/' )
-                cls.store_uri_value("odata", cls.get_uri_simple("Root") + '/odata/')
+                cls.store_uri_value("metadata", cls.get_uri_simple("Root") + '$metadata/' )
+                cls.store_uri_value("odata", cls.get_uri_simple("Root") + 'odata/')
     
         except Exception as e:
             Trace.log(TraceLevel.ERROR, 'Unable to initialize Service Root URIs, exception: {}'.format(e))
