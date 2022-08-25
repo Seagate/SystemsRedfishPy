@@ -65,7 +65,7 @@ class Help():
                 lineCount += 1
                 line = line.strip()
                 
-                if (line.startswith('# @command')):
+                if '@command' in line:
                     # Example: '# @command redfish links'
                     commandFromFile = line.replace('# ', '', 1).replace('@command ', '', 1).strip()
                     Trace.log(TraceLevel.DEBUG, '   commandFromFile: [{}]'.format(commandFromFile))
@@ -79,7 +79,7 @@ class Help():
                     if (atcommand != None):
                         cls.commands[atcommand] = commandFromFile
 
-                elif (line.startswith('# @synopsis')):
+                elif '@synopsis' in line:
                     # Example: '# @synopsis Test all URLs reported by this REST API'
                     text = line.replace('# ', '', 1)
                     text = text.replace('@synopsis ', '', 1).strip()
@@ -87,10 +87,10 @@ class Help():
                         Trace.log(TraceLevel.DEBUG, '   @synopsis: [{}]'.format(text))
                         cls.synopses[atcommand] = text
                         
-                elif (line.startswith('# @description-start')):
+                elif '@description-start' in line:
                     processing = True
                     
-                elif (line.startswith('# @description-end')):
+                elif '@description-end' in line:
                     processing = False
                     if (atcommand != None):
                         cls.descriptions[atcommand] = helptext
@@ -132,11 +132,9 @@ class Help():
 
     @classmethod
     def get_help_commands(cls, redfishConfig):
-        commands = []
         cls.extract_help(redfishConfig.get_value('brand'))
-        for key in cls.synopses:
-            commands.append(key)
-        return commands
+        if redfishConfig.get_value('brand') != 'common':
+            cls.extract_help('common')
 
     @classmethod
     def display_help(cls):

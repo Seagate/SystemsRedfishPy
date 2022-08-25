@@ -41,7 +41,7 @@ class CommandHandler(CommandHandlerBase):
 
     @classmethod
     def process_json(self, redfishConfig, url):
-        Help.extract_help(redfishConfig.get_value('brand'))
+        Help.get_help_commands(redfishConfig)
 
     @classmethod
     def display_results(self, redfishConfig):

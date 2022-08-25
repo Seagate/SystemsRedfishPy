@@ -63,6 +63,9 @@ class Trace:
     def getlevel(cls):
         return cls.tracelevel, cls.tracelabels[cls.tracelevel]
 
+    @classmethod
+    def getlevelint(cls):
+        return cls.tracelevel
 
     @classmethod
     def log(cls, level, entry):

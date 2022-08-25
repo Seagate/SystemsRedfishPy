@@ -1,9 +1,11 @@
 # Change Log
 
 ## [2.4.0] - 2022-08-24
-- Switched to using requests library for all http operations
+- Switched to using python requests library for all http operations, urllib has SSL limitations
 - UrlAccess.process_request() does not work with formatted JSON data using json.dumps()
 - Adjustments were required for working with the request response.headers
+- Adjust the `help` command to show help for brand and common commands
+- Display call stack for command exceptions when trace level is DEBUG or higher
 
 ## [2.3.0] - 2022-08-01
 - Created new 'common' command folder. Brand is searched first, then common.

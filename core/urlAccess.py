@@ -209,11 +209,15 @@ class UrlAccess():
             else:
                 link.urlData = link.response.content
 
-            Trace.log(TraceLevel.TRACE, '[[ urlData DATA ]]')
-            Trace.log(TraceLevel.TRACE, '{}'.format(link.urlData))
-            Trace.log(TraceLevel.TRACE, '[[ urlData DATA END ]]')
+            Trace.log(TraceLevel.TRACE, '[[ response.text ]]')
+            Trace.log(TraceLevel.TRACE, '{}'.format(link.response.text))
+            Trace.log(TraceLevel.TRACE, '[[ response.text END ]]')
 
-            if (link.urlData):
+            Trace.log(TraceLevel.TRACE, '[[ response.content ]]')
+            Trace.log(TraceLevel.TRACE, '{}'.format(link.response.content))
+            Trace.log(TraceLevel.TRACE, '[[ response.content END ]]')
+
+            if link.response.text != '' and link.response.headers is not None:
                 try:
                     contentTypeHandled = False                    
                     headers = link.response.headers
@@ -229,11 +233,13 @@ class UrlAccess():
                                 link.xmlData = link.urlData
                             elif 'application/zip' in value:
                                 contentTypeHandled = True
+                            elif 'IntentionallyUnknownMimeType' in value:
+                                contentTypeHandled = True
                             elif 'text/html' in value:
-                                Trace.log(TraceLevel.ALWAYS, 'html: {}'.format(link.response.text))
+                                Trace.log(TraceLevel.VERBOSE, 'html: {}'.format(link.response.text))
 
                     if not contentTypeHandled:
-                        Trace.log(TraceLevel.WARN, '   ++ UrlAccess: unhandled content type = {}'.format(headers['Content-Type']))
+                        Trace.log(TraceLevel.WARN, '   ++ UrlAccess: unhandled Content-Type: {}'.format(headers['Content-Type']))
 
                 except Exception as inst:
                     Trace.log(TraceLevel.INFO, '   -- Exception: Trying to convert to JSON data, url={}'.format(fullUrl))

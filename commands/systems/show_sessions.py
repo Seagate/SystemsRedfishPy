@@ -101,7 +101,6 @@ class CommandHandler(CommandHandlerBase):
             urls = []
 
             Trace.log(TraceLevel.TRACE, '   -- <<< RESPONSE >>>>')
-            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('x-auth-token', self.link.response.header['x-auth-token']))
             Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('status', self.link.response.status_code))
             Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('reason', self.link.response.reason))
 

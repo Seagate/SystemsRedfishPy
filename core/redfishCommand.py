@@ -124,7 +124,8 @@ class RedfishCommand:
         except ImportError as e:
             Trace.log(TraceLevel.ERROR, 'EXCEPTION: {}'.format(e))
             Trace.log(TraceLevel.ERROR, 'ImportError, No module found for command ({}) using [{}]'.format(command, handlerName))
-            pass
+            if Trace.getlevelint() < TraceLevel.DEBUG:
+                pass
 
         except Exception as e:
             Trace.log(TraceLevel.ERROR, 'EXCEPTION: {}'.format(e))
@@ -132,4 +133,5 @@ class RedfishCommand:
             Trace.log(TraceLevel.INFO, '-'*100)
             traceback.print_exc(file=sys.stdout)
             Trace.log(TraceLevel.INFO, '-'*100)
-            
+            if Trace.getlevelint() < TraceLevel.DEBUG:
+                pass
