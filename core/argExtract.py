@@ -88,7 +88,6 @@ class ArgExtract:
                 except Exception as e:
                     jsonText = ''
                     Trace.log(TraceLevel.ERROR, '   -- get_json: Unable to extract JSON text: Exception: {}'.format(str(e)))
-                    pass
 
                 Trace.log(TraceLevel.TRACE, '   ++ get_json: JSON Text: ({})'.format(jsonText))
                 jsonData = json.loads(jsonText)

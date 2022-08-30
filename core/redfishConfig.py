@@ -219,7 +219,6 @@ class RedfishConfig:
                 json.dump(self.fileSettings, write_file, indent=4)
         except:
             Trace.log(TraceLevel.ERROR, '-- Unable to save configuration to ({}) - check spelling'.format(self.configurationfile))
-            pass
 
     @classmethod
     def update(self, parameter, value):
@@ -244,7 +243,6 @@ class RedfishConfig:
             updated = True
         except:
             Trace.log(TraceLevel.ERROR, '   -- Unable to update parameter ({}) - check spelling'.format(parameter))
-            pass
 
         return (updated)
 

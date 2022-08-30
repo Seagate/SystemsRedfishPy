@@ -149,7 +149,6 @@ class UrlAccess():
         except Exception as e:
             Trace.log(TraceLevel.ERROR, 'Exception: request(POST) - {}'.format(e))
             link.update_status(418, 'Exception: request(POST) - ' + str(e))
-            pass
 
         link.elapsedMicroseconds = (time.time() - startTime) * 1000000
 
@@ -249,7 +248,7 @@ class UrlAccess():
                     Trace.log(TraceLevel.INFO, '-'*100)
                     traceback.print_exc(file=sys.stdout)
                     Trace.log(TraceLevel.INFO, '-'*100)
-                    pass
+
             else:
                 Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // No urlData')
 
@@ -266,7 +265,6 @@ class UrlAccess():
         except socket.timeout:
             link.update_status(598, 'socket.timeout')
             Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): Socket Error {}: {}'.format(link.url, 598, 'socket.timeout'))
-            pass
 
         except urllib.error.HTTPError as err:
             link.update_status(err.code, err.reason)
@@ -277,8 +275,6 @@ class UrlAccess():
 
             link.context = err.headers.get('command-status')
             Trace.log(TraceLevel.DEBUG, '   -- command-status: {}'.format(link.context))
-
-            pass
 
         except urllib.error.URLError as err:
             errorCode = 0
@@ -301,6 +297,5 @@ class UrlAccess():
                 else:
                     Trace.log(TraceLevel.INFO, 'errorMessage = {}'.format(errorMessage))
                 Trace.log(TraceLevel.INFO, '='*120)
-                pass
         
         return link

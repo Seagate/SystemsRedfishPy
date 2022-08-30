@@ -33,7 +33,6 @@ class Label:
 
         except Exception as e:
             Trace.log(TraceLevel.ERROR, '   -- encode: Unable to store label ({}) and vlaue {}: Exception: {}'.format(label, value, str(e)))
-            pass
 
     #
     # decode - Return the value for a label, or the default value provided. If the variable is a list, use the index to extract the value.
@@ -61,6 +60,5 @@ class Label:
         except Exception as e:
             # Return the default value
             Trace.log(TraceLevel.DEBUG, '   -- decode: Unable to get label value ({}): Exception: {}'.format(label, str(e)))
-            pass
         
         return labelValue

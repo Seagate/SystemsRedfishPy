@@ -73,7 +73,6 @@ class StorageGroupInformation:
             except:
                 self.Description = 'Unknown'
                 isDiskGroup = False
-                pass
 
             if (isDiskGroup):
 

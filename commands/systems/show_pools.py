@@ -83,7 +83,6 @@ class PoolInformation:
                         isPool = True
                 except:
                     isPool = False
-                    pass
 
                 if (isPool):
                     self.MaxBlockSizeBytes = link.jsonData['MaxBlockSizeBytes']
@@ -93,7 +92,6 @@ class PoolInformation:
                         self.AllocatedVolumes = len(avs)
                     except:
                         self.AllocatedVolumes = 0
-                        pass
 
                     self.RemainingCapacityPercent = link.jsonData['RemainingCapacityPercent']
 

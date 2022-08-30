@@ -165,7 +165,6 @@ class Help():
                 except:
                     print(' ERROR: command ({}) was not found in descriptions'.format(cls.command))
                     Trace.log(TraceLevel.TRACE, 'show help... descriptions={}'.format(cls.descriptions))
-                    pass
                 print(' ' + '='*170)
 
             else:
