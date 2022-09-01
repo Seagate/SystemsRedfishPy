@@ -66,7 +66,7 @@ class CommandHandler(CommandHandlerBase):
         JsonBuilder.addElement('main', JsonType.STRING, 'UserName', redfishConfig.get_value('username'))
         JsonBuilder.addElement('main', JsonType.STRING, 'Password', redfishConfig.get_value('password'))
 
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', False, json.dumps(JsonBuilder.getElement('main'), indent=4))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', False, JsonBuilder.getElement('main'))
 
         Trace.log(TraceLevel.TRACE, '   -- urlStatus={} urlReason={}'.format(link.urlStatus, link.urlReason))
 
@@ -81,8 +81,12 @@ class CommandHandler(CommandHandlerBase):
                 Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('UserName', link.jsonData['UserName']))
             else:
                 Trace.log(TraceLevel.TRACE, '   -- JSON data was (None)')
-            
-            redfishConfig.sessionKey = link.response.getheader('X-Auth-Token', '')
+
+            if 'X-Auth-Token' in link.response.headers:
+                redfishConfig.sessionKey = link.response.headers['X-Auth-Token']
+            else:
+                Trace.log(TraceLevel.WARN, 'HTTP response headers does not contain X-Auth-Token')
+
             Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('sessionKey', redfishConfig.sessionKey))
             if (redfishConfig.sessionKey != ''):
                 redfishConfig.sessionValid = True

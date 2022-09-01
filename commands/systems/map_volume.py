@@ -72,7 +72,7 @@ class CommandHandler(CommandHandlerBase):
 
         if jsonRequest is not None:
             url = url + storagegroup
-            link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'PATCH', True, json.dumps(jsonRequest, indent=4))
+            link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'PATCH', True, jsonRequest)
     
             Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Status', link.urlStatus))
             Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))

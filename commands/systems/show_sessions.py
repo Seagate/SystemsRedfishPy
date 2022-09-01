@@ -101,9 +101,7 @@ class CommandHandler(CommandHandlerBase):
             urls = []
 
             Trace.log(TraceLevel.TRACE, '   -- <<< RESPONSE >>>>')
-            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('x-auth-token', self.link.response.getheader('x-auth-token', '')))
-            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('version', self.link.response.version))
-            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('status', self.link.response.status))
+            Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('status', self.link.response.status_code))
             Trace.log(TraceLevel.TRACE, '   -- {0: <12}: {1}'.format('reason', self.link.response.reason))
 
             # Create a list of all the URLs
@@ -123,7 +121,7 @@ class CommandHandler(CommandHandlerBase):
                     session.init_from_url(redfishConfig, urls[i])
                     self.sessions.append(session)
             else:
-                Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Information mismatch: Members@odata.count ({}), Memebers {}'.format(total, created))
+                Trace.log(TraceLevel.ERROR, '   ++ CommandHandler: Information mismatch: Members@odata.count ({}), Members {}'.format(total, created))
 
 
     @classmethod

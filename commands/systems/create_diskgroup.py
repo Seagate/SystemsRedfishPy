@@ -152,7 +152,7 @@ class CommandHandler(CommandHandlerBase):
                 JsonBuilder.addElement('array', JsonType.STRING, '', level.upper())
                 JsonBuilder.addElement('main', JsonType.DICT, 'SupportedRAIDTypes', JsonBuilder.getElement('array'))
 
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(url), 'POST', True, JsonBuilder.getElement('main'))
 
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Status', link.urlStatus))
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))

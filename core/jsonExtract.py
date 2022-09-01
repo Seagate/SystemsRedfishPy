@@ -72,7 +72,6 @@ class JsonExtract:
                 result = None
         except:
             result = None
-            pass
 
         return result
 

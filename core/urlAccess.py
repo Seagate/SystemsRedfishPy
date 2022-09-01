@@ -8,7 +8,7 @@
 #
 # ******************************************************************************************
 #
-# urlAccess.py - This module provides a comman access point for all URL accesses. 
+# urlAccess.py - This module provides a common access point for all URL accesses. 
 #
 # ******************************************************************************************
 #
@@ -28,6 +28,7 @@ import time
 import traceback
 import urllib.request, urllib.error
 import warnings
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 ################################################################################
 # UrlStatus
@@ -148,7 +149,6 @@ class UrlAccess():
         except Exception as e:
             Trace.log(TraceLevel.ERROR, 'Exception: request(POST) - {}'.format(e))
             link.update_status(418, 'Exception: request(POST) - ' + str(e))
-            pass
 
         link.elapsedMicroseconds = (time.time() - startTime) * 1000000
 
@@ -164,90 +164,81 @@ class UrlAccess():
     def process_request(self, redfishConfig, link, method = 'GET', addAuth = True, data = None, decode = True):
 
         try:
+            requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
             Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request - {} ({}) session ({}:{})'.format(method, link.url, Label.decode(config.sessionIdVariable), redfishConfig.sessionKey))
             fullUrl = redfishConfig.get_value('http') + '://' + redfishConfig.get_ipaddress() + ":" + redfishConfig.get_port() + link.url
             Trace.log(TraceLevel.TRACE, '   -- fullUrl: {}'.format(fullUrl))
 
-            request = urllib.request.Request(fullUrl, method = method)
+            headers = {}
+            headers['Host'] = socket.gethostname()
 
-            if redfishConfig.get_basicauth():
+            authorization = None
+            if redfishConfig.get_basicauth() == True:
                 Trace.log(TraceLevel.DEBUG, '   -- Using HTTP Basic Auth')
-                uername_password = redfishConfig.get_value('username') + ':' + redfishConfig.get_value('password')
-                encoded = base64.b64encode(str.encode(uername_password))
-                encoded = encoded.decode('utf-8')
-                Trace.log(TraceLevel.DEBUG, '   -- uername_password is ({}) encoded is ({})'.format(uername_password, encoded))
-                request.add_header('Authorization', 'Basic ' + str(encoded))
-
-            elif (addAuth and redfishConfig.sessionKey is not None):
-                Trace.log(TraceLevel.DEBUG, '   ++ UrlAccess: X-Auth-Token=({})'.format(redfishConfig.sessionKey))
-                request.add_header('X-Auth-Token', redfishConfig.sessionKey)
+                authorization = (redfishConfig.get_value('username'), redfishConfig.get_value('password'))
+                Trace.log(TraceLevel.DEBUG, '   ++ Authorization: {}'.format(authorization))
+            elif addAuth == True and redfishConfig.sessionKey is not None:
+                headers['X-Auth-Token'] = redfishConfig.sessionKey
+                Trace.log(TraceLevel.DEBUG, '   ++ X-Auth-Token: {}'.format(redfishConfig.sessionKey))
 
             startTime = time.time()
             Trace.log(TraceLevel.TRACE, '   >> startTime={}'.format(startTime))
 
-            if (data):
-                request.add_header('If-None-Match', '""')
-                request.add_header('Content-Type', 'application/json; charset=utf-8')
-                jsondataasbytes = data.encode('utf-8')                
-                request.add_header('Content-Length', len(jsondataasbytes))
-                Trace.log(TraceLevel.TRACE, '   ++ Content-Length={}'.format(len(jsondataasbytes)))
+            if data is not None:
+                headers['If-None-Match'] = '""'
                 if (redfishConfig.get_bool('dumppostdata')):
                     Trace.log(TraceLevel.INFO, '[[ POST DATA ({}) ]]'.format(link.url))
-                    print(data)
+                    print("{}".format(json.dumps(data, indent=4)))
                     Trace.log(TraceLevel.INFO, '[[ POST DATA END ]]')
-                if (redfishConfig.get_bool('certificatecheck') == False):
-                    link.response = urllib.request.urlopen(request, jsondataasbytes, timeout=redfishConfig.get_urltimeout(), context=ssl._create_unverified_context())
-                else:
-                    link.response = urllib.request.urlopen(request, jsondataasbytes, timeout=redfishConfig.get_urltimeout())
-            else:
-                if (redfishConfig.get_bool('certificatecheck') == False):
-                    link.response = urllib.request.urlopen(request, timeout=redfishConfig.get_urltimeout(), context=ssl._create_unverified_context())
-                else:
-                    link.response = urllib.request.urlopen(request, timeout=redfishConfig.get_urltimeout())
+
+            Trace.log(TraceLevel.DEBUG, '   >> headers={}'.format(headers))
+            link.response = requests.request(
+                method, fullUrl, headers=headers, auth=authorization, json=data,
+                timeout=redfishConfig.get_urltimeout(), verify=redfishConfig.get_bool('certificatecheck'))
 
             endTime = time.time()
             elapsed = (endTime - startTime) * 1000000
             Trace.log(TraceLevel.TRACE, '   >> endTime={}'.format(endTime))
             Trace.log(TraceLevel.TRACE, '   >> elapsed={}'.format(elapsed))
-
             link.elapsedMicroseconds = elapsed
+
             if decode:
-                link.urlData = link.response.read().decode('utf-8')
+                link.urlData = link.response.text
             else:
-                link.urlData = link.response.read()
+                link.urlData = link.response.content
 
-            Trace.log(TraceLevel.TRACE, '[[ urlData DATA ]]')
-            Trace.log(TraceLevel.TRACE, '{}'.format(link.urlData))
-            Trace.log(TraceLevel.TRACE, '[[ urlData DATA END ]]')
+            Trace.log(TraceLevel.TRACE, '[[ response.text ]]')
+            Trace.log(TraceLevel.TRACE, '{}'.format(link.response.text))
+            Trace.log(TraceLevel.TRACE, '[[ response.text END ]]')
 
-            if (link.urlData):
+            Trace.log(TraceLevel.TRACE, '[[ response.content ]]')
+            Trace.log(TraceLevel.TRACE, '{}'.format(link.response.content))
+            Trace.log(TraceLevel.TRACE, '[[ response.content END ]]')
+
+            if link.response.text != '' and link.response.headers is not None:
                 try:
                     contentTypeHandled = False                    
-                    headers = link.response.getheaders()
-                    itemCount = 0
-                    for item in headers:
-                        Trace.log(TraceLevel.TRACE, '   -- headers[{}]={}'.format(itemCount, item))
-                        if len(item) >= 2:
-                            if 'json' in item[1]:
-                                if isinstance(link.urlData, str):
-                                    try:
-                                        link.jsonData = json.loads(link.urlData)
-                                    except:
-                                        pass
-                                elif isinstance(link.urlData, bytes):
-                                    link.jsonData = json.loads(str(link.urlData.decode("utf-8")))
-                                else:
-                                    Trace.log(TraceLevel.WARN, '   ++ UrlAccess: unhandled link.urlData type = {}'.format(type(link.urlData)))
+                    headers = link.response.headers
+                    Trace.log(TraceLevel.TRACE, '   -- headers: {}'.format(headers))
+                    for key, value in headers.items():
+                        Trace.log(TraceLevel.TRACE, '   -- HEADER {}: {}'.format(key, value))
+                        if key == 'Content-Type':
+                            if 'json' in value:
+                                link.jsonData = link.response.json()
                                 contentTypeHandled = True
-                            elif 'application/xml' in item[1]:
+                            elif 'application/xml' in value:
                                 contentTypeHandled = True
                                 link.xmlData = link.urlData
-                            elif 'application/zip' in item[1]:
+                            elif 'application/zip' in value:
                                 contentTypeHandled = True
-                        itemCount += 1 
+                            elif 'IntentionallyUnknownMimeType' in value:
+                                contentTypeHandled = True
+                            elif 'text/html' in value:
+                                Trace.log(TraceLevel.VERBOSE, 'html: {}'.format(link.response.text))
 
                     if not contentTypeHandled:
-                        Trace.log(TraceLevel.WARN, '   ++ UrlAccess: unhandled content type = {}'.format(headers))
+                        Trace.log(TraceLevel.WARN, '   ++ UrlAccess: unhandled Content-Type: {}'.format(headers['Content-Type']))
 
                 except Exception as inst:
                     Trace.log(TraceLevel.INFO, '   -- Exception: Trying to convert to JSON data, url={}'.format(fullUrl))
@@ -257,11 +248,11 @@ class UrlAccess():
                     Trace.log(TraceLevel.INFO, '-'*100)
                     traceback.print_exc(file=sys.stdout)
                     Trace.log(TraceLevel.INFO, '-'*100)
-                    pass
+
             else:
                 Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // No urlData')
 
-            link.update_status(link.response.status, link.response.reason)
+            link.update_status(link.response.status_code, link.response.reason)
 
             if (redfishConfig.get_bool('dumpjsondata')):
                 if (link.jsonData != None):
@@ -274,7 +265,6 @@ class UrlAccess():
         except socket.timeout:
             link.update_status(598, 'socket.timeout')
             Trace.log(TraceLevel.TRACE, '   ++ UrlAccess: process_request // ERROR receiving data from ({}): Socket Error {}: {}'.format(link.url, 598, 'socket.timeout'))
-            pass
 
         except urllib.error.HTTPError as err:
             link.update_status(err.code, err.reason)
@@ -285,8 +275,6 @@ class UrlAccess():
 
             link.context = err.headers.get('command-status')
             Trace.log(TraceLevel.DEBUG, '   -- command-status: {}'.format(link.context))
-
-            pass
 
         except urllib.error.URLError as err:
             errorCode = 0
@@ -309,6 +297,5 @@ class UrlAccess():
                 else:
                     Trace.log(TraceLevel.INFO, 'errorMessage = {}'.format(errorMessage))
                 Trace.log(TraceLevel.INFO, '='*120)
-                pass
         
         return link

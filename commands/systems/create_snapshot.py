@@ -97,7 +97,7 @@ class CommandHandler(CommandHandlerBase):
         fullurl = url + source + '/Actions/Volume.CreateReplicaTarget'
         Trace.log(TraceLevel.VERBOSE, '++ fullurl {}'.format(fullurl))
 
-        link = UrlAccess.process_request(redfishConfig, UrlStatus(fullurl), 'POST', True, json.dumps(JsonBuilder.getElement('main'), indent=4))
+        link = UrlAccess.process_request(redfishConfig, UrlStatus(fullurl), 'POST', True, JsonBuilder.getElement('main'))
 
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Status', link.urlStatus))
         Trace.log(TraceLevel.INFO, '   -- {0: <14}: {1}'.format('Reason', link.urlReason))

@@ -150,7 +150,6 @@ class JsonBuilder:
                 except:
                     Trace.log(TraceLevel.WARN, 'JsonBuilder.addElement could not convert value={} to integer, label={}'.format(value, label))
                     jsonEntity.update({label: 0})
-                    pass
             elif (jsonType == JsonType.DICT):
                 if (label == ''):
                     jsonEntity.update(value)
