@@ -1,3 +1,7 @@
+#
+# Copyright (c) 2022 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+#
+
 import os
 import sys
 
