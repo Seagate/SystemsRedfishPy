@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.4.1] - 2022-09-08
+- Install Atheris from Google
+- Fuzz the command input using Atheris from Google
+- Fix crash caused by surrogate pair characters
+
 ## [2.4.0] - 2022-08-24
 - Switched to using python requests library for all http operations, urllib has SSL limitations
 - UrlAccess.process_request() does not work with formatted JSON data using json.dumps()
