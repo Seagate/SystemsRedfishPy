@@ -18,6 +18,7 @@ import socket
 from collections import OrderedDict
 from core.trace import TraceLevel, Trace
 from version import __version__
+from json import JSONDecodeError
 
 ################################################################################
 # RedfishConfig
@@ -79,35 +80,41 @@ class RedfishConfig:
 
         currentvalue = 0
         
-        with open(filename, "r") as read_file:
-            try:            
-                Trace.log(TraceLevel.VERBOSE, 'Open JSON configuration file {}'.format(filename))
-                self.fileSettings = json.load(read_file)
-                Trace.log(TraceLevel.VERBOSE, 'self.fileSettings: {}'.format(self.fileSettings))
+        try:            
+            with open(filename, "r") as read_file:
+                try:
+                    Trace.log(TraceLevel.VERBOSE, 'Open JSON configuration file {}'.format(filename))
+                    self.fileSettings = json.load(read_file)
+                    Trace.log(TraceLevel.VERBOSE, 'self.fileSettings: {}'.format(self.fileSettings))
 
-                for key in self.dictionary:
-                    if key in self.fileSettings:
-                        self.dictionary[key][0] = self.fileSettings[key]
-                    Trace.log(TraceLevel.DEBUG, '   -- {0: <16} : {1}'.format(key, self.dictionary[key][0]))
+                    for key in self.dictionary:
+                        if key in self.fileSettings:
+                            self.dictionary[key][0] = self.fileSettings[key]
+                        Trace.log(TraceLevel.DEBUG, '   -- {0: <16} : {1}'.format(key, self.dictionary[key][0]))
 
-                self.update_trace('trace', currentvalue, self.dictionary['trace'][0])
+                    self.update_trace('trace', currentvalue, self.dictionary['trace'][0])
 
-                # Configuration compatibility checks, update old settings to new using stored value
-                if 'httpbasicauth' in self.fileSettings:
-                    value1 = self.fileSettings['httpbasicauth']
-                    self.dictionary['basicauth'][0] = self.fileSettings['httpbasicauth']
-                    Trace.log(TraceLevel.VERBOSE, '   UPDATE {} (old) to {} (new) using value ({})'.format('httpbasicauth', 'basicauth', value1))
+                    # Configuration compatibility checks, update old settings to new using stored value
+                    if 'httpbasicauth' in self.fileSettings:
+                        value1 = self.fileSettings['httpbasicauth']
+                        self.dictionary['basicauth'][0] = self.fileSettings['httpbasicauth']
+                        Trace.log(TraceLevel.VERBOSE, '   UPDATE {} (old) to {} (new) using value ({})'.format('httpbasicauth', 'basicauth', value1))
 
-                if 'mcip' in self.fileSettings:
-                    value1 = self.fileSettings['mcip']
-                    self.dictionary['ipaddress'][0] = self.fileSettings['mcip']
-                    Trace.log(TraceLevel.VERBOSE, '   UPDATE {} (old) to {} (new) using value ({})'.format('mcip', 'ipaddress', value1))
+                    if 'mcip' in self.fileSettings:
+                        value1 = self.fileSettings['mcip']
+                        self.dictionary['ipaddress'][0] = self.fileSettings['mcip']
+                        Trace.log(TraceLevel.VERBOSE, '   UPDATE {} (old) to {} (new) using value ({})'.format('mcip', 'ipaddress', value1))
 
-                # Save the configuration settings back to the file
-                self.save()
+                    # Save the configuration settings back to the file
+                    self.save()
 
-            except Exception as e:
-                Trace.log(TraceLevel.ERROR, 'Exception parsing JSON configuration file ({}) - {}'.format(filename, repr(e)))
+                except TypeError as e:
+                    Trace.log(TraceLevel.ALWAYS, 'JSON configuration file ({}) does not contain alphabetical characters'.format(configFile))
+                    raise JSONDecodeError(e, filename, 0)
+
+        except (JSONDecodeError, FileNotFoundError) as e:
+            Trace.log(TraceLevel.ALWAYS, 'Exception parsing JSON configuration file ({}) - {}'.format(filename, repr(e)))
+
 
     @classmethod
     def get_value(self, key):
