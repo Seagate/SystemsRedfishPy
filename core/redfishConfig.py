@@ -109,7 +109,7 @@ class RedfishConfig:
                     self.save()
 
                 except TypeError as e:
-                    Trace.log(TraceLevel.ALWAYS, 'JSON configuration file ({}) does not contain alphabetical characters'.format(configFile))
+                    Trace.log(TraceLevel.ALWAYS, 'JSON configuration file ({}) does not contain alphabetical characters'.format(filename))
                     raise JSONDecodeError(e, filename, 0)
 
         except (JSONDecodeError, FileNotFoundError) as e:
