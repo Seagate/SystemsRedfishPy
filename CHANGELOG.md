@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.4.2] - 2022-10-06
+- Log failures to load invalid JSON configuration files
+
 ## [2.4.1] - 2022-09-08
 - Install Atheris from Google
 - Fuzz the command input using Atheris from Google
