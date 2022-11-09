@@ -1,0 +1,20 @@
+{
+    "Destination": "http://10.237.117.212:8080/",
+    "Protocol": "Redfish",
+    "EventFormatType": "Event",
+    "Context": "Public",
+    "IncludeOriginOfCondition": false,
+    "ResourceTypes": [
+        "Chassis"
+    ],
+    "RegistryPrefixes": [],
+    "MessageIds": [],
+    "OriginResources": [],
+    "EventTypes": [
+        "Alert",
+        "ResourceRemoved",
+        "ResourceAdded",
+        "ResourceUpdated",
+        "StatusChange"
+    ]
+}
