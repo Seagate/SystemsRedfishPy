@@ -1,5 +1,5 @@
 {
-    "Destination": "http://10.237.117.212:8080/",
+    "Destination": "<http|https>://<IP>:<port>/",
     "Protocol": "Redfish",
     "EventFormatType": "Event",
     "Context": "Public",
