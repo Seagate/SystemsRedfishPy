@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.5.0] - 2022-11-15
+- Added support of Redfish event listener in the core
+- Added command to start/ stop Redfish event listener
+
 ## [2.4.2] - 2022-10-06
 - Log failures to load invalid JSON configuration files
 
