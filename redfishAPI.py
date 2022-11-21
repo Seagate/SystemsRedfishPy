@@ -73,6 +73,10 @@ if __name__ == '__main__':
         # Run script mode
         returncode = RedfishScript.execute_script(redfishConfig, args.scriptfile)
 
+    # Before existing, stop the listener service if running
+    if redfishConfig.listener != None:
+        redfishConfig.listener.shutdown()
+
     # Before existing, delete any current active session
     sessionId = Label.decode(config.sessionIdVariable)
     if sessionId is not None:

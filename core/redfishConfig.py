@@ -38,6 +38,7 @@ class RedfishConfig:
     sessionValid = False
     configurationfile = ''
     fileSettings = {}
+    listener = None
 
     @classmethod
     def __init__(self, filename):
@@ -67,6 +68,11 @@ class RedfishConfig:
         self.dictionary['urltimeout']       = [300, '<int>       How long to wait for a URL request before timing out. Default is 300.']
         self.dictionary['usefinalslash']    = [True, 'True|False  When True, all Redfish URIs will have a slash as the final character in the URL. Default is True.']
         self.dictionary['username']         = ['', '<string>    Change the username to [name] that is used to log in to the Redfish Service.']
+        self.dictionary['listenerusessl']   = ["True", 'True|False  Switch between use http and https. Default is https.']
+        self.dictionary['listenerip']       = ['localhost', '<string>    Event and Telemetry Listener IP address.']
+        self.dictionary['listenerport']     = ['8080', '<string>    Event and Telemetry Listener port.']
+        self.dictionary['certfile']         = ['', '<string>    Certificate PEM file for the SSL connection.']
+        self.dictionary['keyfile']          = ['', '<string>    Private Key PEM file for the SSL connection.']
 
         self.load_config(filename)
 

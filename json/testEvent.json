@@ -1,0 +1,14 @@
+{
+    "EventType": "Alert",
+    "EventId": "ABC132489713478812346",
+    "Severity": "Warning",
+    "Message": "The LAN has been disconnected",
+    "MessageId": "Alert.1.0.LanDisconnect",
+    "MessageArgs": [
+        "EthernetInterface 1",
+        "/redfish/v1/Systems/1"
+    ],
+    "OriginOfCondition": {
+        "@odata.id": "/redfish/v1/Systems/1/EthernetInterfaces/1"
+    }
+}
