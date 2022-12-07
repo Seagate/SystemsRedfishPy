@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.5.1] - 2022-12-07
+- Updated the types of drive logs available in 'get logs'.
+
 ## [2.5.0] - 2022-11-15
 - Added support of Redfish event listener in the core
 - Added command to start/ stop Redfish event listener
