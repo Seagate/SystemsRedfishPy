@@ -5415,9 +5415,9 @@ JSON Response Data:
          options: controller, drive
  
      'logtype' - Required for 'drive', not used for 'controller'
-         options: disk, diskfarm, diskibt, disksm2, diskidd, diskfarmlct, diskfarmfield,
-                 diskfarmts1, diskfarmts2, diskfarmsf1, diskfarmsf2, diskfarmsf3,
-                 diskfarmsf4, diskfarmfactory
+         options: disk, diskfarm, diskibt, disksm2, diskiddcap, diskiddoff, diskfarmlct,
+                 diskfarmfield, diskfarmts1, diskfarmts2, diskfarmsf1, diskfarmsf2,
+                 diskfarmsf3, diskfarmsf4, diskfarmfactory
  
      'drivenumber' - Required for 'drive', not used for 'controller'
          options: enclosure.slot, for example 0.24
@@ -5491,7 +5491,7 @@ Since not all drives support all log types, two example are shown below - one th
 LogService POST JSON Data:
 - **DiagnosticDataType**: only valid value is **OEM**
 - **OEMDiagnosticDataType** relvant options are: **GetDriveLog**
-- **DriveLogType**: disk, diskfarm, diskibt, disksm2, diskidd, diskfarmlct, diskfarmfield, diskfarmts1, diskfarmts2, diskfarmsf1, diskfarmsf2, diskfarmsf3, diskfarmsf4, diskfarmfactory
+- **DriveLogType**: disk, diskfarm, diskibt, disksm2, diskiddcap, diskiddoff, diskfarmlct, diskfarmfield, diskfarmts1, diskfarmts2, diskfarmsf1, diskfarmsf2, diskfarmsf3, diskfarmsf4, diskfarmfactory
 - **DriveNumber**: single number such as '0.1', other examples: 0.0, 1.0, 0.23, etc.
 
 HTTP Commands:
@@ -5521,9 +5521,9 @@ HTTP Commands:
          options: controller, drive
  
      'logtype' - Required for 'drive', not used for 'controller'
-         options: disk, diskfarm, diskibt, disksm2, diskidd, diskfarmlct, diskfarmfield,
-                 diskfarmts1, diskfarmts2, diskfarmsf1, diskfarmsf2, diskfarmsf3,
-                 diskfarmsf4, diskfarmfactory
+         options: disk, diskfarm, diskibt, disksm2, diskiddcap, diskiddoff, diskfarmlct,
+                 diskfarmfield, diskfarmts1, diskfarmts2, diskfarmsf1, diskfarmsf2,
+                 diskfarmsf3, diskfarmsf4, diskfarmfactory
  
      'drivenumber' - Required for 'drive', not used for 'controller'
          options: enclosure.slot, for example 0.24

@@ -28,9 +28,9 @@
 #         options: controller, drive
 #
 #     'logtype' - Required for 'drive', not used for 'controller'
-#         options: disk, diskfarm, diskibt, disksm2, diskidd, diskfarmlct, diskfarmfield,
-#                 diskfarmts1, diskfarmts2, diskfarmsf1, diskfarmsf2, diskfarmsf3,
-#                 diskfarmsf4, diskfarmfactory
+#         options: disk, diskfarm, diskibt, disksm2, diskiddcap, diskiddoff, diskfarmlct,
+#                 diskfarmfield, diskfarmts1, diskfarmts2, diskfarmsf1, diskfarmsf2,
+#                 diskfarmsf3, diskfarmsf4, diskfarmfactory
 #
 #     'drivenumber' - Required for 'drive', not used for 'controller'
 #         options: enclosure.slot, for example 0.24
