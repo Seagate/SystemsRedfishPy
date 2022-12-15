@@ -234,6 +234,8 @@ class UrlAccess():
                                 contentTypeHandled = True
                             elif 'IntentionallyUnknownMimeType' in value:
                                 contentTypeHandled = True
+                            elif 'text/plain' in value:
+                                contentTypeHandled = True
                             elif 'text/html' in value:
                                 Trace.log(TraceLevel.VERBOSE, 'html: {}'.format(link.response.text))
 

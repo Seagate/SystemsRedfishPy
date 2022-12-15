@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.5.2] - 2022-12-14
+- For Redfish services that don't support /redfish/v1, default version to v1
+- Handle text/plain responses from a service
+
 ## [2.5.1] - 2022-12-07
 - Updated the types of drive logs available in 'get logs'.
 

@@ -122,8 +122,9 @@ class RedfishSystem:
                 newValue = link.jsonData["v1"]
                 cls.store_uri_value("Root", newValue)
             else:
-                Trace.log(TraceLevel.ERROR, 'System Init: Invalid URL link for ({})'.format(url))
-                cls.successfulRootInit = False
+                # Since this service does not respond to /redfish, default to v1
+                cls.store_uri_value("Root", "/redfish/v1")
+                Trace.log(TraceLevel.INFO, 'System Init: Default to /redfish/v1')
 
             # GET Redfish Root Services
             if (cls.successfulRootInit):
