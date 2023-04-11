@@ -1,0 +1,5 @@
+pyreadline==2.1
+requests==2.25.0
+urllib3==1.26.5
+atheris==2.0.12
+http_parser
