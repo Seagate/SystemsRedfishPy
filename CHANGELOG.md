@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.5.2] - 2023-06-06
+- Handle ServiceRoot services that do not have a `@odata.id` included
+
 ## [2.5.1] - 2022-12-07
 - Updated the types of drive logs available in 'get logs'.
 
