@@ -51,11 +51,12 @@ class RedfishSystem:
     def store_uri(cls, key, link):
         if (link.valid):
             if (key in link.jsonData):
-                newValue = link.jsonData[key]["@odata.id"]
-                if (newValue[-1] != '/'):
-                    newValue = newValue + '/'
-                cls.systemDict[key] = newValue
-                cls.discovered_uri(key, newValue)
+                if ("@odata.id" in link.jsonData[key]):
+                    newValue = link.jsonData[key]["@odata.id"]
+                    if (newValue[-1] != '/'):
+                        newValue = newValue + '/'
+                    cls.systemDict[key] = newValue
+                    cls.discovered_uri(key, newValue)
 
     #
     # Display all discovered URIs
